@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #F9F7F3;
+  --color-text: #2C2A29;
+  --color-accent: #E67E22;
+  --color-muted: #5A5653;
+  --color-border: #E8E5DF;
+  --color-border-strong: #D1CEC7;
+  --color-green: #8BA896;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: #F9F7F3;
+  color: #2C2A29;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 50vh;
+  max-height: 450px;
+}
+
+@media (max-width: 768px) {
+  .chart-container {
+    height: 40vh;
+    max-height: 350px;
+  }
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -15px rgba(230, 126, 34, 0.15);
+  border-color: #E67E22;
+}
+
+.tag-pill {
+  background: #E8E5DF;
+  color: #5A5653;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Demo styles */
+.perspective-1000 { perspective: 1000px; }
+.preserve-3d { transform-style: preserve-3d; }
+
+.fluid-panel {
+  flex: 1;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.fluid-panel:hover {
+  flex: 4;
+  background-color: #E67E22;
+}
+
+.magnet-btn {
+  transition: transform 0.1s linear;
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(30px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-modal-in {
+  animation: modal-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}
+
+/* Web weave background nodes */
+@keyframes silk-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* Scroll-reveal defaults */
+.weave-reveal {
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #F9F7F3; }
+::-webkit-scrollbar-thumb { background: #D1CEC7; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #B8B5AE; }
+
+@keyframes silk-progress {
+  0% { width: 0%; }
+  50% { width: 70%; }
+  100% { width: 100%; }
+}
