@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { KnowledgeGateway } from "@/components/KnowledgeGateway";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { gloss } from "@/data/knowledgeGloss";
 import {
   Chart,
@@ -38,13 +39,13 @@ export function LandscapeSection() {
           {
             label: "AI Intent",
             data: [10, 25, 70, 95],
-            borderColor: "#E67E22",
-            backgroundColor: "rgba(230, 126, 34, 0.05)",
+            borderColor: "#9C7C5B",
+            backgroundColor: "rgba(156, 124, 91, 0.05)",
             borderWidth: 3,
             tension: 0.4,
             fill: true,
             pointBackgroundColor: "#F9F7F3",
-            pointBorderColor: "#E67E22",
+            pointBorderColor: "#9C7C5B",
             pointBorderWidth: 2,
             pointRadius: 5,
             pointHoverRadius: 8,
@@ -118,32 +119,53 @@ export function LandscapeSection() {
   }, []);
 
   return (
-    <section id="weave" className="relative z-10 py-24 px-6 bg-white border-y border-[#E8E5DF]">
+    <section id="weave" className="relative z-10 py-24 px-6 bg-white border-y border-[#C4A882]/30">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-3 gap-12 items-center">
-          <div className="lg:col-span-1">
-            <div className="flex items-start justify-between gap-3 mb-6">
-              <h2 className="text-4xl font-bold tracking-tight text-balance flex-1">The Growth of the Weave</h2>
-              <KnowledgeGateway article={gloss.weaveGrowth} surface="cream" />
-            </div>
-            <p className="text-[#5A5653] mb-6 leading-relaxed text-pretty text-balance">
-              Traditional UI patterns are decaying. Our data tracks the shift from static grids to{" "}
-              <strong>Spatial Silk</strong> and <strong>Intent-Driven</strong> interfaces.
-            </p>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 text-sm font-bold">
-                <div className="w-3 h-3 bg-[#E67E22] rounded-full animate-pulse" /> AI Intent-Driven (+82%)
+          <div className="lg:col-span-1 text-center lg:text-left">
+            <ScrollReveal>
+              <div className="mb-6">
+                <h2 className="text-4xl font-bold tracking-tight text-balance">
+                  <KnowledgeGateway article={gloss.weaveGrowth} surface="cream">
+                    <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">The Growth of the Weave</span>
+                  </KnowledgeGateway>
+                </h2>
               </div>
-              <div className="flex items-center gap-3 text-sm font-bold">
-                <div className="w-3 h-3 bg-[#8BA896] rounded-full" /> Spatial WebGL (+45%)
+            </ScrollReveal>
+            <ScrollReveal index={1}>
+              <p className="text-[#5A5653] mb-6 leading-relaxed text-pretty text-balance">
+                Traditional <KnowledgeGateway article={gloss.whatIsUI} surface="cream"><span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">UI</span></KnowledgeGateway> patterns are decaying. Our data tracks the shift from static grids to{" "}
+                <KnowledgeGateway article={gloss.spatialCategory} surface="cream"><span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">Spatial Silk</span></KnowledgeGateway> & <KnowledgeGateway article={gloss.intentDrivenTerm} surface="cream"><span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">Intent-Driven</span></KnowledgeGateway> interfaces.
+              </p>
+            </ScrollReveal>
+            <div className="flex flex-col items-center gap-4 lg:items-start">
+              <div className="flex items-center justify-center gap-3 text-sm font-bold lg:justify-start">
+                <div className="h-3 w-3 shrink-0 animate-pulse rounded-full bg-[#9C7C5B]" />{" "}
+                <KnowledgeGateway article={gloss.intentDrivenTerm} surface="cream">
+                  <span className="cursor-pointer font-bold text-[#9C7C5B] transition-colors duration-200 hover:text-[#E67E22]">AI Intent-Driven</span>
+                </KnowledgeGateway>{" "}
+                (+82%)
               </div>
-              <div className="flex items-center gap-3 text-sm font-bold">
-                <div className="w-3 h-3 bg-[#2C2A29] rounded-full" /> Physics Micro-UX (+30%)
+              <div className="flex items-center justify-center gap-3 text-sm font-bold lg:justify-start">
+                <div className="h-3 w-3 shrink-0 rounded-full bg-[#8BA896]" />{" "}
+                <KnowledgeGateway article={gloss.spatialCategory} surface="cream">
+                  <span className="cursor-pointer font-bold text-[#9C7C5B] transition-colors duration-200 hover:text-[#E67E22]">Spatial WebGL</span>
+                </KnowledgeGateway>{" "}
+                (+45%)
+              </div>
+              <div className="flex items-center justify-center gap-3 text-sm font-bold lg:justify-start">
+                <div className="h-3 w-3 shrink-0 rounded-full bg-[#2C2A29]" />{" "}
+                <KnowledgeGateway article={gloss.physicsCategory} surface="cream">
+                  <span className="cursor-pointer font-bold text-[#9C7C5B] transition-colors duration-200 hover:text-[#E67E22]">Physics Micro-UX</span>
+                </KnowledgeGateway>{" "}
+                (+30%)
               </div>
             </div>
           </div>
-          <div className="lg:col-span-2 chart-container bg-[#F9F7F3] rounded-3xl p-6 border border-[#E8E5DF]">
-            <canvas ref={canvasRef} />
+          <div className="lg:col-span-2 chart-container bg-[#F9F7F3] rounded-3xl p-6 border border-[#C4A882]/20">
+            <ScrollReveal index={2}>
+              <canvas ref={canvasRef} />
+            </ScrollReveal>
           </div>
         </div>
       </div>

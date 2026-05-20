@@ -15,7 +15,7 @@ export function FluidDemo() {
         </div>
       </div>
       <p className="mt-3 text-[10px] text-gray-400 text-center pointer-events-none">
-        Hover over a panel — the silk tensions and stretches
+        Hover over a panel — the silk tensions & stretches
       </p>
     </div>
   );

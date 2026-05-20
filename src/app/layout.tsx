@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://archive-arac.vercel.app"),
   title: "Archive Arac | Vanguard Weave",
   description:
-    "A standalone exhibit of future-facing interfaces—curated strands, live demos, and the Silk Analyzer. Built for visitors who need context, not jargon, with depth on demand.",
+    "Web intelligence platform — curated strands, Silk Analyzer, compare URLs, strand composer, & audit vault. Plain-language explainers beside every bold term.",
   openGraph: {
     title: "Archive Arac | Vanguard Weave",
     description:
-      "Curated interface strands, tactile demos, and a URL analyzer—with plain-language gateways at every section.",
+      "Curated interface strands, Silk Analyzer, compare URLs, strand composer, & audit vault.",
     type: "website",
+    url: "https://archive-arac.vercel.app",
   },
 };
 

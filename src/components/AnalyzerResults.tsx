@@ -5,6 +5,8 @@ import type { AnalysisResult } from "@/types/analysis";
 import { gloss } from "@/data/knowledgeGloss";
 import { KnowledgeGateway } from "@/components/KnowledgeGateway";
 import { CodeBlock } from "./CodeBlock";
+import { StrandRecommendations } from "./analyzer/StrandRecommendations";
+import { ReportActions } from "./analyzer/ReportActions";
 
 interface Props {
   result: AnalysisResult;
@@ -53,8 +55,11 @@ export const AnalyzerResults: FC<Props> = ({ result }) => {
             {overview.score}
           </div>
           <div className="mt-1 flex items-center justify-center gap-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#5A5653]">Score</span>
-            <KnowledgeGateway article={gloss.analyzerScore} surface="cream" compact />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#5A5653]">
+              <KnowledgeGateway article={gloss.analyzerScore} surface="cream">
+                <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 cursor-pointer">Score</span>
+              </KnowledgeGateway>
+            </span>
           </div>
         </div>
       </div>
@@ -63,8 +68,11 @@ export const AnalyzerResults: FC<Props> = ({ result }) => {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
         <p className="text-[10px] font-bold uppercase tracking-widest text-[#B8B5AE]">Result tabs</p>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-[#5A5653] hidden sm:inline">How to read</span>
-          <KnowledgeGateway article={gloss.readingYourAnalysis} surface="cream" compact />
+          <span className="text-[10px] text-[#5A5653] hidden sm:inline">
+            <KnowledgeGateway article={gloss.readingYourAnalysis} surface="cream">
+              <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 cursor-pointer">How to read</span>
+            </KnowledgeGateway>
+          </span>
         </div>
       </div>
       <div className="flex flex-wrap gap-2 mb-8 border-b border-[#E8E5DF] pb-4">
@@ -106,6 +114,9 @@ export const AnalyzerResults: FC<Props> = ({ result }) => {
           />
         )}
       </div>
+
+      <StrandRecommendations result={result} />
+      <ReportActions result={result} />
     </div>
   );
 };
@@ -574,7 +585,7 @@ function ExtractedTab({
       <div className="mt-8 p-4 bg-[#2C2A29] rounded-2xl text-center">
         <p className="text-[10px] text-[#D1CEC7] uppercase tracking-widest">
           These code snippets are <strong className="text-white">inspired</strong> by the analyzed site.
-          Copy, adapt, and use them in your own projects.
+          Copy, adapt, & use them in your own projects.
         </p>
       </div>
     </div>

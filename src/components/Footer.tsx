@@ -3,7 +3,7 @@ import { gloss } from "@/data/knowledgeGloss";
 
 export function Footer() {
   return (
-    <footer className="relative z-10 bg-[#2C2A29] py-20 px-6 text-[#F9F7F3] border-t border-[#5A5653]/30">
+      <footer className="relative z-10 bg-[#2C2A29] py-20 px-6 text-[#F9F7F3] border-t border-[#9C7C5B]/30">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
         <div className="text-center md:text-left">
           <div className="font-bold text-2xl tracking-tighter mb-2 flex flex-wrap items-center justify-center md:justify-start gap-3">
@@ -12,9 +12,10 @@ export function Footer() {
                 <path d="M12 2v20M2 12h20M5.5 5.5l13 13M18.5 5.5l-13 13" />
                 <circle cx="12" cy="12" r="3" />
               </svg>
-              ARCHIVE ARAC
+              <KnowledgeGateway article={gloss.archiveArac} surface="ink">
+                <span className="font-bold text-[#C4A882] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">ARCHIVE ARAC</span>
+              </KnowledgeGateway>
             </span>
-            <KnowledgeGateway article={gloss.archiveArac} surface="ink" compact />
           </div>
           <p className="text-[#D1CEC7] text-sm font-light">Vanguard Weaving for the next digital era.</p>
         </div>
