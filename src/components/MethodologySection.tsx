@@ -13,9 +13,13 @@ export function MethodologySection() {
               </KnowledgeGateway>
             </h2>
           </div>
-          <p className="text-[#D1CEC7] mb-16 text-lg font-light text-pretty text-balance text-center max-w-2xl mx-auto">
-            Every breakthrough interface uses one of these three silk types. Your next project should weave at least two.
-        </p>
+          <p className="text-[#D1CEC7] mb-16 text-lg font-light copy-balanced">
+            <span className="copy-balanced-line">Every breakthrough interface uses one</span>
+            <br />
+            <span className="copy-balanced-line">of these three silk types. Your next project</span>
+            <br />
+            <span className="copy-balanced-line">should weave at least two.</span>
+          </p>
 
         <StaggerGrid className="grid md:grid-cols-3 gap-8 text-center" staggerMs={140}>
           <div className="relative flex flex-col items-center p-8 border border-[#5A5653] rounded-2xl hover:bg-[#3d3a38] hover:border-[#9C7C5B] transition-all group">
@@ -30,8 +34,16 @@ export function MethodologySection() {
                 <span className="font-bold text-[#C4A882] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">Elastic Silk</span>
               </KnowledgeGateway>
             </h3>
-            <p className="text-sm text-[#D1CEC7] leading-relaxed text-balance">
-              Interfaces stretch & contract based on proximity, not clicks. Each panel is a strand of silk that tensions as the user nears, relaxing when focus shifts.
+            <p className="text-sm text-[#D1CEC7] leading-relaxed copy-balanced">
+              <span className="copy-balanced-line">Interfaces stretch</span>
+              <br />
+              <span className="copy-balanced-line">&amp; contract based on proximity,</span>
+              <br />
+              <span className="copy-balanced-line">not clicks. Each panel is a strand of silk</span>
+              <br />
+              <span className="copy-balanced-line">that tensions as the user nears,</span>
+              <br />
+              <span className="copy-balanced-line">relaxing when focus shifts.</span>
             </p>
           </div>
           <div className="relative flex flex-col items-center p-8 border border-[#5A5653] rounded-2xl hover:bg-[#3d3a38] transition-all group">
@@ -46,8 +58,14 @@ export function MethodologySection() {
                 <span className="font-bold text-[#C4A882] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">Orbital Web</span>
               </KnowledgeGateway>
             </h3>
-            <p className="text-sm text-[#D1CEC7] leading-relaxed text-balance">
-              Navigation radiates from a central hub along concentric rings. Each level of depth is a ring further from the core — like a true spider web.
+            <p className="text-sm text-[#D1CEC7] leading-relaxed copy-balanced">
+              <span className="copy-balanced-line">Navigation radiates from a central hub</span>
+              <br />
+              <span className="copy-balanced-line">along concentric rings. Each level of depth</span>
+              <br />
+              <span className="copy-balanced-line">is a ring further from the core —</span>
+              <br />
+              <span className="copy-balanced-line">like a true spider web.</span>
             </p>
           </div>
           <div className="relative flex flex-col items-center p-8 border border-[#5A5653] rounded-2xl hover:bg-[#3d3a38] transition-all group">
@@ -63,8 +81,14 @@ export function MethodologySection() {
                 <span className="font-bold text-[#C4A882] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">Intent Thread</span>
               </KnowledgeGateway>
             </h3>
-            <p className="text-sm text-[#D1CEC7] leading-relaxed text-balance">
-              The user speaks or types their goal. The interface weaves itself around that intent — a single thread pulled from the user&apos;s mind to the screen.
+            <p className="text-sm text-[#D1CEC7] leading-relaxed copy-balanced">
+              <span className="copy-balanced-line">The user speaks or types their goal.</span>
+              <br />
+              <span className="copy-balanced-line">The interface weaves itself around that intent —</span>
+              <br />
+              <span className="copy-balanced-line">a single thread pulled from the user&apos;s mind</span>
+              <br />
+              <span className="copy-balanced-line">to the screen.</span>
             </p>
           </div>
         </StaggerGrid>

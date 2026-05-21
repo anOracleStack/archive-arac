@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { BalancedText } from "@/components/BalancedText";
 import { PlatformShell } from "@/components/PlatformShell";
 import { getOrCreateClientId } from "@/lib/clientId";
 import type { WixSiteConnection } from "@/types/connections";
@@ -61,7 +62,7 @@ export default function StudioWixPage() {
 
   return (
     <PlatformShell>
-      <div className="relative z-10 pt-32 pb-24 px-6 max-w-3xl mx-auto">
+      <div className="relative z-10 pt-32 pb-24 px-6 max-w-3xl mx-auto text-center">
         <Link
           href="/studio"
           className="inline-flex mb-6 text-[10px] font-bold uppercase tracking-widest text-[#E67E22] hover:underline"
@@ -71,13 +72,18 @@ export default function StudioWixPage() {
         <h1 className="text-4xl font-bold mb-4">
           Wix <span className="text-[#E67E22]">connect</span>
         </h1>
-        <p className="text-sm text-[#5A5653] mb-8 max-w-xl">
-          Link live Wix sites for Silk audits, domain alignment via Identity Lock, and
-          optional API token probing (Wix REST). Deeper MCP editor sync can plug in when your
-          Wix app credentials are configured.
-        </p>
+        <BalancedText
+          className="text-sm text-[#5A5653] mb-8"
+          lines={[
+            "Link live Wix sites for Silk audits,",
+            "domain alignment via Identity Lock,",
+            "& optional API token probing (Wix REST).",
+            "Deeper MCP editor sync can plug in when your",
+            "Wix app credentials are configured.",
+          ]}
+        />
 
-        <section className="mb-10 p-6 rounded-2xl border border-[#E8E5DF] bg-white">
+        <section className="mb-10 p-6 rounded-2xl border border-[#E8E5DF] bg-white text-left">
           <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#5A5653] mb-4">
             Add site
           </h2>

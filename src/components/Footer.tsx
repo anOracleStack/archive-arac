@@ -4,9 +4,9 @@ import { gloss } from "@/data/knowledgeGloss";
 export function Footer() {
   return (
       <footer className="relative z-10 bg-[#2C2A29] py-20 px-6 text-[#F9F7F3] border-t border-[#9C7C5B]/30">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-        <div className="text-center md:text-left">
-          <div className="font-bold text-2xl tracking-tighter mb-2 flex flex-wrap items-center justify-center md:justify-start gap-3">
+      <div className="max-w-7xl mx-auto flex flex-col items-center gap-8 text-center">
+        <div>
+          <div className="font-bold text-2xl tracking-tighter mb-2 flex flex-wrap items-center justify-center gap-3">
             <span className="inline-flex items-center gap-3">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 2v20M2 12h20M5.5 5.5l13 13M18.5 5.5l-13 13" />

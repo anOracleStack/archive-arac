@@ -7,6 +7,7 @@ import { KnowledgeGateway } from "@/components/KnowledgeGateway";
 import { CodeBlock } from "./CodeBlock";
 import { StrandRecommendations } from "./analyzer/StrandRecommendations";
 import { ReportActions } from "./analyzer/ReportActions";
+import { BalancedText } from "@/components/BalancedText";
 
 interface Props {
   result: AnalysisResult;
@@ -124,13 +125,13 @@ export const AnalyzerResults: FC<Props> = ({ result }) => {
 /* ── Overview ── */
 function OverviewTab({ overview }: { overview: AnalysisResult["overview"] }) {
   return (
-    <div className="space-y-8">
-      <p className="text-[#5A5653] leading-relaxed">{overview.summary}</p>
+    <div className="space-y-8 text-center">
+      <BalancedText text={overview.summary} className="text-[#5A5653] max-w-2xl mx-auto" />
 
       {overview.innovations.length > 0 && (
-        <div>
+        <div className="max-w-xl mx-auto">
           <h4 className="font-bold text-sm uppercase tracking-widest text-[#8BA896] mb-3">✦ What&apos;s Innovative</h4>
-          <ul className="space-y-2">
+          <ul className="space-y-2 text-left">
             {overview.innovations.map((item, i) => (
               <li key={i} className="flex items-start gap-3 text-sm text-[#2C2A29]">
                 <svg className="w-4 h-4 mt-0.5 shrink-0 text-[#8BA896]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
@@ -142,9 +143,9 @@ function OverviewTab({ overview }: { overview: AnalysisResult["overview"] }) {
       )}
 
       {overview.uniqueFeatures.length > 0 && (
-        <div>
+        <div className="max-w-xl mx-auto">
           <h4 className="font-bold text-sm uppercase tracking-widest text-[#E67E22] mb-3">✦ Unique Features</h4>
-          <ul className="space-y-2">
+          <ul className="space-y-2 text-left">
             {overview.uniqueFeatures.map((item, i) => (
               <li key={i} className="flex items-start gap-3 text-sm text-[#2C2A29]">
                 <svg className="w-4 h-4 mt-0.5 shrink-0 text-[#E67E22]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
@@ -156,9 +157,9 @@ function OverviewTab({ overview }: { overview: AnalysisResult["overview"] }) {
       )}
 
       {overview.problems.length > 0 && (
-        <div>
+        <div className="max-w-xl mx-auto">
           <h4 className="font-bold text-sm uppercase tracking-widest text-red-400 mb-3">⚠ Needs Attention</h4>
-          <ul className="space-y-2">
+          <ul className="space-y-2 text-left">
             {overview.problems.map((item, i) => (
               <li key={i} className="flex items-start gap-3 text-sm text-[#5A5653]">
                 <svg className="w-4 h-4 mt-0.5 shrink-0 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
@@ -251,7 +252,7 @@ function DesignTab({ design }: { design: AnalysisResult["design"] }) {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-[#5A5653]">No custom fonts detected</p>
+            <BalancedText text="No custom fonts detected" className="text-sm text-[#5A5653]" />
           )}
         </div>
       </div>
@@ -275,7 +276,10 @@ function TechTab({ tech }: { tech: AnalysisResult["tech"] }) {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-[#5A5653]">No major JS frameworks detected (may be static)</p>
+          <BalancedText
+            text="No major JS frameworks detected (may be static)"
+            className="text-sm text-[#5A5653]"
+          />
         )}
 
         {tech.metaFramework && (
@@ -298,7 +302,7 @@ function TechTab({ tech }: { tech: AnalysisResult["tech"] }) {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-[#5A5653]">No common libraries detected</p>
+          <BalancedText text="No common libraries detected" className="text-sm text-[#5A5653]" />
         )}
 
         {tech.analytics.length > 0 && (
@@ -371,7 +375,7 @@ function InteractionsTab({
               ))}
             </div>
           ) : (
-            <p className="text-sm text-[#5A5653]">No CSS animations detected</p>
+            <BalancedText text="No CSS animations detected" className="text-sm text-[#5A5653]" />
           )}
         </div>
         <div>
@@ -395,7 +399,10 @@ function InteractionsTab({
             {interactions.performanceWarnings.length === 0 &&
              interactions.scrollEffects.length === 0 &&
              interactions.jsAnimations.length === 0 && (
-              <p className="text-sm text-[#5A5653]">No advanced interaction patterns detected</p>
+              <BalancedText
+                text="No advanced interaction patterns detected"
+                className="text-sm text-[#5A5653]"
+              />
             )}
           </div>
         </div>
@@ -547,7 +554,10 @@ function ExtractedTab({
       {activeCat === "inspired" && (
         <div className="space-y-4">
           {snippets.length === 0 && (
-            <p className="text-sm text-[#5A5653]">No code snippets could be generated from this site.</p>
+            <BalancedText
+              text="No code snippets could be generated from this site."
+              className="text-sm text-[#5A5653]"
+            />
           )}
           {snippets.map((s, i) => (
             <div key={i} className="bg-[#F9F7F3] rounded-2xl p-6 border border-[#E8E5DF]">
@@ -567,7 +577,10 @@ function ExtractedTab({
       {activeCat === "extracted" && (
         <div className="grid md:grid-cols-2 gap-4">
           {Object.entries(extractedCSS).length === 0 && (
-            <p className="text-sm text-[#5A5653] col-span-2">No CSS patterns could be extracted.</p>
+            <BalancedText
+              text="No CSS patterns could be extracted."
+              className="text-sm text-[#5A5653] col-span-2"
+            />
           )}
           {Object.entries(extractedCSS).map(([cat, vals]) => (
             <div key={cat} className="bg-[#F9F7F3] rounded-2xl p-5 border border-[#E8E5DF]">
@@ -583,10 +596,16 @@ function ExtractedTab({
       )}
 
       <div className="mt-8 p-4 bg-[#2C2A29] rounded-2xl text-center">
-        <p className="text-[10px] text-[#D1CEC7] uppercase tracking-widest">
-          These code snippets are <strong className="text-white">inspired</strong> by the analyzed site.
-          Copy, adapt, & use them in your own projects.
-        </p>
+        <BalancedText
+          className="text-[10px] text-[#D1CEC7] uppercase tracking-widest max-w-lg mx-auto"
+          lines={[
+            <>
+              These code snippets are <strong className="text-white">inspired</strong> by the
+              analyzed site.
+            </>,
+            "Copy, adapt, & use them in your own projects.",
+          ]}
+        />
       </div>
     </div>
   );

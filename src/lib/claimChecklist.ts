@@ -22,7 +22,7 @@ export function buildClaimChecklist(candidate: IdentityCandidate): string[] {
     }
   }
 
-  steps.push("Enable 2FA on every claimed account and store credentials in a password manager.");
+  steps.push("Enable 2FA on every claimed account & store credentials in a password manager.");
   steps.push("Add brand link in bio across networks for consistency.");
 
   return steps;

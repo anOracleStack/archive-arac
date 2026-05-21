@@ -31,9 +31,10 @@ export interface RegistrarOrder {
   domains: string[];
   hostingTierId: string;
   status: "pending" | "paid" | "registering" | "complete" | "failed";
+  hostingStatus?: "pending" | "provisioning" | "active";
   stripeSessionId?: string;
   createdAt: string;
   updatedAt: string;
-  registrarProvider: "namecheap_reseller" | "manual";
+  registrarProvider?: "namecheap_reseller" | "manual";
   notes?: string;
 }

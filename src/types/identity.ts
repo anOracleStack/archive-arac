@@ -60,6 +60,7 @@ export interface IdentityScanResult {
       rationale: string;
     };
     disclaimer: string;
+    disclaimerLines?: string[];
   };
 }
 

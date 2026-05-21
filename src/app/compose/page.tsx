@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { strands } from "@/data/strands";
+import { BalancedText } from "@/components/BalancedText";
 import { PlatformShell } from "@/components/PlatformShell";
 import { buildComposeExport } from "@/lib/composeExport";
 import { buildFullComposePackage } from "@/lib/composeScaffolds";
@@ -41,17 +42,22 @@ export default function ComposePage() {
 
   return (
     <PlatformShell>
-      <div className="relative z-10 pt-32 pb-24 px-6 max-w-5xl mx-auto">
+      <div className="relative z-10 pt-32 pb-24 px-6 max-w-5xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10">
           Strand Composer
         </div>
         <h1 className="text-5xl font-bold tracking-tight mb-4">
           Weave your <span className="text-[#E67E22]">launch stack</span>
         </h1>
-        <p className="text-[#5A5653] max-w-2xl mb-10 leading-relaxed">
-          Select up to five strands. Export a manifest you can drop into a Next.js repo — the first
-          step toward a strand-native site builder, not a generic drag-and-drop host.
-        </p>
+        <BalancedText
+          className="text-[#5A5653] mb-10"
+          lines={[
+            "Select up to five strands. Export a manifest",
+            "you can drop into a Next.js repo — the first step",
+            "toward a strand-native site builder, not a generic",
+            "drag-and-drop host.",
+          ]}
+        />
 
         <div className="grid sm:grid-cols-2 gap-3 mb-10">
           {strands.map((s) => {
@@ -71,7 +77,7 @@ export default function ComposePage() {
                   <span className="font-bold text-sm">{s.name}</span>
                   <span className="text-[10px] text-[#9C7C5B] uppercase">{s.demoType}</span>
                 </div>
-                <p className="text-xs text-[#5A5653] line-clamp-2">{s.shortDesc}</p>
+                <BalancedText text={s.shortDesc} className="text-xs text-[#5A5653] line-clamp-2" />
               </button>
             );
           })}

@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { BalancedText } from "@/components/BalancedText";
 import { PlatformShell } from "@/components/PlatformShell";
 import { IdentityResults } from "@/components/identity/IdentityResults";
 import { IdentityTopPick } from "@/components/identity/IdentityTopPick";
@@ -88,7 +89,7 @@ export default function IdentityPage() {
 
   return (
     <PlatformShell>
-      <div className="relative z-10 pt-32 pb-24 px-6 max-w-4xl mx-auto">
+      <div className="relative z-10 pt-32 pb-24 px-6 max-w-4xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10">
           <span className="w-2 h-2 rounded-full bg-[#E67E22] animate-pulse" />
           Identity Lock
@@ -96,13 +97,20 @@ export default function IdentityPage() {
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-4">
           Names that <span className="text-[#E67E22]">line up</span>
         </h1>
-        <p className="text-lg text-[#5A5653] mb-8 max-w-2xl leading-relaxed">
-          Ranked domain + handle options across .com, .io, .ai, and more — with RDAP checks, live
-          GitHub verification, and a claim playbook. Approve a package, pick hosting, and save to
-          Vault.
-        </p>
+        <BalancedText
+          className="text-lg text-[#5A5653] mb-8"
+          lines={[
+            "Ranked domain + handle options across",
+            ".com, .io, .ai, & more — with RDAP checks,",
+            "live GitHub verification, & a claim playbook.",
+            "Approve a package, pick hosting, & save to Vault.",
+          ]}
+        />
 
-        <form onSubmit={handleSubmit} className="space-y-6 rounded-2xl border border-[#E8E5DF] bg-white/80 p-6">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6 rounded-2xl border border-[#E8E5DF] bg-white/80 p-6 text-left"
+        >
           <div className="grid sm:grid-cols-2 gap-4">
             <label className="block sm:col-span-2">
               <span className="text-[10px] font-bold uppercase tracking-widest text-[#5A5653]">

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { BalancedText } from "@/components/BalancedText";
 import { ClaimChecklist } from "@/components/identity/ClaimChecklist";
 import type { IdentityCandidate, IdentityScanResult } from "@/types/identity";
 
@@ -20,9 +21,15 @@ interface Props {
 export function IdentityResults({ result, onApprove, onExport }: Props) {
   return (
     <div className="space-y-6 mt-12">
-      <p className="text-xs text-[#5A5653] leading-relaxed border-l-2 border-[#C4A882] pl-4">
-        {result.meta.disclaimer}
-      </p>
+      <BalancedText
+        as="div"
+        className="text-xs text-[#5A5653] mx-auto max-w-2xl"
+        lines={
+          result.meta.disclaimerLines ?? [
+            result.meta.disclaimer,
+          ]
+        }
+      />
 
       {result.candidates.map((c, idx) => (
         <article

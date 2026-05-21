@@ -10,6 +10,7 @@ import { CanvasDemo } from "./demos/CanvasDemo";
 import { ScrollDemo } from "./demos/ScrollDemo";
 import { KnowledgeGateway } from "@/components/KnowledgeGateway";
 import { gloss } from "@/data/knowledgeGloss";
+import { BalancedText } from "@/components/BalancedText";
 
 interface ModalProps {
   item: StrandItem | null;
@@ -90,14 +91,14 @@ export function Modal({ item, onClose }: ModalProps) {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-12">
+          <div className="grid md:grid-cols-2 gap-12 text-center">
             <div>
               <h4 className="font-bold text-lg mb-4 text-[#2C2A29]">Arachnid Logic</h4>
-              <p className="text-[#5A5653] leading-relaxed text-sm">{item.innovation}</p>
+              <BalancedText text={item.innovation} className="text-[#5A5653] text-sm" />
             </div>
             <div>
               <h4 className="font-bold text-lg mb-4 text-[#2C2A29]">The Silk (Tech Stack)</h4>
-              <p className="text-[#5A5653] leading-relaxed text-sm">{item.tech}</p>
+              <BalancedText text={item.tech} className="text-[#5A5653] text-sm" />
             </div>
           </div>
         </div>

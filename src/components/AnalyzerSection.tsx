@@ -6,6 +6,7 @@ import type { SiteComparison } from "@/lib/compareSites";
 import { tryNormalizeCanonicalUrl } from "@/lib/normalizeUrl";
 import { gloss } from "@/data/knowledgeGloss";
 import { KnowledgeGateway } from "@/components/KnowledgeGateway";
+import { BalancedText } from "@/components/BalancedText";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { AnalyzerResults } from "./AnalyzerResults";
 import { CompareResults } from "./analyzer/CompareResults";
@@ -121,10 +122,15 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerS
                   </KnowledgeGateway>
                 </h2>
               </div>
-              <p className="text-[#5A5653] max-w-xl mx-auto leading-relaxed text-pretty text-balance mb-6">
-                Unravel any URL — tech stack, design, UX, what works, what does not, innovation
-                highlights, and strand recommendations. Compare two competitors side-by-side.
-              </p>
+              <BalancedText
+                className="text-[#5A5653] mb-6"
+                lines={[
+                  "Unravel any URL — tech stack, design, UX,",
+                  "what works, what does not, innovation",
+                  "highlights, & strand recommendations.",
+                  "Compare two competitors side-by-side.",
+                ]}
+              />
               <div className="inline-flex rounded-xl border border-[#E8E5DF] p-1 bg-[#F9F7F3]">
                 <button
                   type="button"

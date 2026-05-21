@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { BalancedText } from "@/components/BalancedText";
 import type { IdentityCandidate, IdentityScanResult } from "@/types/identity";
 
 interface Props {
@@ -18,12 +19,12 @@ export function IdentityTopPick({ scan, candidate, onLock, onExport }: Props) {
       <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#E67E22] mb-3">
         Top pick · {scan.tier}-option scan
       </p>
-      <div className="flex flex-wrap items-start justify-between gap-6">
-        <div>
+      <div className="flex flex-wrap items-start justify-between gap-6 text-center">
+        <div className="flex-1 min-w-[min(100%,20rem)]">
           <h2 className="text-3xl font-bold tracking-tight">{candidate.label}</h2>
           <p className="text-sm text-[#5A5653] mt-1 font-mono">{candidate.slug}</p>
-          <p className="text-sm text-[#5A5653] mt-4 max-w-xl">{rationale}</p>
-          <div className="flex flex-wrap gap-2 mt-4">
+          <BalancedText text={rationale} className="text-sm text-[#5A5653] mt-4 max-w-xl mx-auto" />
+          <div className="flex flex-wrap gap-2 mt-4 justify-center">
             {candidate.highlights.slice(0, 3).map((h) => (
               <span
                 key={h}
@@ -39,7 +40,7 @@ export function IdentityTopPick({ scan, candidate, onLock, onExport }: Props) {
           <p className="text-[10px] font-bold uppercase tracking-widest text-[#B8B5AE]">match</p>
         </div>
       </div>
-      <div className="flex flex-wrap gap-3 mt-8 pt-6 border-t border-[#E8E5DF]">
+      <div className="flex flex-wrap gap-3 mt-8 pt-6 border-t border-[#E8E5DF] justify-center">
         <button
           type="button"
           onClick={onLock}

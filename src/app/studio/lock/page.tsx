@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { BalancedText } from "@/components/BalancedText";
 import { PlatformShell } from "@/components/PlatformShell";
 import { hostingTiers } from "@/data/buildPlatforms";
 import {
@@ -39,9 +40,13 @@ function LockContent() {
     return (
       <div className="relative z-10 pt-32 pb-24 px-6 max-w-2xl mx-auto text-center">
         <h1 className="text-3xl font-bold mb-4">No lock package yet</h1>
-        <p className="text-[#5A5653] mb-8">
-          Run an identity scan and approve a candidate, or open a saved lock from the vault.
-        </p>
+        <BalancedText
+          className="text-[#5A5653] mb-8"
+          lines={[
+            "Run an identity scan & approve a candidate,",
+            "or open a saved lock from the vault.",
+          ]}
+        />
         <Link
           href="/identity"
           className="inline-flex px-6 py-3 rounded-xl bg-[#E67E22] text-white text-[10px] font-bold uppercase tracking-widest"
@@ -118,7 +123,10 @@ function LockContent() {
           Domains to register
         </h2>
         {availableDomains.length === 0 ? (
-          <p className="text-sm text-[#5A5653]">No RDAP-available domains in this pick — try another candidate.</p>
+          <BalancedText
+            text="No RDAP-available domains in this pick — try another candidate."
+            className="text-sm text-[#5A5653] mx-auto"
+          />
         ) : (
           <ul className="space-y-2">
             {availableDomains.map((d) => (

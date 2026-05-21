@@ -14,8 +14,11 @@ import {
 import { listStudioBriefs, removeStudioBrief } from "@/lib/identityStore";
 import { AnalyzerResults } from "@/components/AnalyzerResults";
 import { ClaimChecklist } from "@/components/identity/ClaimChecklist";
+import { BalancedText } from "@/components/BalancedText";
 import { VaultSyncBar } from "@/components/vault/VaultSyncBar";
-import { syncVaultBidirectional, applyServerSnapshotToLocal } from "@/lib/vaultSync";
+import { syncVaultBidirectional, applyServerSnapshotToLocal, pullServerVault } from "@/lib/vaultSync";
+import type { RegistrarOrder } from "@/types/connections";
+import type { ServerVaultSnapshot } from "@/lib/server/serverVault";
 
 function VaultInner() {
   const searchParams = useSearchParams();
@@ -27,6 +30,18 @@ function VaultInner() {
   const [briefs, setBriefs] = useState(listStudioBriefs());
   const [viewReport, setViewReport] = useState<VaultEntry | null>(null);
   const [viewLock, setViewLock] = useState(getIdentityLock(viewId ?? "") ?? null);
+  const [orders, setOrders] = useState<RegistrarOrder[]>([]);
+  const [serverMeta, setServerMeta] = useState<Pick<ServerVaultSnapshot, "social" | "wix">>({
+    social: [],
+    wix: [],
+  });
+
+  const applySnapshot = (snapshot: ServerVaultSnapshot) => {
+    applyServerSnapshotToLocal(snapshot);
+    setOrders(snapshot.orders ?? []);
+    setServerMeta({ social: snapshot.social ?? [], wix: snapshot.wix ?? [] });
+    refresh();
+  };
 
   const refresh = () => {
     setReports(listVault());
@@ -37,8 +52,15 @@ function VaultInner() {
   useEffect(() => {
     void (async () => {
       const result = await syncVaultBidirectional();
-      if (result.snapshot) applyServerSnapshotToLocal(result.snapshot);
-      refresh();
+      if (result.snapshot) applySnapshot(result.snapshot);
+      else {
+        const snap = await pullServerVault();
+        if (snap) {
+          setOrders(snap.orders ?? []);
+          setServerMeta({ social: snap.social ?? [], wix: snap.wix ?? [] });
+        }
+        refresh();
+      }
     })();
   }, []);
 
@@ -99,26 +121,37 @@ function VaultInner() {
   }
 
   return (
-    <div className="relative z-10 pt-32 pb-24 px-6 max-w-4xl mx-auto">
+    <div className="relative z-10 pt-32 pb-24 px-6 max-w-4xl mx-auto text-center">
       <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10">
         Silk Vault
       </div>
       <h1 className="text-5xl font-bold tracking-tight mb-4">
         Your <span className="text-[#E67E22]">vault</span>
       </h1>
-      <p className="text-[#5A5653] mb-6 max-w-xl">
-        Analyzer reports, identity locks, and studio briefs — synced to this browser and the
-        server vault when you sync.
-      </p>
+      <BalancedText
+        className="text-[#5A5653] mb-6"
+        lines={[
+          "Analyzer reports, identity locks,",
+          "& studio briefs — synced to this browser",
+          "& the server vault when you sync.",
+        ]}
+      />
 
-      <VaultSyncBar onSynced={refresh} />
+      <VaultSyncBar
+        onSynced={() => {
+          void pullServerVault().then((snap) => {
+            if (snap) applySnapshot(snap);
+            else refresh();
+          });
+        }}
+      />
 
       <VaultTabs>
         {tab === "reports" && (
           <>
             {reports.length === 0 ? (
               <div className="p-10 rounded-2xl border border-dashed border-[#D1CEC7] text-center">
-                <p className="text-[#5A5653] mb-4">No reports yet.</p>
+                <BalancedText text="No reports yet." className="text-[#5A5653] mb-4 mx-auto" />
                 <Link
                   href="/analyze"
                   className="inline-flex px-6 py-3 rounded-xl bg-[#2C2A29] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#E67E22]"
@@ -169,7 +202,7 @@ function VaultInner() {
           <>
             {locks.length === 0 ? (
               <div className="p-10 rounded-2xl border border-dashed border-[#D1CEC7] text-center">
-                <p className="text-[#5A5653] mb-4">No identity locks yet.</p>
+                <BalancedText text="No identity locks yet." className="text-[#5A5653] mb-4 mx-auto" />
                 <Link
                   href="/identity"
                   className="inline-flex px-6 py-3 rounded-xl bg-[#E67E22] text-white text-[10px] font-bold uppercase tracking-widest"
@@ -222,11 +255,89 @@ function VaultInner() {
           </>
         )}
 
+        {tab === "orders" && (
+          <>
+            {orders.length === 0 ? (
+              <div className="p-10 rounded-2xl border border-dashed border-[#D1CEC7] text-center">
+                <BalancedText
+                  text="No registrar or hosting orders yet. Complete checkout from an identity lock."
+                  className="text-[#5A5653] mb-4 mx-auto max-w-md"
+                />
+                <Link
+                  href="/identity"
+                  className="inline-flex px-6 py-3 rounded-xl bg-[#E67E22] text-white text-[10px] font-bold uppercase tracking-widest"
+                >
+                  Identity Lock →
+                </Link>
+              </div>
+            ) : (
+              <ul className="space-y-4">
+                {orders.map((o) => {
+                  const lock = locks.find((l) => l.id === o.lockId);
+                  return (
+                    <li
+                      key={o.id}
+                      className="p-5 rounded-2xl border border-[#E8E5DF] bg-white"
+                    >
+                      <div className="flex flex-wrap justify-between gap-2 mb-2">
+                        <p className="font-bold">
+                          {lock?.candidate.label ?? `Lock ${o.lockId.slice(0, 8)}`}
+                        </p>
+                        <span className="text-[10px] font-bold uppercase text-[#9C7C5B]">
+                          {o.status}
+                          {o.hostingStatus ? ` · hosting ${o.hostingStatus}` : ""}
+                        </span>
+                      </div>
+                      <p className="text-sm font-mono text-[#5A5653]">
+                        {o.domains.join(", ") || "—"}
+                      </p>
+                      <p className="text-xs text-[#B8B5AE] mt-2">
+                        {o.registrarProvider ?? "manual"} ·{" "}
+                        {new Date(o.updatedAt).toLocaleString()}
+                      </p>
+                      {o.notes && (
+                        <p className="text-xs text-[#5A5653] mt-2 whitespace-pre-wrap line-clamp-4">
+                          {o.notes}
+                        </p>
+                      )}
+                      {lock && (
+                        <Link
+                          href={`/vault?tab=identity&id=${encodeURIComponent(lock.id)}`}
+                          className="inline-block mt-3 text-[10px] font-bold uppercase text-[#E67E22] hover:underline"
+                        >
+                          View lock →
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            {(serverMeta.social.length > 0 || serverMeta.wix.length > 0) && (
+              <div className="mt-10 p-5 rounded-2xl border border-[#E8E5DF] bg-[#F5F3EE]/50">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[#9C7C5B] mb-3">
+                  Connected platforms (server)
+                </p>
+                {serverMeta.social.length > 0 && (
+                  <p className="text-sm text-[#5A5653] mb-1">
+                    Social: {serverMeta.social.map((s) => s.platformId).join(", ")}
+                  </p>
+                )}
+                {serverMeta.wix.length > 0 && (
+                  <p className="text-sm text-[#5A5653]">
+                    Wix: {serverMeta.wix.map((w) => w.displayName ?? w.siteUrl).join(", ")}
+                  </p>
+                )}
+              </div>
+            )}
+          </>
+        )}
+
         {tab === "briefs" && (
           <>
             {briefs.length === 0 ? (
               <div className="p-10 rounded-2xl border border-dashed border-[#D1CEC7] text-center">
-                <p className="text-[#5A5653] mb-4">No studio briefs saved.</p>
+                <BalancedText text="No studio briefs saved." className="text-[#5A5653] mb-4 mx-auto" />
                 <Link
                   href="/studio"
                   className="inline-flex px-6 py-3 rounded-xl bg-[#2C2A29] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#E67E22]"

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BalancedText } from "@/components/BalancedText";
 import { PlatformShell } from "@/components/PlatformShell";
 
 const phases = [
@@ -51,7 +52,7 @@ const phases = [
 export default function MissionPage() {
   return (
     <PlatformShell>
-      <div className="relative z-10 pt-32 pb-24 px-6 max-w-4xl mx-auto">
+      <div className="relative z-10 pt-32 pb-24 px-6 max-w-4xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10">
           <span className="w-2 h-2 rounded-full bg-[#E67E22] animate-pulse" />
           Past Pluto
@@ -59,13 +60,18 @@ export default function MissionPage() {
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6">
           Mission <span className="text-[#E67E22]">Control</span>
         </h1>
-        <p className="text-lg text-[#5A5653] leading-relaxed mb-12 max-w-2xl">
-          Archive Arac is evolving from exhibit into platform: forensics on any URL, strand
-          recommendations, composable exports, & a vault for your audits — with agency-grade
-          tooling on the horizon.
-        </p>
+        <BalancedText
+          className="text-lg text-[#5A5653] mb-12"
+          lines={[
+            "Archive Arac is evolving from exhibit",
+            "into platform: forensics on any URL, strand",
+            "recommendations, composable exports,",
+            "& a vault for your audits — with agency-grade",
+            "tooling on the horizon.",
+          ]}
+        />
 
-        <div className="grid gap-6">
+        <div className="grid gap-6 text-left">
           {phases.map((p) => (
             <div
               key={p.phase}

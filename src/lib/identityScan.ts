@@ -69,11 +69,18 @@ export async function runIdentityScan(req: IdentityScanRequest): Promise<Identit
         ? {
             slug: top.slug,
             score: top.score,
-            rationale: top.highlights[0] ?? "Highest composite match across domains and handles.",
+            rationale: top.highlights[0] ?? "Highest composite match across domains & handles.",
           }
         : undefined,
+      disclaimerLines: [
+        "Domain checks use public RDAP (deduplicated per scan).",
+        "GitHub availability is live; other social networks need",
+        "in-app verification before you claim.",
+        "We register domains & configure hosting —",
+        "you complete social signups with our checklist.",
+      ],
       disclaimer:
-        "Domain checks use public RDAP (deduplicated per scan). GitHub availability is live; other social networks need in-app verification before you claim. We register domains and configure hosting — you complete social signups with our checklist.",
+        "Domain checks use public RDAP (deduplicated per scan). GitHub availability is live; other social networks need in-app verification before you claim. We register domains & configure hosting — you complete social signups with our checklist.",
     },
   };
 }

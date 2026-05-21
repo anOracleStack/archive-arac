@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
   const { clientId, lock } = body;
   if (!clientId || !lock?.id) {
-    return NextResponse.json({ error: "clientId and lock required" }, { status: 400 });
+    return NextResponse.json({ error: "clientId & lock required" }, { status: 400 });
   }
 
   await upsertIdentityLock(clientId, { ...lock, status: "checkout_pending" });

@@ -60,7 +60,7 @@ function buildHighlights(
     warnings.push(`Rules conflict on: ${invalidSocial.map((s) => s.platformName).join(", ")}`);
   }
 
-  if (slug.length > 20) warnings.push("Long slug — harder to type and remember");
+  if (slug.length > 20) warnings.push("Long slug — harder to type & remember");
 
   return { highlights, warnings };
 }

@@ -3,6 +3,7 @@
 import type { FC } from "react";
 import type { AnalysisResult } from "@/types/analysis";
 import type { SiteComparison } from "@/lib/compareSites";
+import { BalancedText } from "@/components/BalancedText";
 
 interface Props {
   a: AnalysisResult;
@@ -34,7 +35,7 @@ export const CompareResults: FC<Props> = ({ a, b, comparison }) => {
     comparison.scoreDelta > 5 ? b.hostname : comparison.scoreDelta < -5 ? a.hostname : null;
 
   return (
-    <div className="max-w-5xl mx-auto mt-16 space-y-10">
+    <div className="max-w-5xl mx-auto mt-16 space-y-10 text-center">
       <div className="grid md:grid-cols-2 gap-6">
         {[a, b].map((site) => (
           <div
@@ -78,21 +79,19 @@ export const CompareResults: FC<Props> = ({ a, b, comparison }) => {
           Weave delta
         </h4>
         {winner && (
-          <p className="text-lg font-bold text-[#2C2A29] mb-4">
-            <span className="text-[#E67E22]">{winner}</span> leads on innovation score
-            {comparison.scoreDelta !== 0 && (
-              <span className="text-[#5A5653] font-normal text-sm ml-2">
-                ({comparison.scoreDelta > 0 ? "+" : ""}
-                {comparison.scoreDelta} pts)
-              </span>
-            )}
-          </p>
+          <BalancedText
+            text={`${winner} leads on innovation score${
+              comparison.scoreDelta !== 0
+                ? ` (${comparison.scoreDelta > 0 ? "+" : ""}${comparison.scoreDelta} pts)`
+                : ""
+            }`}
+            className="text-lg font-bold text-[#2C2A29] mb-4"
+          />
         )}
-        <ul className="space-y-2 mb-6">
+        <ul className="space-y-4 mb-6 list-none">
           {comparison.highlights.map((h) => (
-            <li key={h} className="text-sm text-[#5A5653] flex gap-2">
-              <span className="text-[#E67E22]">◆</span>
-              {h}
+            <li key={h}>
+              <BalancedText text={h} className="text-sm text-[#5A5653]" />
             </li>
           ))}
         </ul>
@@ -102,11 +101,12 @@ export const CompareResults: FC<Props> = ({ a, b, comparison }) => {
           <DiffPill label="Shared libraries" items={comparison.libraries.shared} />
           <DiffPill label="Shared frameworks" items={comparison.frameworks.shared} />
         </div>
-        <p className="mt-6 text-xs text-[#B8B5AE]">
-          A11y: {comparison.accessibility.a} vs {comparison.accessibility.b} · DOM Δ{" "}
-          {comparison.performance.domDelta > 0 ? "+" : ""}
-          {comparison.performance.domDelta}
-        </p>
+        <BalancedText
+          text={`A11y: ${comparison.accessibility.a} vs ${comparison.accessibility.b} · DOM Δ ${
+            comparison.performance.domDelta > 0 ? "+" : ""
+          }${comparison.performance.domDelta}`}
+          className="mt-6 text-xs text-[#B8B5AE] mx-auto"
+        />
       </div>
     </div>
   );

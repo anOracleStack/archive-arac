@@ -3,6 +3,7 @@
 import { Navbar } from "@/components/Navbar";
 import { WebWeaveBackground } from "@/components/effects/WebWeaveBackground";
 import { SilkTrail } from "@/components/effects/SilkTrail";
+import { VaultAutoSync } from "@/components/VaultAutoSync";
 
 export function PlatformShell({ children }: { children: React.ReactNode }) {
   return (
@@ -10,6 +11,7 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
       <WebWeaveBackground />
       <SilkTrail />
       <Navbar />
+      <VaultAutoSync />
       {children}
     </main>
   );

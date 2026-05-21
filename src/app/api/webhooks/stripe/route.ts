@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { loadServerVault, mergeVaultPush } from "@/lib/server/serverVault";
-import { submitRegistrarOrder } from "@/lib/registrar/submitOrder";
+import { fulfillPaidLock } from "@/lib/checkout/fulfillPaidLock";
 
 export const runtime = "nodejs";
 
@@ -33,24 +32,12 @@ export async function POST(req: NextRequest) {
     const clientId = session.metadata?.clientId;
 
     if (lockId && clientId) {
-      const vault = await loadServerVault(clientId);
-      const lock = vault.identityLocks.find((l) => l.id === lockId);
-      if (lock) {
-        const locks = vault.identityLocks.map((l) =>
-          l.id === lockId ? { ...l, status: "registered" as const } : l
-        );
-        const orders = vault.orders.map((o) =>
-          o.lockId === lockId
-            ? { ...o, status: "paid" as const, updatedAt: new Date().toISOString() }
-            : o
-        );
-        await mergeVaultPush(clientId, { identityLocks: locks, orders });
-
-        const order = orders.find((o) => o.lockId === lockId);
-        if (order) {
-          await submitRegistrarOrder(order, { ...lock, status: "registered" });
-        }
-      }
+      await fulfillPaidLock({
+        clientId,
+        lockId,
+        stripeSessionId: session.id,
+        source: "stripe_webhook",
+      });
     }
   }
 

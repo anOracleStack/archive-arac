@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { BalancedText } from "@/components/BalancedText";
 import { PlatformShell } from "@/components/PlatformShell";
 import { getOrCreateClientId } from "@/lib/clientId";
 import type { SocialConnection } from "@/types/connections";
@@ -50,7 +51,7 @@ function SocialInner() {
   };
 
   return (
-    <div className="relative z-10 pt-32 pb-24 px-6 max-w-3xl mx-auto">
+    <div className="relative z-10 pt-32 pb-24 px-6 max-w-3xl mx-auto text-center">
       <Link
         href="/studio"
         className="inline-flex mb-6 text-[10px] font-bold uppercase tracking-widest text-[#E67E22] hover:underline"
@@ -60,14 +61,20 @@ function SocialInner() {
       <h1 className="text-4xl font-bold mb-4">
         Social <span className="text-[#E67E22]">connections</span>
       </h1>
-      <p className="text-sm text-[#5A5653] mb-8 max-w-xl">
-        Connect X and TikTok for handle monitoring and profile alignment — not automatic
-        registration. Pair with{" "}
-        <Link href="/identity" className="text-[#E67E22] hover:underline">
-          Identity Lock
-        </Link>{" "}
-        for availability scans.
-      </p>
+      <BalancedText
+        className="text-sm text-[#5A5653] mb-8"
+        lines={[
+          "Connect X & TikTok for handle monitoring",
+          "& profile alignment — not automatic registration.",
+          <>
+            Pair with{" "}
+            <Link href="/identity" className="text-[#E67E22] hover:underline">
+              Identity Lock
+            </Link>{" "}
+            for availability scans.
+          </>,
+        ]}
+      />
 
       {msg && (
         <p className="mb-6 text-sm border border-[#C4A882]/50 bg-[#C4A882]/10 rounded-xl px-4 py-3 text-[#5A5653]">
@@ -143,10 +150,14 @@ function SocialInner() {
         </section>
       )}
 
-      <p className="text-xs text-[#B8B5AE] mt-8">
-        Requires X_OAUTH_* and TIKTOK_* env vars on the server. Tokens stay server-side in{" "}
-        <code className="font-mono">data/vault/</code>.
-      </p>
+      <BalancedText
+        className="text-xs text-[#B8B5AE] mt-8 max-w-md mx-auto"
+        lines={[
+          "Requires X_OAUTH_* & TIKTOK_* env vars on the server.",
+          "Tokens stay server-side in server vault",
+          "(Vercel Blob in production).",
+        ]}
+      />
     </div>
   );
 }

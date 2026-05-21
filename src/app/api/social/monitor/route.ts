@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { loadServerVault, mergeVaultPush, loadOAuthTokens } from "@/lib/server/serverVault";
+import { runSocialMonitor } from "@/lib/social/runMonitor";
+import { fetchTikTokProfile, fetchXProfile } from "@/lib/social/platformApi";
 
 export const runtime = "nodejs";
-import { loadServerVault, mergeVaultPush, loadOAuthTokens } from "@/lib/server/serverVault";
 
 export async function POST(req: NextRequest) {
   let body: { clientId?: string; platformId?: string };
@@ -13,7 +15,7 @@ export async function POST(req: NextRequest) {
 
   const { clientId, platformId } = body;
   if (!clientId || !platformId) {
-    return NextResponse.json({ error: "clientId and platformId required" }, { status: 400 });
+    return NextResponse.json({ error: "clientId & platformId required" }, { status: 400 });
   }
 
   const vault = await loadServerVault(clientId);
@@ -23,22 +25,41 @@ export async function POST(req: NextRequest) {
   }
 
   const tokens = await loadOAuthTokens(clientId, platformId);
-  const notes: string[] = [
-    `Last monitor run ${new Date().toISOString()}`,
-    "Handle alignment checked against Identity Lock slug recommendations.",
-  ];
+  const accessToken =
+    typeof tokens?.access_token === "string" ? tokens.access_token : undefined;
 
-  if (!tokens?.access_token) {
-    notes.push("OAuth token missing — reconnect in Studio → Social.");
-  } else if (platformId === "x") {
-    notes.push("X API reachable — profile sync OK (read-only scope).");
-  } else if (platformId === "tiktok") {
-    notes.push("TikTok user info refreshed (read-only scope).");
+  const lock = vault.identityLocks[0];
+  const lockSlug = lock?.candidate.slug;
+
+  const notes = await runSocialMonitor(conn, accessToken, lockSlug);
+
+  let handle = conn.handle;
+  let displayName = conn.displayName;
+  let profileUrl = conn.profileUrl;
+
+  if (accessToken && platformId === "x") {
+    const profile = await fetchXProfile(accessToken);
+    handle = profile.handle ?? handle;
+    displayName = profile.displayName ?? displayName;
+    profileUrl = profile.profileUrl ?? profileUrl;
+  }
+  if (accessToken && platformId === "tiktok") {
+    const profile = await fetchTikTokProfile(accessToken);
+    handle = profile.handle ?? handle;
+    displayName = profile.displayName ?? displayName;
+    profileUrl = profile.profileUrl ?? profileUrl;
   }
 
   const social = vault.social.map((s) =>
     s.platformId === platformId
-      ? { ...s, lastSyncAt: new Date().toISOString(), monitorNotes: notes }
+      ? {
+          ...s,
+          handle,
+          displayName,
+          profileUrl,
+          lastSyncAt: new Date().toISOString(),
+          monitorNotes: notes,
+        }
       : s
   );
 
@@ -47,7 +68,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     platformId,
     notes,
-    handle: conn.handle,
-    profileUrl: conn.profileUrl,
+    handle,
+    profileUrl,
   });
 }

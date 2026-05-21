@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BalancedText } from "@/components/BalancedText";
 import { KnowledgeGateway } from "@/components/KnowledgeGateway";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { gloss } from "@/data/knowledgeGloss";
@@ -24,14 +25,32 @@ export function Hero() {
         </h1>
       </ScrollReveal>
       <ScrollReveal index={2}>
-        <div className="text-xl text-[#5A5653] leading-relaxed max-w-2xl mx-auto font-light text-pretty text-balance text-center">
-          <span className="block">A specialized index of digital architectures that break the mold.</span>
-          <span className="block">We track the threads of{" "}
-            <KnowledgeGateway article={gloss.synapseSilk} surface="cream">
-              <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">Synapse &amp; Silk</span>
-            </KnowledgeGateway>{" "}
-            — where high-performance <KnowledgeGateway article={gloss.whatIsUI} surface="cream"><span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">UI</span></KnowledgeGateway> meets organic interactivity.</span>
-        </div>
+        <BalancedText
+          className="text-xl text-[#5A5653] font-light"
+          lines={[
+            "A specialized index of digital",
+            "architectures that break the mold.",
+            <>
+              We track the threads of{" "}
+              <KnowledgeGateway article={gloss.synapseSilk} surface="cream">
+                <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">
+                  Synapse &amp; Silk
+                </span>
+              </KnowledgeGateway>
+              {" "}
+              —
+            </>,
+            <>
+              where high-performance{" "}
+              <KnowledgeGateway article={gloss.whatIsUI} surface="cream">
+                <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">
+                  UI
+                </span>
+              </KnowledgeGateway>{" "}
+              meets organic interactivity.
+            </>,
+          ]}
+        />
       </ScrollReveal>
       <ScrollReveal index={3}>
         <div className="mt-12 flex flex-wrap justify-center gap-3">

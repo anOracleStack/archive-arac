@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BalancedText } from "@/components/BalancedText";
 import { syncVaultBidirectional } from "@/lib/vaultSync";
 
 export function VaultSyncBar({ onSynced }: { onSynced?: () => void }) {
@@ -17,13 +18,16 @@ export function VaultSyncBar({ onSynced }: { onSynced?: () => void }) {
   };
 
   return (
-    <div className="mb-8 p-4 rounded-xl border border-[#8BA896]/40 bg-[#8BA896]/10 flex flex-wrap items-center justify-between gap-3">
-      <div>
+    <div className="mb-8 p-4 rounded-xl border border-[#8BA896]/40 bg-[#8BA896]/10 flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 text-center">
+      <div className="max-w-md">
         <p className="text-sm font-bold text-[#2C2A29]">Server vault</p>
-        <p className="text-xs text-[#5A5653]">
-          Sync this browser with the Archive Arac server so locks, reports, and briefs persist
-          across devices.
-        </p>
+        <BalancedText
+          className="text-xs text-[#5A5653]"
+          lines={[
+            "Sync this browser with the Archive Arac server",
+            "so locks, reports, & briefs persist across devices.",
+          ]}
+        />
         {status && <p className="text-xs text-[#5a7a68] mt-2">{status}</p>}
       </div>
       <button

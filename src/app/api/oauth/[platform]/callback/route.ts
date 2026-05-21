@@ -8,6 +8,7 @@ import {
   saveOAuthTokens,
 } from "@/lib/server/serverVault";
 import type { SocialConnection } from "@/types/connections";
+import { fetchTikTokProfile, fetchXProfile } from "@/lib/social/platformApi";
 
 export async function GET(
   req: NextRequest,
@@ -99,20 +100,6 @@ async function exchangeX(code: string, redirectUri: string) {
   return (await res.json()) as Record<string, unknown>;
 }
 
-async function fetchXProfile(accessToken: string) {
-  const res = await fetch("https://api.twitter.com/2/users/me?user.fields=username,name", {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
-  if (!res.ok) return {};
-  const data = (await res.json()) as { data?: { username?: string; name?: string } };
-  const u = data.data;
-  return {
-    handle: u?.username,
-    displayName: u?.name,
-    profileUrl: u?.username ? `https://x.com/${u.username}` : undefined,
-  };
-}
-
 async function exchangeTikTok(code: string, redirectUri: string) {
   const clientKey = process.env.TIKTOK_CLIENT_KEY;
   const clientSecret = process.env.TIKTOK_CLIENT_SECRET;
@@ -133,18 +120,3 @@ async function exchangeTikTok(code: string, redirectUri: string) {
   return (await res.json()) as Record<string, unknown>;
 }
 
-async function fetchTikTokProfile(accessToken: string) {
-  const res = await fetch("https://open.tiktokapis.com/v2/user/info/?fields=display_name,username", {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
-  if (!res.ok) return {};
-  const data = (await res.json()) as {
-    data?: { user?: { display_name?: string; username?: string } };
-  };
-  const u = data.data?.user;
-  return {
-    handle: u?.username,
-    displayName: u?.display_name,
-    profileUrl: u?.username ? `https://www.tiktok.com/@${u.username}` : undefined,
-  };
-}

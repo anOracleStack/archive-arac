@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     const { urlA, urlB } = body;
 
     if (!urlA || !urlB || typeof urlA !== "string" || typeof urlB !== "string") {
-      return NextResponse.json({ error: "Provide urlA and urlB" }, { status: 400 });
+      return NextResponse.json({ error: "Provide urlA & urlB" }, { status: 400 });
     }
 
     let normalizedA: string;

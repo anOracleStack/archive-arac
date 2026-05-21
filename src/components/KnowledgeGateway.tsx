@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { GatewayArticle } from "@/data/knowledgeGloss";
+import { BalancedText } from "@/components/BalancedText";
 
 type Level = "beginner" | "moderate" | "advanced";
 
@@ -183,23 +184,28 @@ export function KnowledgeGateway({ article, surface = "cream", compact = false, 
             <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8">
               <section className="text-center">
                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8BA896] mb-3">What it is</h3>
-                <p className="text-sm text-[#2C2A29] leading-relaxed text-pretty text-balance text-center">{block.what}</p>
+                <BalancedText text={block.what} className="text-sm text-[#2C2A29]" />
               </section>
               <section className="text-center">
                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#E67E22] mb-3">Why it matters</h3>
-                <p className="text-sm text-[#2C2A29] leading-relaxed text-pretty text-balance text-center">{block.why}</p>
+                <BalancedText text={block.why} className="text-sm text-[#2C2A29]" />
               </section>
               <section className="text-center">
                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C2A29] mb-3">What we do with it</h3>
-                <p className="text-sm text-[#5A5653] leading-relaxed text-pretty text-balance text-center">{block.action}</p>
+                <BalancedText text={block.action} className="text-sm text-[#5A5653]" />
               </section>
             </div>
 
             {/* Footer */}
             <div className="border-t border-[#E8E5DF] px-6 py-4 bg-[#F9F7F3]/90">
-              <p className="text-[10px] text-[#B8B5AE] leading-relaxed text-center text-pretty">
-                Gateways are editorial signposts—not legal, medical, or financial advice. Tune copy per release.
-              </p>
+              <BalancedText
+                lines={[
+                  "Gateways are editorial signposts — not legal,",
+                  "medical, or financial advice.",
+                  "Tune copy per release.",
+                ]}
+                className="text-[10px] text-[#B8B5AE]"
+              />
             </div>
           </div>
         </div>

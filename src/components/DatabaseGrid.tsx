@@ -5,6 +5,7 @@ import type { StrandItem, SilkCategory } from "@/types";
 import { strands } from "@/data/strands";
 import { KnowledgeGateway } from "@/components/KnowledgeGateway";
 import { ScrollReveal, StaggerGrid } from "@/components/ScrollReveal";
+import { BalancedText } from "@/components/BalancedText";
 import { gloss } from "@/data/knowledgeGloss";
 
 const FILTERS: { key: SilkCategory | "all"; label: string; glossArticle: keyof typeof gloss }[] = [
@@ -375,9 +376,9 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
       <div className="relative z-10 mx-auto max-w-7xl">
         <ScrollReveal>
           <div className="mb-16 flex flex-col items-center gap-8 md:flex-row md:items-end md:justify-between">
-            <div className="max-w-xl text-center md:text-left">
-              <div className="mb-4 flex items-start justify-center gap-3 md:justify-between">
-                <h2 className="flex flex-1 flex-wrap items-center justify-center gap-3 text-balance text-4xl font-bold tracking-tight md:justify-start">
+            <div className="max-w-xl text-center mx-auto">
+              <div className="mb-4 flex items-start justify-center gap-3">
+                <h2 className="flex flex-1 flex-wrap items-center justify-center gap-3 text-balance text-4xl font-bold tracking-tight">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-1 shrink-0">
                     <path d="M12 2a10 10 0 0 1 7.07 17.07L12 22l-7.07-2.93A10 10 0 0 1 12 2z" />
                     <path d="M12 6v6l4 2" />
@@ -387,17 +388,24 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
                   </KnowledgeGateway>
                 </h2>
               </div>
-              <p className="leading-relaxed text-pretty text-balance text-[#5A5653]">
-                <KnowledgeGateway article={gloss.curatedStrands} surface="cream">
-                  <span className="cursor-pointer border-b-2 border-dotted border-[#C4A882]/60 font-semibold text-[#6B543C] transition-colors hover:border-[#E67E22] hover:text-[#E67E22]">
-                    Curated strands of innovation.
-                  </span>
-                </KnowledgeGateway>{" "}
-                Filter by the specific{" "}
-                <KnowledgeGateway article={gloss.silkStrand} surface="cream">
-                  <span className="cursor-pointer font-bold text-[#9C7C5B] transition-colors duration-200 hover:text-[#E67E22]">&ldquo;Silk&rdquo;</span>
-                </KnowledgeGateway>{" "}
-                type used to build the experience.
+              <p className="leading-relaxed copy-balanced text-[#5A5653]">
+                <span className="copy-balanced-line">
+                  <KnowledgeGateway article={gloss.curatedStrands} surface="cream">
+                    <span className="cursor-pointer border-b-2 border-dotted border-[#C4A882]/60 font-semibold text-[#6B543C] transition-colors hover:border-[#E67E22] hover:text-[#E67E22]">
+                      Curated strands of innovation.
+                    </span>
+                  </KnowledgeGateway>
+                </span>
+                <br />
+                <span className="copy-balanced-line">
+                  Filter by the specific{" "}
+                  <KnowledgeGateway article={gloss.silkStrand} surface="cream">
+                    <span className="cursor-pointer font-bold text-[#9C7C5B] transition-colors duration-200 hover:text-[#E67E22]">
+                      &ldquo;Silk&rdquo;
+                    </span>
+                  </KnowledgeGateway>{" "}
+                  type used to build the experience.
+                </span>
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -440,7 +448,7 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
                     <h3 className="text-3xl font-bold mb-4 group-hover:text-[#E67E22] transition-colors tracking-tighter">
                       {item.name}
                     </h3>
-                    <p className="text-[#5A5653] text-sm leading-relaxed font-light text-balance">{item.shortDesc}</p>
+                    <BalancedText text={item.shortDesc} className="text-[#5A5653] text-sm font-light" />
                   </div>
                   <div className="mt-8 pt-6 border-t border-[#E8E5DF] flex justify-between items-center">
                     <KnowledgeGateway article={
@@ -459,14 +467,18 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
                 </div>
               ))
             ) : (
-              <div className="col-span-full text-center py-20 text-[#5A5653]">No strands match this silk type.</div>
+              <div className="col-span-full text-center py-20 text-[#5A5653]">
+                <BalancedText text="No strands match this silk type." className="mx-auto" />
+              </div>
             )}
           </StaggerGrid>
         )}
 
         {/* Web View — empty state, canvas handles rendering */}
         {webView && displayStrands.length === 0 && (
-          <div className="text-center py-40 text-[#5A5653]">No strands match this silk type.</div>
+          <div className="text-center py-40 text-[#5A5653]">
+            <BalancedText text="No strands match this silk type." className="mx-auto" />
+          </div>
         )}
       </div>
 

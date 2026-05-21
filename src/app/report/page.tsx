@@ -8,6 +8,7 @@ import { decodeSharePayload, type SharedReportPayload } from "@/lib/reportShare"
 import { strands } from "@/data/strands";
 import { AnalyzerResults } from "@/components/AnalyzerResults";
 import type { AnalysisResult } from "@/types/analysis";
+import { BalancedText } from "@/components/BalancedText";
 
 function ReportContent() {
   const params = useSearchParams();
@@ -52,18 +53,29 @@ function ReportContent() {
 
   if (!params.get("s")) {
     return (
-      <p className="text-[#5A5653]">
-        Missing share token.{" "}
-        <Link href="/#analyzer" className="text-[#E67E22] underline">
-          Run an analysis
-        </Link>
-        .
-      </p>
+      <div className="text-center">
+        <BalancedText
+          lines={[
+            "Missing share token.",
+            <>
+              <Link href="/#analyzer" className="text-[#E67E22] underline">
+                Run an analysis
+              </Link>
+              .
+            </>,
+          ]}
+          className="text-[#5A5653]"
+        />
+      </div>
     );
   }
 
   if (error && !payload) {
-    return <p className="text-red-600">{error}</p>;
+    return (
+      <div className="text-center">
+        <BalancedText text={error} className="text-red-600" />
+      </div>
+    );
   }
 
   if (!payload) return null;
@@ -73,7 +85,7 @@ function ReportContent() {
     .filter(Boolean);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 text-center">
       <div className="p-6 rounded-2xl border border-[#E8E5DF] bg-white">
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#9C7C5B] mb-2">
           Shared snapshot
@@ -82,21 +94,28 @@ function ReportContent() {
         <a href={payload.url} target="_blank" rel="noopener noreferrer" className="text-[#E67E22]">
           {payload.hostname} ↗
         </a>
-        <p className="mt-4 text-sm text-[#5A5653]">{payload.summary}</p>
-        <p className="mt-4 text-sm">
-          Score <strong>{payload.score}</strong> · Vibe <strong>{payload.vibe}</strong>
-        </p>
+        <BalancedText text={payload.summary} className="mt-4 text-sm text-[#5A5653] mx-auto max-w-2xl" />
+        <BalancedText
+          text={`Score ${payload.score} · Vibe ${payload.vibe}`}
+          className="mt-4 text-sm mx-auto"
+        />
         {strandNames.length > 0 && (
-          <p className="mt-2 text-xs text-[#9C7C5B]">
-            Suggested strands: {strandNames.join(", ")}
-          </p>
+          <BalancedText
+            text={`Suggested strands: ${strandNames.join(", ")}`}
+            className="mt-2 text-xs text-[#9C7C5B] mx-auto max-w-xl"
+          />
         )}
       </div>
 
       {loading && (
-        <p className="text-sm text-[#5A5653] animate-pulse">Refreshing full weave analysis…</p>
+        <BalancedText
+          text="Refreshing full weave analysis…"
+          className="text-sm text-[#5A5653] animate-pulse mx-auto"
+        />
       )}
-      {error && full === null && <p className="text-red-600 text-sm">{error}</p>}
+      {error && full === null && (
+        <BalancedText text={error} className="text-red-600 text-sm mx-auto" />
+      )}
       {full && (
         <div className="bg-white rounded-2xl border border-[#E8E5DF] p-6">
           <AnalyzerResults result={full} />
@@ -109,8 +128,12 @@ function ReportContent() {
 export default function ReportPage() {
   return (
     <PlatformShell>
-      <div className="relative z-10 pt-32 pb-24 px-6 max-w-5xl mx-auto">
-        <Suspense fallback={<p className="text-[#5A5653]">Loading report…</p>}>
+      <div className="relative z-10 pt-32 pb-24 px-6 max-w-5xl mx-auto text-center">
+        <Suspense
+          fallback={
+            <BalancedText text="Loading report…" className="text-[#5A5653] mx-auto" />
+          }
+        >
           <ReportContent />
         </Suspense>
       </div>

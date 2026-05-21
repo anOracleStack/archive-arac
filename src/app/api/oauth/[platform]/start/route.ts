@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { signOAuthState, appOrigin } from "@/lib/oauth/state";
 
+export const runtime = "nodejs";
+
 const PLATFORMS = ["x", "tiktok"] as const;
 
 export async function GET(

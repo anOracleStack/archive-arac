@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { BalancedText } from "@/components/BalancedText";
 import { PlatformShell } from "@/components/PlatformShell";
 import { buildPlatforms, hostingTiers, socialConnectors } from "@/data/buildPlatforms";
 import { saveStudioBrief } from "@/lib/identityStore";
@@ -14,21 +15,27 @@ export default function StudioPage() {
 
   return (
     <PlatformShell>
-      <div className="relative z-10 pt-32 pb-24 px-6 max-w-5xl mx-auto">
+      <div className="relative z-10 pt-32 pb-24 px-6 max-w-5xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10">
           Studio
         </div>
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-4">
           Build, connect, <span className="text-[#E67E22]">host</span>
         </h1>
-        <p className="text-lg text-[#5A5653] mb-12 max-w-2xl leading-relaxed">
-          Nothing yet? We can build with you in Cursor. Already on Wix, Lovable, or a custom URL?
-          Connect and audit. Hosting and domains bundle with Identity Lock — connect X and TikTok
-          for read-only monitoring, or link Wix sites for deeper studio workflows.
-        </p>
+        <BalancedText
+          className="text-lg text-[#5A5653] mb-12"
+          lines={[
+            "Nothing yet? We can build with you in Cursor.",
+            "Already on Wix, Lovable, or a custom URL?",
+            "Connect & audit. Hosting & domains bundle",
+            "with Identity Lock — connect X & TikTok",
+            "for read-only monitoring, or link Wix sites",
+            "for deeper studio workflows.",
+          ]}
+        />
 
         <section className="mb-16">
-          <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#9C7C5B] mb-4">
+          <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#9C7C5B] mb-4 section-heading">
             Hosting plans
           </h2>
           <div className="grid md:grid-cols-3 gap-4">
@@ -62,7 +69,7 @@ export default function StudioPage() {
         </section>
 
         <section className="mb-16">
-          <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#9C7C5B] mb-4">
+          <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#9C7C5B] mb-4 section-heading">
             Build & connect platforms
           </h2>
           <div className="grid sm:grid-cols-2 gap-4">
@@ -106,10 +113,15 @@ export default function StudioPage() {
         {selectedBuild === "wix" && (
           <section className="mb-12 p-6 rounded-2xl border border-[#E8E5DF] bg-white/80">
             <h3 className="font-bold mb-2">Connect your Wix site</h3>
-            <p className="text-sm text-[#5A5653] mb-4">
-              Save Wix sites to your vault, run Silk audits, and align domains via Identity Lock.
-              Optional API token enables live site metadata from Wix REST.
-            </p>
+            <BalancedText
+              className="text-sm text-[#5A5653] mb-4"
+              lines={[
+                "Save Wix sites to your vault, run Silk audits,",
+                "& align domains via Identity Lock.",
+                "Optional API token enables live site",
+                "metadata from Wix REST.",
+              ]}
+            />
             <input
               value={wixUrl}
               onChange={(e) => setWixUrl(e.target.value)}
@@ -136,10 +148,15 @@ export default function StudioPage() {
         {selectedBuild === "cursor" && (
           <section className="mb-12 p-6 rounded-2xl border border-[#E8E5DF] bg-white/80">
             <h3 className="font-bold mb-2">Cursor build request</h3>
-            <p className="text-sm text-[#5A5653] mb-4">
-              Tell us what you need — we pair Archive Arac analyzer + compose strands with a Cursor
-              implementation in your repo (or ours). This is the path when you want us to ship it.
-            </p>
+            <BalancedText
+              className="text-sm text-[#5A5653] mb-4"
+              lines={[
+                "Tell us what you need — we pair Archive Arac",
+                "analyzer + compose strands with a Cursor",
+                "implementation in your repo (or ours).",
+                "This is the path when you want us to ship it.",
+              ]}
+            />
             <textarea
               value={cursorNote}
               onChange={(e) => setCursorNote(e.target.value)}
@@ -172,9 +189,13 @@ export default function StudioPage() {
         {selectedBuild === "lovable" && (
           <section className="mb-12 p-6 rounded-2xl border border-[#E8E5DF] bg-white/80">
             <h3 className="font-bold mb-2">Lovable project</h3>
-            <p className="text-sm text-[#5A5653] mb-4">
-              Paste your Lovable preview URL for a full Silk audit — stack, UX, and innovation gaps.
-            </p>
+            <BalancedText
+              className="text-sm text-[#5A5653] mb-4"
+              lines={[
+                "Paste your Lovable preview URL for a full",
+                "Silk audit — stack, UX, & innovation gaps.",
+              ]}
+            />
             <Link
               href="/analyze"
               className="inline-block px-5 py-2.5 rounded-xl bg-[#2C2A29] text-white text-xs font-bold uppercase tracking-widest"
@@ -187,10 +208,14 @@ export default function StudioPage() {
         {selectedBuild === "existing" && (
           <section className="mb-12 p-6 rounded-2xl border border-[#E67E22]/30 bg-[#E67E22]/5">
             <h3 className="font-bold mb-2">Already live somewhere?</h3>
-            <p className="text-sm text-[#5A5653] mb-4">
-              Wix, WordPress, custom React, anything with a URL — dump it in the Analyzer for tech
-              stack, UX, innovation highlights, and gaps.
-            </p>
+            <BalancedText
+              className="text-sm text-[#5A5653] mb-4"
+              lines={[
+                "Wix, WordPress, custom React — anything",
+                "with a URL — dump it in the Analyzer for",
+                "tech stack, UX, innovation highlights, & gaps.",
+              ]}
+            />
             <Link
               href="/analyze"
               className="inline-block px-5 py-2.5 rounded-xl bg-[#E67E22] text-white text-xs font-bold uppercase tracking-widest"
@@ -201,7 +226,7 @@ export default function StudioPage() {
         )}
 
         <section>
-          <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#9C7C5B] mb-4">
+          <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#9C7C5B] mb-4 section-heading">
             Social connections
           </h2>
           <div className="grid sm:grid-cols-3 gap-4">
@@ -218,15 +243,21 @@ export default function StudioPage() {
               </div>
             ))}
           </div>
-          <p className="text-xs text-[#5A5653] mt-4">
-            <Link href="/studio/social" className="text-[#E67E22] font-bold hover:underline">
-              Open social connections →
-            </Link>{" "}
-            for OAuth (monitoring only, not registration). Pair with{" "}
-            <Link href="/identity" className="text-[#E67E22] hover:underline">
-              Identity Lock
-            </Link>{" "}
-            for handle availability scans.
+          <p className="text-xs text-[#5A5653] mt-4 copy-balanced max-w-lg mx-auto">
+            <span className="copy-balanced-line">
+              <Link href="/studio/social" className="text-[#E67E22] font-bold hover:underline">
+                Open social connections →
+              </Link>{" "}
+              for OAuth (monitoring only, not registration).
+            </span>
+            <br />
+            <span className="copy-balanced-line">
+              Pair with{" "}
+              <Link href="/identity" className="text-[#E67E22] hover:underline">
+                Identity Lock
+              </Link>{" "}
+              for handle availability scans.
+            </span>
           </p>
         </section>
       </div>

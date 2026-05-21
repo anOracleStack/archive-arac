@@ -122,7 +122,7 @@ export function LandscapeSection() {
     <section id="weave" className="relative z-10 py-24 px-6 bg-white border-y border-[#C4A882]/30">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-3 gap-12 items-center">
-          <div className="lg:col-span-1 text-center lg:text-left">
+          <div className="lg:col-span-1 text-center">
             <ScrollReveal>
               <div className="mb-6">
                 <h2 className="text-4xl font-bold tracking-tight text-balance">
@@ -133,27 +133,52 @@ export function LandscapeSection() {
               </div>
             </ScrollReveal>
             <ScrollReveal index={1}>
-              <p className="text-[#5A5653] mb-6 leading-relaxed text-pretty text-balance">
-                Traditional <KnowledgeGateway article={gloss.whatIsUI} surface="cream"><span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">UI</span></KnowledgeGateway> patterns are decaying. Our data tracks the shift from static grids to{" "}
-                <KnowledgeGateway article={gloss.spatialCategory} surface="cream"><span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">Spatial Silk</span></KnowledgeGateway> & <KnowledgeGateway article={gloss.intentDrivenTerm} surface="cream"><span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">Intent-Driven</span></KnowledgeGateway> interfaces.
+              <p className="text-[#5A5653] mb-6 leading-relaxed copy-balanced">
+                <span className="copy-balanced-line">
+                  Traditional{" "}
+                  <KnowledgeGateway article={gloss.whatIsUI} surface="cream">
+                    <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">
+                      UI
+                    </span>
+                  </KnowledgeGateway>{" "}
+                  patterns are decaying.
+                </span>
+                <br />
+                <span className="copy-balanced-line">Our data tracks the shift from static grids to</span>
+                <br />
+                <span className="copy-balanced-line">
+                  <KnowledgeGateway article={gloss.spatialCategory} surface="cream">
+                    <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">
+                      Spatial Silk
+                    </span>
+                  </KnowledgeGateway>
+                  {" "}
+                  &{" "}
+                  <KnowledgeGateway article={gloss.intentDrivenTerm} surface="cream">
+                    <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">
+                      Intent-Driven
+                    </span>
+                  </KnowledgeGateway>{" "}
+                  interfaces.
+                </span>
               </p>
             </ScrollReveal>
-            <div className="flex flex-col items-center gap-4 lg:items-start">
-              <div className="flex items-center justify-center gap-3 text-sm font-bold lg:justify-start">
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex items-center justify-center gap-3 text-sm font-bold">
                 <div className="h-3 w-3 shrink-0 animate-pulse rounded-full bg-[#9C7C5B]" />{" "}
                 <KnowledgeGateway article={gloss.intentDrivenTerm} surface="cream">
                   <span className="cursor-pointer font-bold text-[#9C7C5B] transition-colors duration-200 hover:text-[#E67E22]">AI Intent-Driven</span>
                 </KnowledgeGateway>{" "}
                 (+82%)
               </div>
-              <div className="flex items-center justify-center gap-3 text-sm font-bold lg:justify-start">
+              <div className="flex items-center justify-center gap-3 text-sm font-bold">
                 <div className="h-3 w-3 shrink-0 rounded-full bg-[#8BA896]" />{" "}
                 <KnowledgeGateway article={gloss.spatialCategory} surface="cream">
                   <span className="cursor-pointer font-bold text-[#9C7C5B] transition-colors duration-200 hover:text-[#E67E22]">Spatial WebGL</span>
                 </KnowledgeGateway>{" "}
                 (+45%)
               </div>
-              <div className="flex items-center justify-center gap-3 text-sm font-bold lg:justify-start">
+              <div className="flex items-center justify-center gap-3 text-sm font-bold">
                 <div className="h-3 w-3 shrink-0 rounded-full bg-[#2C2A29]" />{" "}
                 <KnowledgeGateway article={gloss.physicsCategory} surface="cream">
                   <span className="cursor-pointer font-bold text-[#9C7C5B] transition-colors duration-200 hover:text-[#E67E22]">Physics Micro-UX</span>

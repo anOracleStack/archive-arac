@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   const clientId = body.clientId?.trim();
   const siteUrl = body.siteUrl?.trim();
   if (!clientId || !siteUrl) {
-    return NextResponse.json({ error: "clientId and siteUrl required" }, { status: 400 });
+    return NextResponse.json({ error: "clientId & siteUrl required" }, { status: 400 });
   }
 
   let resolved;
@@ -68,7 +68,7 @@ export async function DELETE(req: NextRequest) {
   const clientId = req.nextUrl.searchParams.get("clientId");
   const siteId = req.nextUrl.searchParams.get("siteId");
   if (!clientId || !siteId) {
-    return NextResponse.json({ error: "clientId and siteId required" }, { status: 400 });
+    return NextResponse.json({ error: "clientId & siteId required" }, { status: 400 });
   }
   const vault = await loadServerVault(clientId);
   await mergeVaultPush(clientId, {

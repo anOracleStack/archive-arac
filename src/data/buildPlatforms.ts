@@ -26,7 +26,7 @@ export const buildPlatforms: BuildPlatform[] = [
   {
     id: "cursor",
     name: "Cursor build",
-    tagline: "We architect and ship in your repo with you",
+    tagline: "We architect & ship in your repo with you",
     forAudience: "No site yet — want a custom Next.js / React product",
     connectionStatus: "connect",
     connectLabel: "Request Cursor build",

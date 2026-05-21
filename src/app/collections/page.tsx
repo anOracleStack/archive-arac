@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { BalancedText } from "@/components/BalancedText";
 import { PlatformShell } from "@/components/PlatformShell";
 import {
   listCollections,
@@ -96,19 +97,24 @@ export default function CollectionsPage() {
 
   return (
     <PlatformShell>
-      <div className="relative z-10 pt-32 pb-24 px-6 max-w-6xl mx-auto">
+      <div className="relative z-10 pt-32 pb-24 px-6 max-w-6xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10">
           Phase 3 — Collections
         </div>
         <h1 className="text-5xl font-bold tracking-tight mb-4">
           URL <span className="text-[#E67E22]">collections</span>
         </h1>
-        <p className="text-[#5A5653] max-w-2xl mb-10">
-          Curate competitor sets, batch-analyze up to eight URLs, & export agency-ready benchmark
-          sheets — hall-of-fame boards without leaving the weave.
-        </p>
+        <BalancedText
+          className="text-[#5A5653] mb-10"
+          lines={[
+            "Curate competitor sets, batch-analyze",
+            "up to eight URLs, & export agency-ready",
+            "benchmark sheets — hall-of-fame boards",
+            "without leaving the weave.",
+          ]}
+        />
 
-        <div className="grid lg:grid-cols-[280px_1fr] gap-8">
+        <div className="grid lg:grid-cols-[280px_1fr] gap-8 text-left">
           <aside className="space-y-4">
             <div className="flex gap-2">
               <input
@@ -147,7 +153,7 @@ export default function CollectionsPage() {
 
           <div className="space-y-6">
             {!active ? (
-              <p className="text-[#5A5653]">Create a collection to begin.</p>
+              <BalancedText text="Create a collection to begin." className="text-[#5A5653] mx-auto" />
             ) : (
               <>
                 <div className="flex flex-wrap items-center justify-between gap-4">

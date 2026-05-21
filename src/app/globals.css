@@ -21,6 +21,31 @@ body {
   scroll-behavior: smooth;
 }
 
+/* Center-aligned prose with even visual line lengths */
+.copy-balanced {
+  text-align: center;
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-wrap: balance;
+}
+
+.copy-balanced-line {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.page-intro {
+  text-align: center;
+  max-width: 40rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-heading {
+  text-align: center;
+}
+
 .chart-container {
   position: relative;
   width: 100%;

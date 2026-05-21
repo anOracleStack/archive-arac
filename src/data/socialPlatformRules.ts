@@ -75,7 +75,7 @@ export const socialPlatforms: SocialPlatformRule[] = [
     allowsDashes: true,
     allowsUnderscores: false,
     caseSensitive: false,
-    notes: "Public custom URL for profiles and company pages.",
+    notes: "Public custom URL for profiles & company pages.",
     claimUrlTemplate: "https://linkedin.com/company/{handle}",
   },
   {
