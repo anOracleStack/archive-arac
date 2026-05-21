@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { loadServerVault } from "@/lib/server/serverVault";
-import { loadOAuthTokens } from "@/lib/server/serverVault";
+
+export const runtime = "nodejs";
+import { loadServerVault, loadOAuthTokens } from "@/lib/server/serverVault";
 
 export async function GET(req: NextRequest) {
   const clientId = req.nextUrl.searchParams.get("clientId");
@@ -8,11 +9,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "clientId required" }, { status: 400 });
   }
 
-  const vault = loadServerVault(clientId);
-  const connections = vault.social.map((s) => ({
-    ...s,
-    hasToken: Boolean(loadOAuthTokens(clientId, s.platformId)),
-  }));
+  const vault = await loadServerVault(clientId);
+  const connections = await Promise.all(
+    vault.social.map(async (s) => ({
+      ...s,
+      hasToken: Boolean(await loadOAuthTokens(clientId, s.platformId)),
+    }))
+  );
 
   return NextResponse.json({ connections });
 }

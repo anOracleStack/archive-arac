@@ -3,6 +3,8 @@ import type { VaultEntry } from "@/lib/reportStore";
 import type { IdentityLockPackage, StudioBriefEntry } from "@/types/identity";
 import { loadServerVault, mergeVaultPush, type ServerVaultSnapshot } from "@/lib/server/serverVault";
 
+export const runtime = "nodejs";
+
 function mergeById<T extends { id: string; savedAt: string }>(a: T[], b: T[]): T[] {
   const map = new Map<string, T>();
   for (const item of [...a, ...b]) {
@@ -17,8 +19,13 @@ export async function GET(req: NextRequest) {
   if (!clientId) {
     return NextResponse.json({ error: "clientId required" }, { status: 400 });
   }
-  const snapshot = loadServerVault(clientId);
-  return NextResponse.json(snapshot);
+  try {
+    const snapshot = await loadServerVault(clientId);
+    return NextResponse.json(snapshot);
+  } catch (err) {
+    console.error("[vault] GET failed", err);
+    return NextResponse.json({ error: "Vault read failed" }, { status: 503 });
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -40,23 +47,28 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "clientId required" }, { status: 400 });
   }
 
-  const current = loadServerVault(clientId);
-  const next: ServerVaultSnapshot = {
-    reports: body.merge
-      ? mergeById(current.reports, body.reports ?? [])
-      : (body.reports ?? current.reports),
-    identityLocks: body.merge
-      ? mergeById(current.identityLocks, body.identityLocks ?? [])
-      : (body.identityLocks ?? current.identityLocks),
-    briefs: body.merge
-      ? mergeById(current.briefs, body.briefs ?? [])
-      : (body.briefs ?? current.briefs),
-    social: current.social,
-    wix: current.wix,
-    orders: current.orders,
-    updatedAt: new Date().toISOString(),
-  };
+  try {
+    const current = await loadServerVault(clientId);
+    const next: ServerVaultSnapshot = {
+      reports: body.merge
+        ? mergeById(current.reports, body.reports ?? [])
+        : (body.reports ?? current.reports),
+      identityLocks: body.merge
+        ? mergeById(current.identityLocks, body.identityLocks ?? [])
+        : (body.identityLocks ?? current.identityLocks),
+      briefs: body.merge
+        ? mergeById(current.briefs, body.briefs ?? [])
+        : (body.briefs ?? current.briefs),
+      social: current.social,
+      wix: current.wix,
+      orders: current.orders,
+      updatedAt: new Date().toISOString(),
+    };
 
-  mergeVaultPush(clientId, next);
-  return NextResponse.json(loadServerVault(clientId));
+    await mergeVaultPush(clientId, next);
+    return NextResponse.json(await loadServerVault(clientId));
+  } catch (err) {
+    console.error("[vault] POST failed", err);
+    return NextResponse.json({ error: "Vault write failed" }, { status: 503 });
+  }
 }

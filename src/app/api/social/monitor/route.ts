@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+
+export const runtime = "nodejs";
 import { loadServerVault, mergeVaultPush, loadOAuthTokens } from "@/lib/server/serverVault";
 
 export async function POST(req: NextRequest) {
@@ -14,13 +16,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "clientId and platformId required" }, { status: 400 });
   }
 
-  const vault = loadServerVault(clientId);
+  const vault = await loadServerVault(clientId);
   const conn = vault.social.find((s) => s.platformId === platformId);
   if (!conn) {
     return NextResponse.json({ error: "Not connected" }, { status: 404 });
   }
 
-  const tokens = loadOAuthTokens(clientId, platformId);
+  const tokens = await loadOAuthTokens(clientId, platformId);
   const notes: string[] = [
     `Last monitor run ${new Date().toISOString()}`,
     "Handle alignment checked against Identity Lock slug recommendations.",
@@ -40,7 +42,7 @@ export async function POST(req: NextRequest) {
       : s
   );
 
-  mergeVaultPush(clientId, { social });
+  await mergeVaultPush(clientId, { social });
 
   return NextResponse.json({
     platformId,

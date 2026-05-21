@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "clientId and lock required" }, { status: 400 });
   }
 
-  upsertIdentityLock(clientId, { ...lock, status: "checkout_pending" });
+  await upsertIdentityLock(clientId, { ...lock, status: "checkout_pending" });
 
   const { lineItems, metadata } = buildCheckoutFromLock(lock);
   const origin = appOrigin();
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     })),
   });
 
-  const vault = loadServerVault(clientId);
+  const vault = await loadServerVault(clientId);
   const order: RegistrarOrder = {
     id: crypto.randomUUID(),
     lockId: lock.id,
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     notes: "Awaiting Stripe payment; registrar job queued on webhook",
   };
 
-  mergeVaultPush(clientId, {
+  await mergeVaultPush(clientId, {
     orders: [order, ...vault.orders.filter((o) => o.lockId !== lock.id)].slice(0, 50),
   });
 

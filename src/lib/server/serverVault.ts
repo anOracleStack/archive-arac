@@ -1,9 +1,7 @@
-import fs from "fs";
-import path from "path";
 import type { VaultEntry } from "@/lib/reportStore";
 import type { IdentityLockPackage, StudioBriefEntry } from "@/types/identity";
 import type { SocialConnection, WixSiteConnection, RegistrarOrder } from "@/types/connections";
-import { clientVaultDir, readJsonFile, writeJsonFile } from "@/lib/server/dataPaths";
+import { readVaultJson, writeVaultJson } from "@/lib/server/vaultStorage";
 
 export interface ServerVaultSnapshot {
   reports: VaultEntry[];
@@ -15,16 +13,10 @@ export interface ServerVaultSnapshot {
   updatedAt: string;
 }
 
-function snapshotPath(clientId: string) {
-  return path.join(clientVaultDir(clientId), "snapshot.json");
-}
+const SNAPSHOT_FILE = "snapshot.json";
 
-function tokensPath(clientId: string, platformId: string) {
-  return path.join(clientVaultDir(clientId), `oauth-${platformId}.json`);
-}
-
-export function loadServerVault(clientId: string): ServerVaultSnapshot {
-  const empty: ServerVaultSnapshot = {
+function emptySnapshot(): ServerVaultSnapshot {
+  return {
     reports: [],
     identityLocks: [],
     briefs: [],
@@ -33,21 +25,31 @@ export function loadServerVault(clientId: string): ServerVaultSnapshot {
     orders: [],
     updatedAt: new Date().toISOString(),
   };
-  return readJsonFile(snapshotPath(clientId), empty);
 }
 
-export function saveServerVault(clientId: string, snapshot: ServerVaultSnapshot) {
-  writeJsonFile(snapshotPath(clientId), {
+function oauthFile(platformId: string) {
+  return `oauth-${platformId}.json`;
+}
+
+export async function loadServerVault(clientId: string): Promise<ServerVaultSnapshot> {
+  return readVaultJson(clientId, SNAPSHOT_FILE, emptySnapshot());
+}
+
+export async function saveServerVault(
+  clientId: string,
+  snapshot: ServerVaultSnapshot
+): Promise<void> {
+  await writeVaultJson(clientId, SNAPSHOT_FILE, {
     ...snapshot,
     updatedAt: new Date().toISOString(),
   });
 }
 
-export function mergeVaultPush(
+export async function mergeVaultPush(
   clientId: string,
   patch: Partial<ServerVaultSnapshot>
-): ServerVaultSnapshot {
-  const current = loadServerVault(clientId);
+): Promise<ServerVaultSnapshot> {
+  const current = await loadServerVault(clientId);
   const next: ServerVaultSnapshot = {
     reports: patch.reports ?? current.reports,
     identityLocks: patch.identityLocks ?? current.identityLocks,
@@ -57,38 +59,46 @@ export function mergeVaultPush(
     orders: patch.orders ?? current.orders,
     updatedAt: new Date().toISOString(),
   };
-  saveServerVault(clientId, next);
+  await saveServerVault(clientId, next);
   return next;
 }
 
-export function upsertIdentityLock(clientId: string, lock: IdentityLockPackage) {
-  const v = loadServerVault(clientId);
+export async function upsertIdentityLock(
+  clientId: string,
+  lock: IdentityLockPackage
+): Promise<ServerVaultSnapshot> {
+  const v = await loadServerVault(clientId);
   const next = [lock, ...v.identityLocks.filter((l) => l.id !== lock.id)];
   return mergeVaultPush(clientId, { identityLocks: next.slice(0, 30) });
 }
 
-export function saveOAuthTokens(
+export async function saveOAuthTokens(
   clientId: string,
   platformId: string,
   tokens: Record<string, unknown>
-) {
-  writeJsonFile(tokensPath(clientId, platformId), {
+): Promise<void> {
+  await writeVaultJson(clientId, oauthFile(platformId), {
     ...tokens,
     savedAt: new Date().toISOString(),
   });
 }
 
-export function loadOAuthTokens(
+export async function loadOAuthTokens(
   clientId: string,
   platformId: string
-): Record<string, unknown> | null {
-  const p = tokensPath(clientId, platformId);
-  if (!fs.existsSync(p)) return null;
-  return readJsonFile(p, {});
+): Promise<Record<string, unknown> | null> {
+  const data = await readVaultJson<Record<string, unknown> | null>(
+    clientId,
+    oauthFile(platformId),
+    null
+  );
+  if (!data || typeof data !== "object") return null;
+  return data;
 }
 
-export function listSocialPublic(clientId: string): SocialConnection[] {
-  return loadServerVault(clientId).social.map((s) => ({
+export async function listSocialPublic(clientId: string): Promise<SocialConnection[]> {
+  const vault = await loadServerVault(clientId);
+  return vault.social.map((s) => ({
     ...s,
     hasToken: true,
   }));

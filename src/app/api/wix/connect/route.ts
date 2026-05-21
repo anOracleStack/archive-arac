@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+
+export const runtime = "nodejs";
 import { loadServerVault, mergeVaultPush } from "@/lib/server/serverVault";
 import { resolveWixSite } from "@/lib/wix/wixClient";
 import type { WixSiteConnection } from "@/types/connections";
@@ -8,7 +10,7 @@ export async function GET(req: NextRequest) {
   if (!clientId) {
     return NextResponse.json({ error: "clientId required" }, { status: 400 });
   }
-  const vault = loadServerVault(clientId);
+  const vault = await loadServerVault(clientId);
   return NextResponse.json({ sites: vault.wix });
 }
 
@@ -42,7 +44,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid site URL" }, { status: 400 });
   }
 
-  const vault = loadServerVault(clientId);
+  const vault = await loadServerVault(clientId);
   const entry: WixSiteConnection = {
     id: crypto.randomUUID(),
     siteUrl: resolved.siteUrl,
@@ -57,7 +59,7 @@ export async function POST(req: NextRequest) {
     ...vault.wix.filter((w) => w.siteUrl !== entry.siteUrl),
   ].slice(0, 20);
 
-  mergeVaultPush(clientId, { wix });
+  await mergeVaultPush(clientId, { wix });
 
   return NextResponse.json({ site: entry, sites: wix });
 }
@@ -68,8 +70,8 @@ export async function DELETE(req: NextRequest) {
   if (!clientId || !siteId) {
     return NextResponse.json({ error: "clientId and siteId required" }, { status: 400 });
   }
-  const vault = loadServerVault(clientId);
-  mergeVaultPush(clientId, {
+  const vault = await loadServerVault(clientId);
+  await mergeVaultPush(clientId, {
     wix: vault.wix.filter((w) => w.id !== siteId),
   });
   return NextResponse.json({ ok: true });

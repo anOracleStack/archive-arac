@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     const clientId = session.metadata?.clientId;
 
     if (lockId && clientId) {
-      const vault = loadServerVault(clientId);
+      const vault = await loadServerVault(clientId);
       const lock = vault.identityLocks.find((l) => l.id === lockId);
       if (lock) {
         const locks = vault.identityLocks.map((l) =>
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
             ? { ...o, status: "paid" as const, updatedAt: new Date().toISOString() }
             : o
         );
-        mergeVaultPush(clientId, { identityLocks: locks, orders });
+        await mergeVaultPush(clientId, { identityLocks: locks, orders });
 
         const order = orders.find((o) => o.lockId === lockId);
         if (order) {

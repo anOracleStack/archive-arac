@@ -14,9 +14,9 @@ export async function submitRegistrarOrder(
   const apiKey = process.env.REGISTRAR_API_KEY;
   const provider = process.env.REGISTRAR_PROVIDER ?? "manual";
 
-  const vault = loadServerVault(order.clientId);
-  const markRegistering = (notes: string) => {
-    mergeVaultPush(order.clientId, {
+  const markRegistering = async (notes: string) => {
+    const vault = await loadServerVault(order.clientId);
+    await mergeVaultPush(order.clientId, {
       orders: vault.orders.map((o) =>
         o.id === order.id
           ? {
@@ -31,7 +31,7 @@ export async function submitRegistrarOrder(
   };
 
   if (!apiKey || provider === "manual") {
-    markRegistering(
+    await markRegistering(
       `Manual registrar queue: register ${order.domains.join(", ")} for ${lock.candidate.slug}. ` +
         `Configure REGISTRAR_API_KEY for Namecheap/Enom reseller automation.`
     );
@@ -42,12 +42,12 @@ export async function submitRegistrarOrder(
   }
 
   if (provider === "namecheap") {
-    markRegistering(
+    await markRegistering(
       `Namecheap reseller stub: POST domains for ${order.domains.join(", ")} — wire Namecheap API here.`
     );
     return { ok: true, message: "Namecheap reseller path acknowledged (stub)" };
   }
 
-  markRegistering("Unknown registrar provider");
+  await markRegistering("Unknown registrar provider");
   return { ok: false, message: "Unknown registrar provider" };
 }

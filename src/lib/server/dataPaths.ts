@@ -2,20 +2,19 @@ import path from "path";
 import fs from "fs";
 
 export function getVaultDataRoot(): string {
-  const root = process.env.VAULT_DATA_DIR ?? path.join(process.cwd(), "data", "vault");
-  if (!fs.existsSync(root)) {
-    fs.mkdirSync(root, { recursive: true });
-  }
-  return root;
+  return process.env.VAULT_DATA_DIR ?? path.join(process.cwd(), "data", "vault");
 }
 
 export function clientVaultDir(clientId: string): string {
   const safe = clientId.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 64);
-  const dir = path.join(getVaultDataRoot(), safe);
+  return path.join(getVaultDataRoot(), safe);
+}
+
+function ensureParentDir(filePath: string) {
+  const dir = path.dirname(filePath);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
-  return dir;
 }
 
 export function readJsonFile<T>(filePath: string, fallback: T): T {
@@ -29,5 +28,6 @@ export function readJsonFile<T>(filePath: string, fallback: T): T {
 }
 
 export function writeJsonFile(filePath: string, data: unknown) {
+  ensureParentDir(filePath);
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8");
 }

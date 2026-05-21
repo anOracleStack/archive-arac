@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+
+export const runtime = "nodejs";
 import { verifyOAuthState, appOrigin } from "@/lib/oauth/state";
 import {
   loadServerVault,
@@ -38,11 +40,11 @@ export async function GET(
   try {
     if (platform === "x") {
       const tokens = await exchangeX(code, redirectUri);
-      saveOAuthTokens(state.clientId, "x", tokens);
+      await saveOAuthTokens(state.clientId, "x", tokens);
       profile = await fetchXProfile(tokens.access_token as string);
     } else if (platform === "tiktok") {
       const tokens = await exchangeTikTok(code, redirectUri);
-      saveOAuthTokens(state.clientId, "tiktok", tokens);
+      await saveOAuthTokens(state.clientId, "tiktok", tokens);
       profile = await fetchTikTokProfile(tokens.access_token as string);
     }
   } catch (e) {
@@ -52,7 +54,7 @@ export async function GET(
     );
   }
 
-  const vault = loadServerVault(state.clientId);
+  const vault = await loadServerVault(state.clientId);
   const conn: SocialConnection = {
     id: crypto.randomUUID(),
     platformId: platform as SocialConnection["platformId"],
@@ -70,7 +72,7 @@ export async function GET(
     ...vault.social.filter((s) => s.platformId !== conn.platformId),
   ];
 
-  mergeVaultPush(state.clientId, { social });
+  await mergeVaultPush(state.clientId, { social });
 
   return NextResponse.redirect(`${origin}/studio/social?connected=${platform}`);
 }
