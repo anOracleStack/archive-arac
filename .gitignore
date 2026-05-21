@@ -23,3 +23,6 @@ yarn-error.log*
 # misc
 out/
 .vercel
+
+# server-side vault + oauth token storage (local dev)
+/data/

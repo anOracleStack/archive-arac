@@ -9,6 +9,9 @@ const homeSections = [
 ];
 
 const platformLinks = [
+  { href: "/identity", label: "Identity" },
+  { href: "/studio", label: "Studio" },
+  { href: "/analyze", label: "Analyze" },
   { href: "/compose", label: "Compose" },
   { href: "/collections", label: "Collections" },
   { href: "/vault", label: "Vault" },

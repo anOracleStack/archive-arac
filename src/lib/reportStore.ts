@@ -1,5 +1,6 @@
 import type { AnalysisResult } from "@/types/analysis";
 import { recommendStrands } from "@/lib/strandMatcher";
+import { scheduleVaultSync } from "@/lib/vaultSync";
 
 const VAULT_KEY = "archive-arac:vault";
 const MAX_ENTRIES = 24;
@@ -42,11 +43,13 @@ export function saveToVault(result: AnalysisResult, label?: string): VaultEntry 
   };
   const next = [entry, ...readVault().filter((e) => e.result.url !== result.url)];
   writeVault(next);
+  scheduleVaultSync();
   return entry;
 }
 
 export function removeFromVault(id: string) {
   writeVault(readVault().filter((e) => e.id !== id));
+  scheduleVaultSync();
 }
 
 export function getVaultEntry(id: string): VaultEntry | null {

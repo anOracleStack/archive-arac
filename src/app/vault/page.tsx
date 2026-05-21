@@ -2,50 +2,98 @@
 
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { PlatformShell } from "@/components/PlatformShell";
+import { VaultTabs, useVaultTab } from "@/components/vault/VaultTabs";
 import { listVault, removeFromVault, getVaultEntry, type VaultEntry } from "@/lib/reportStore";
+import {
+  listIdentityLocks,
+  removeIdentityLock,
+  getIdentityLock,
+} from "@/lib/identityStore";
+import { listStudioBriefs, removeStudioBrief } from "@/lib/identityStore";
 import { AnalyzerResults } from "@/components/AnalyzerResults";
+import { ClaimChecklist } from "@/components/identity/ClaimChecklist";
+import { VaultSyncBar } from "@/components/vault/VaultSyncBar";
+import { syncVaultBidirectional, applyServerSnapshotToLocal } from "@/lib/vaultSync";
 
-function VaultContent() {
+function VaultInner() {
   const searchParams = useSearchParams();
-  const router = useRouter();
+  const tab = useVaultTab();
   const viewId = searchParams.get("id");
-  const [entries, setEntries] = useState<VaultEntry[]>([]);
-  const [viewEntry, setViewEntry] = useState<VaultEntry | null>(null);
+
+  const [reports, setReports] = useState<VaultEntry[]>([]);
+  const [locks, setLocks] = useState(listIdentityLocks());
+  const [briefs, setBriefs] = useState(listStudioBriefs());
+  const [viewReport, setViewReport] = useState<VaultEntry | null>(null);
+  const [viewLock, setViewLock] = useState(getIdentityLock(viewId ?? "") ?? null);
+
+  const refresh = () => {
+    setReports(listVault());
+    setLocks(listIdentityLocks());
+    setBriefs(listStudioBriefs());
+  };
 
   useEffect(() => {
-    setEntries(listVault());
+    void (async () => {
+      const result = await syncVaultBidirectional();
+      if (result.snapshot) applyServerSnapshotToLocal(result.snapshot);
+      refresh();
+    })();
   }, []);
 
   useEffect(() => {
-    if (viewId) {
-      setViewEntry(getVaultEntry(viewId));
+    if (tab === "reports" && viewId) {
+      setViewReport(getVaultEntry(viewId));
     } else {
-      setViewEntry(null);
+      setViewReport(null);
     }
-  }, [viewId]);
+    if (tab === "identity" && viewId) {
+      setViewLock(getIdentityLock(viewId));
+    } else if (tab !== "identity") {
+      setViewLock(null);
+    }
+  }, [viewId, tab]);
 
-  const handleRemove = (id: string) => {
-    removeFromVault(id);
-    setEntries(listVault());
-    if (viewId === id) router.push("/vault");
-  };
-
-  if (viewEntry) {
+  if (viewReport) {
     return (
       <div className="relative z-10 pt-32 pb-24 px-6 max-w-6xl mx-auto">
         <Link
-          href="/vault"
+          href="/vault?tab=reports"
           className="inline-flex mb-6 text-[10px] font-bold uppercase tracking-widest text-[#E67E22] hover:underline"
         >
           ← Back to vault
         </Link>
-        <h1 className="text-3xl font-bold mb-2">{viewEntry.label}</h1>
+        <h1 className="text-3xl font-bold mb-2">{viewReport.label}</h1>
         <p className="text-sm text-[#B8B5AE] mb-8">
-          Saved {new Date(viewEntry.savedAt).toLocaleString()}
+          Saved {new Date(viewReport.savedAt).toLocaleString()}
         </p>
-        <AnalyzerResults result={viewEntry.result} />
+        <AnalyzerResults result={viewReport.result} />
+      </div>
+    );
+  }
+
+  if (viewLock) {
+    return (
+      <div className="relative z-10 pt-32 pb-24 px-6 max-w-3xl mx-auto">
+        <Link
+          href="/vault?tab=identity"
+          className="inline-flex mb-6 text-[10px] font-bold uppercase tracking-widest text-[#E67E22] hover:underline"
+        >
+          ← Back to vault
+        </Link>
+        <h1 className="text-3xl font-bold mb-2">{viewLock.candidate.label}</h1>
+        <p className="text-sm text-[#B8B5AE] mb-2">
+          {viewLock.status} · {new Date(viewLock.savedAt).toLocaleString()}
+        </p>
+        <p className="text-sm font-mono text-[#5A5653] mb-6">{viewLock.candidate.slug}</p>
+        <Link
+          href={`/studio/lock?id=${encodeURIComponent(viewLock.id)}`}
+          className="inline-flex mb-8 px-5 py-2.5 rounded-xl bg-[#E67E22] text-white text-[10px] font-bold uppercase tracking-widest"
+        >
+          Open checkout →
+        </Link>
+        <ClaimChecklist candidate={viewLock.candidate} />
       </div>
     );
   }
@@ -56,63 +104,167 @@ function VaultContent() {
         Silk Vault
       </div>
       <h1 className="text-5xl font-bold tracking-tight mb-4">
-        Your <span className="text-[#E67E22]">audit vault</span>
+        Your <span className="text-[#E67E22]">vault</span>
       </h1>
-      <p className="text-[#5A5653] mb-10 max-w-xl">
-        Reports saved in this browser. Run an analysis, then hit &quot;Save to vault&quot; — or
-        open Mission Control for what&apos;s shipping next.
+      <p className="text-[#5A5653] mb-6 max-w-xl">
+        Analyzer reports, identity locks, and studio briefs — synced to this browser and the
+        server vault when you sync.
       </p>
 
-      {entries.length === 0 ? (
-        <div className="p-10 rounded-2xl border border-dashed border-[#D1CEC7] text-center">
-          <p className="text-[#5A5653] mb-4">No reports yet.</p>
-          <Link
-            href="/#analyzer"
-            className="inline-flex px-6 py-3 rounded-xl bg-[#2C2A29] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#E67E22] transition-colors"
-          >
-            Analyze a URL →
-          </Link>
-        </div>
-      ) : (
-        <ul className="space-y-4">
-          {entries.map((e) => (
-            <li
-              key={e.id}
-              className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl border border-[#E8E5DF] bg-white"
-            >
-              <div>
-                <p className="font-bold">{e.label}</p>
-                <p className="text-sm text-[#E67E22]">{e.result.url}</p>
-                <p className="text-xs text-[#B8B5AE] mt-1">
-                  Score {e.result.overview.score} · {new Date(e.savedAt).toLocaleString()} ·{" "}
-                  {e.strandIds.length} strand hints
-                </p>
-              </div>
-              <div className="flex gap-2">
+      <VaultSyncBar onSynced={refresh} />
+
+      <VaultTabs>
+        {tab === "reports" && (
+          <>
+            {reports.length === 0 ? (
+              <div className="p-10 rounded-2xl border border-dashed border-[#D1CEC7] text-center">
+                <p className="text-[#5A5653] mb-4">No reports yet.</p>
                 <Link
-                  href={`/vault?id=${encodeURIComponent(e.id)}`}
-                  className="px-4 py-2 rounded-xl bg-[#2C2A29] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#E67E22]"
+                  href="/analyze"
+                  className="inline-flex px-6 py-3 rounded-xl bg-[#2C2A29] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#E67E22]"
                 >
-                  View report
+                  Analyze a URL →
                 </Link>
-                <Link
-                  href="/#analyzer"
-                  className="px-4 py-2 rounded-xl border border-[#D1CEC7] text-[10px] font-bold uppercase tracking-widest hover:border-[#E67E22]"
-                >
-                  Re-analyze
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => handleRemove(e.id)}
-                  className="px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest text-red-500 hover:bg-red-50"
-                >
-                  Remove
-                </button>
               </div>
-            </li>
-          ))}
-        </ul>
-      )}
+            ) : (
+              <ul className="space-y-4">
+                {reports.map((e) => (
+                  <li
+                    key={e.id}
+                    className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl border border-[#E8E5DF] bg-white"
+                  >
+                    <div>
+                      <p className="font-bold">{e.label}</p>
+                      <p className="text-sm text-[#E67E22]">{e.result.url}</p>
+                      <p className="text-xs text-[#B8B5AE] mt-1">
+                        Score {e.result.overview.score} · {new Date(e.savedAt).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/vault?tab=reports&id=${encodeURIComponent(e.id)}`}
+                        className="px-4 py-2 rounded-xl bg-[#2C2A29] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#E67E22]"
+                      >
+                        View
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          removeFromVault(e.id);
+                          refresh();
+                        }}
+                        className="px-4 py-2 rounded-xl text-[10px] font-bold uppercase text-red-500 hover:bg-red-50"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+
+        {tab === "identity" && (
+          <>
+            {locks.length === 0 ? (
+              <div className="p-10 rounded-2xl border border-dashed border-[#D1CEC7] text-center">
+                <p className="text-[#5A5653] mb-4">No identity locks yet.</p>
+                <Link
+                  href="/identity"
+                  className="inline-flex px-6 py-3 rounded-xl bg-[#E67E22] text-white text-[10px] font-bold uppercase tracking-widest"
+                >
+                  Identity Lock →
+                </Link>
+              </div>
+            ) : (
+              <ul className="space-y-4">
+                {locks.map((l) => (
+                  <li
+                    key={l.id}
+                    className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl border border-[#E8E5DF] bg-white"
+                  >
+                    <div>
+                      <p className="font-bold">{l.candidate.label}</p>
+                      <p className="text-sm font-mono text-[#5A5653]">{l.candidate.slug}</p>
+                      <p className="text-xs text-[#B8B5AE] mt-1">
+                        Score {l.candidate.score} · {l.status} · {l.selectedDomains.length} domains
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/vault?tab=identity&id=${encodeURIComponent(l.id)}`}
+                        className="px-4 py-2 rounded-xl bg-[#2C2A29] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#E67E22]"
+                      >
+                        View
+                      </Link>
+                      <Link
+                        href={`/studio/lock?id=${encodeURIComponent(l.id)}`}
+                        className="px-4 py-2 rounded-xl border border-[#D1CEC7] text-[10px] font-bold uppercase tracking-widest hover:border-[#E67E22]"
+                      >
+                        Checkout
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          removeIdentityLock(l.id);
+                          refresh();
+                        }}
+                        className="px-4 py-2 rounded-xl text-[10px] font-bold uppercase text-red-500 hover:bg-red-50"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+
+        {tab === "briefs" && (
+          <>
+            {briefs.length === 0 ? (
+              <div className="p-10 rounded-2xl border border-dashed border-[#D1CEC7] text-center">
+                <p className="text-[#5A5653] mb-4">No studio briefs saved.</p>
+                <Link
+                  href="/studio"
+                  className="inline-flex px-6 py-3 rounded-xl bg-[#2C2A29] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#E67E22]"
+                >
+                  Studio →
+                </Link>
+              </div>
+            ) : (
+              <ul className="space-y-4">
+                {briefs.map((b) => (
+                  <li key={b.id} className="p-5 rounded-2xl border border-[#E8E5DF] bg-white">
+                    <div className="flex flex-wrap justify-between gap-2 mb-2">
+                      <p className="font-bold">{b.title}</p>
+                      <span className="text-[10px] font-bold uppercase text-[#9C7C5B]">
+                        {b.platformId}
+                      </span>
+                    </div>
+                    <p className="text-sm text-[#5A5653] whitespace-pre-wrap line-clamp-4">{b.body}</p>
+                    {b.url && (
+                      <p className="text-xs text-[#E67E22] mt-2 truncate">{b.url}</p>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        removeStudioBrief(b.id);
+                        refresh();
+                      }}
+                      className="mt-3 text-[10px] font-bold uppercase text-red-500 hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+      </VaultTabs>
     </div>
   );
 }
@@ -120,12 +272,8 @@ function VaultContent() {
 export default function VaultPage() {
   return (
     <PlatformShell>
-      <Suspense
-        fallback={
-          <div className="relative z-10 pt-32 px-6 text-[#5A5653]">Loading vault…</div>
-        }
-      >
-        <VaultContent />
+      <Suspense fallback={<div className="relative z-10 pt-32 px-6 text-[#5A5653]">Loading vault…</div>}>
+        <VaultInner />
       </Suspense>
     </PlatformShell>
   );

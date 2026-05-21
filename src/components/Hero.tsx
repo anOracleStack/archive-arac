@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { KnowledgeGateway } from "@/components/KnowledgeGateway";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { gloss } from "@/data/knowledgeGloss";
@@ -30,6 +31,24 @@ export function Hero() {
               <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">Synapse &amp; Silk</span>
             </KnowledgeGateway>{" "}
             — where high-performance <KnowledgeGateway article={gloss.whatIsUI} surface="cream"><span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">UI</span></KnowledgeGateway> meets organic interactivity.</span>
+        </div>
+      </ScrollReveal>
+      <ScrollReveal index={3}>
+        <div className="mt-12 flex flex-wrap justify-center gap-3">
+          {[
+            { href: "/identity", label: "Identity Lock" },
+            { href: "/studio", label: "Studio" },
+            { href: "/analyze", label: "Analyzer" },
+            { href: "/vault", label: "Vault" },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="px-4 py-2 rounded-full border border-[#E8E5DF] text-[10px] font-bold uppercase tracking-widest text-[#5A5653] hover:border-[#E67E22] hover:text-[#E67E22] transition-colors"
+            >
+              {item.label}
+            </Link>
+          ))}
         </div>
       </ScrollReveal>
     </header>

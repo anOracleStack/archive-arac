@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, type FormEvent } from "react";
+import { useState, useRef, useEffect, type FormEvent } from "react";
 import type { AnalysisResult, AnalysisStatus } from "@/types/analysis";
 import type { SiteComparison } from "@/lib/compareSites";
 import { tryNormalizeCanonicalUrl } from "@/lib/normalizeUrl";
@@ -12,9 +12,14 @@ import { CompareResults } from "./analyzer/CompareResults";
 
 type AnalyzerMode = "single" | "compare";
 
-export function AnalyzerSection() {
+interface AnalyzerSectionProps {
+  initialUrl?: string;
+  showIntro?: boolean;
+}
+
+export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerSectionProps) {
   const [mode, setMode] = useState<AnalyzerMode>("single");
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState(initialUrl);
   const [urlB, setUrlB] = useState("");
   const [status, setStatus] = useState<AnalysisStatus>("idle");
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -23,6 +28,10 @@ export function AnalyzerSection() {
   const [comparison, setComparison] = useState<SiteComparison | null>(null);
   const [error, setError] = useState<string | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (initialUrl) setUrl(initialUrl);
+  }, [initialUrl]);
 
   const resetResults = () => {
     setResult(null);
@@ -96,25 +105,62 @@ export function AnalyzerSection() {
   return (
     <section id="analyzer" className="relative z-10 py-24 px-6 bg-white border-y border-[#E8E5DF]">
       <div className="max-w-4xl mx-auto">
-        <ScrollReveal>
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-[#E67E22]" />
-              Silk Intelligence
+        {showIntro && (
+          <ScrollReveal>
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-[#E67E22]" />
+                Silk Intelligence
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
+                <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-balance">
+                  <KnowledgeGateway article={gloss.silkAnalyzer} surface="cream">
+                    <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">
+                      The Silk Analyzer
+                    </span>
+                  </KnowledgeGateway>
+                </h2>
+              </div>
+              <p className="text-[#5A5653] max-w-xl mx-auto leading-relaxed text-pretty text-balance mb-6">
+                Unravel any URL — tech stack, design, UX, what works, what does not, innovation
+                highlights, and strand recommendations. Compare two competitors side-by-side.
+              </p>
+              <div className="inline-flex rounded-xl border border-[#E8E5DF] p-1 bg-[#F9F7F3]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("single");
+                    resetResults();
+                    setError(null);
+                    setStatus("idle");
+                  }}
+                  className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
+                    mode === "single" ? "bg-[#2C2A29] text-white" : "text-[#5A5653]"
+                  }`}
+                >
+                  Analyze
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("compare");
+                    resetResults();
+                    setError(null);
+                    setStatus("idle");
+                  }}
+                  className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
+                    mode === "compare" ? "bg-[#2C2A29] text-white" : "text-[#5A5653]"
+                  }`}
+                >
+                  Compare
+                </button>
+              </div>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-balance">
-                <KnowledgeGateway article={gloss.silkAnalyzer} surface="cream">
-                  <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">
-                    The Silk Analyzer
-                  </span>
-                </KnowledgeGateway>
-              </h2>
-            </div>
-            <p className="text-[#5A5653] max-w-xl mx-auto leading-relaxed text-pretty text-balance mb-6">
-              Unravel any URL — compare competitors, save to your vault, share reports, & get strand
-              recommendations.
-            </p>
+          </ScrollReveal>
+        )}
+
+        {!showIntro && (
+          <div className="flex justify-center mb-8">
             <div className="inline-flex rounded-xl border border-[#E8E5DF] p-1 bg-[#F9F7F3]">
               <button
                 type="button"
@@ -146,7 +192,7 @@ export function AnalyzerSection() {
               </button>
             </div>
           </div>
-        </ScrollReveal>
+        )}
 
         <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-8 space-y-4">
           <UrlField
