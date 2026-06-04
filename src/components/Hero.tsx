@@ -26,14 +26,14 @@ export function Hero() {
     <header className="relative pt-40 pb-20 px-6 max-w-5xl mx-auto text-center z-10">
       <ScrollReveal>
         <p className="inline-block mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10 backdrop-blur-sm shadow-sm">
-          Website intelligence
+          Digital real estate, end to end
         </p>
       </ScrollReveal>
       <ScrollReveal index={1}>
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-[0.95] tracking-tighter text-balance">
-          Paste a URL.{" "}
+          From foundation to{" "}
           <span className="text-[#E67E22] relative inline-block">
-            See how the site is built.
+            deployment.
             <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 8" fill="none" aria-hidden>
               <path d="M0 4 Q50 0 100 4 Q150 8 200 4" stroke="#E67E22" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.4" />
             </svg>
@@ -44,8 +44,8 @@ export function Hero() {
         <BalancedText
           className="text-lg md:text-xl text-[#5A5653] font-light max-w-2xl mx-auto"
           lines={[
-            "Tech stack, layout patterns, UX signals, and innovation highlights —",
-            "from any public URL, in one pass.",
+            "Understand and optimize any site — then build your presence:",
+            "branding, domains, handles, architecture, and a site that fits your identity.",
           ]}
         />
       </ScrollReveal>
@@ -76,7 +76,7 @@ export function Hero() {
           </button>
         </form>
         <p className="mt-4 text-[11px] text-[#B8B5AE]">
-          Compare two sites, save reports, and browse curated examples below.
+          Paste a URL to see how it&apos;s built — one quick way to start understanding site architecture.
         </p>
       </ScrollReveal>
       <ScrollReveal index={4}>
@@ -85,7 +85,7 @@ export function Hero() {
             href="#index"
             className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#5A5653] hover:text-[#E67E22] transition-colors"
           >
-            Browse example sites
+            Explore the platform
             <span aria-hidden>↓</span>
           </a>
         </div>

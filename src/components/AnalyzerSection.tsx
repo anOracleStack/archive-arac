@@ -106,7 +106,7 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerS
           <ScrollReveal>
             <div className="text-center mb-12">
               <p className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10 shadow-sm">
-                Full report
+                Understand &amp; optimize
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
                 <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-balance">
@@ -120,8 +120,8 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerS
               <BalancedText
                 className="text-[#5A5653] mb-6"
                 lines={[
-                  "Tech stack, design patterns, UX signals, innovation notes,",
-                  "and strand picks — or compare two URLs side by side.",
+                  "Features, structure, UX signals, and ideas to make sites more innovative —",
+                  "from one URL or a side-by-side compare.",
                 ]}
               />
               <ModeToggle mode={mode} onChange={(m) => { setMode(m); single.reset(); resetCompare(); }} />
