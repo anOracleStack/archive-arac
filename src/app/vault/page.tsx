@@ -15,6 +15,7 @@ import { listStudioBriefs, removeStudioBrief } from "@/lib/identityStore";
 import { AnalyzerResults } from "@/components/AnalyzerResults";
 import { ClaimChecklist } from "@/components/identity/ClaimChecklist";
 import { BalancedText } from "@/components/BalancedText";
+import { FeatureExplainer } from "@/components/FeatureExplainer";
 import { VaultSyncBar } from "@/components/vault/VaultSyncBar";
 import { syncVaultBidirectional, applyServerSnapshotToLocal, pullServerVault } from "@/lib/vaultSync";
 import type { RegistrarOrder } from "@/types/connections";
@@ -123,7 +124,7 @@ function VaultInner() {
   return (
     <div className="relative z-10 pt-32 pb-24 px-6 max-w-4xl mx-auto text-center">
       <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10">
-        Silk Vault
+        Vault
       </div>
       <h1 className="text-5xl font-bold tracking-tight mb-4">
         Your <span className="text-[#E67E22]">vault</span>
@@ -134,6 +135,15 @@ function VaultInner() {
           "Analyzer reports, identity locks,",
           "& studio briefs — synced to this browser",
           "& the server vault when you sync.",
+        ]}
+      />
+
+      <FeatureExplainer
+        className="mb-6 text-left"
+        whatThisIs="Your local-first workspace keyed by anonymous client ID, with optional server sync—analyzer reports, identity locks, studio briefs, registrar orders, connected social/Wix metadata."
+        youCan={[
+          "Review, delete, sync",
+          "Open deep links (?id=)",
         ]}
       />
 
@@ -156,7 +166,7 @@ function VaultInner() {
                   href="/analyze"
                   className="inline-flex px-6 py-3 rounded-xl bg-[#2C2A29] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#E67E22]"
                 >
-                  Analyze a URL →
+                  Open Silk Analyzer →
                 </Link>
               </div>
             ) : (

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { BalancedText } from "@/components/BalancedText";
+import { FeatureExplainer } from "@/components/FeatureExplainer";
 import { PlatformShell } from "@/components/PlatformShell";
 import {
   listCollections,
@@ -99,7 +100,7 @@ export default function CollectionsPage() {
     <PlatformShell>
       <div className="relative z-10 pt-32 pb-24 px-6 max-w-6xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10">
-          Phase 3 — Collections
+          Collections
         </div>
         <h1 className="text-5xl font-bold tracking-tight mb-4">
           URL <span className="text-[#E67E22]">collections</span>
@@ -111,6 +112,16 @@ export default function CollectionsPage() {
             "up to eight URLs, & export agency-ready",
             "benchmark sheets — hall-of-fame boards",
             "without leaving the weave.",
+          ]}
+        />
+
+        <FeatureExplainer
+          className="mb-10 text-left"
+          whatThisIs="Named URL lists for batch analysis—benchmark sets, competitor boards, audit queues."
+          youCan={[
+            "Create collections",
+            "Add or remove URLs",
+            "Run batch analyze against the set",
           ]}
         />
 

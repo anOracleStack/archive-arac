@@ -335,7 +335,7 @@ export const gloss = {
     headline: "Gen-AI (Generative AI)",
     say: "jen A-I",
     beginner: {
-      what: "Technology that can create text, images, or code from prompts. Here it means interfaces that reshape around what you intend — the chart labels this lane \"AI Intent\" (same idea as Intent-Driven).",
+      what: "Technology that can create text, images, or code from prompts. Here it means interfaces that reshape around what you intend — Weave Motion labels this lane \"AI Intent\" (same idea as Intent-Driven).",
       why: "Gen-AI shifts the UI paradigm from hunting through menus to stating what you want.",
       action: "Filter by Gen-AI in the Index for terminal-first navigation, unfurling content, & prompt-led shells.",
     },
@@ -376,7 +376,7 @@ export const gloss = {
     beginner: {
       what: "Interfaces that figure out what you want to do -- not by making you click through menus, but by guessing or asking. Like typing in a command bar & the page rearranges to show what you need.",
       why: "As AI grows, users expect apps to anticipate their needs instead of forcing them to navigate.",
-      action: "Look at the AI Intent-Driven chart line in The Growth of the Weave -- it's the fastest-rising trend for a reason.",
+      action: "Watch the brown thread in Weave Motion on the home page — it introduces the AI Intent-Driven beat for a reason.",
     },
     moderate: {
       what: "Intent-driven UIs use natural language processing, command palettes (CMD+K patterns), & predictive interfaces that surface actions before the user asks.",

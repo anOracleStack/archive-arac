@@ -97,7 +97,7 @@ export const buildPlatforms: BuildPlatform[] = [
     tagline: "Paste a link — full Silk breakdown",
     forAudience: "Already live anywhere (Wix, custom, etc.)",
     connectionStatus: "available",
-    connectLabel: "Run Analyzer",
+    connectLabel: "Run Silk Analyzer",
     features: ["Tech stack", "UX & a11y", "Innovation vs gaps"],
   },
 ];

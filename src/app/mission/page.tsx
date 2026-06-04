@@ -1,4 +1,5 @@
 import { BalancedText } from "@/components/BalancedText";
+import { FeatureExplainer } from "@/components/FeatureExplainer";
 import { PlatformShell } from "@/components/PlatformShell";
 import { WeaveJourney } from "@/components/mission/WeaveJourney";
 import { ScrollReveal } from "@/components/ScrollReveal";
@@ -31,6 +32,14 @@ export default function MissionPage() {
               "Four clear moves — & one vault",
               "that holds everything you save.",
             ]}
+          />
+        </ScrollReveal>
+
+        <ScrollReveal index={3}>
+          <FeatureExplainer
+            className="mb-12"
+            whatThisIs="A plain-language map of the product—four moves (Unravel → Claim → Spin → Vault) with links into real tools."
+            youCan="Understand the flow end-to-end before committing to Identity Lock or Studio."
           />
         </ScrollReveal>
 

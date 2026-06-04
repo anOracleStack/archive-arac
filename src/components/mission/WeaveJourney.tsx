@@ -68,15 +68,15 @@ const steps: JourneyStep[] = [
       "Built for teams who prototype fast, not drag-and-drop hosts",
     ],
     status: "ready",
-    primary: { href: "/compose", label: "Compose strands" },
-    secondary: { href: "/collections", label: "Batch collections" },
+    primary: { href: "/compose", label: "Strand Composer" },
+    secondary: { href: "/collections", label: "Collections" },
   },
 ];
 
 const onlyHere = [
   "Strand-native — we teach motion & layout patterns, not generic templates",
   "Every bold term opens a plain-language explainer — no jargon wall",
-  "Analyzer, identity, studio, & weave tools share one vault — not four silos",
+  "Silk Analyzer, Identity Lock, Studio, & weave tools share one Vault — not four silos",
 ];
 
 function StatusPill({ status }: { status: StepStatus }) {
@@ -215,7 +215,7 @@ export function WeaveJourney({ appUrl }: { appUrl: string }) {
           />
           <ul className="grid sm:grid-cols-2 gap-3 mb-8 text-sm text-[#C4A882]/90 relative">
             <li className="flex gap-2">
-              <span className="text-[#E67E22]">→</span> Reports from the Analyzer
+              <span className="text-[#E67E22]">→</span> Reports from Silk Analyzer
             </li>
             <li className="flex gap-2">
               <span className="text-[#E67E22]">→</span> Identity packages you locked

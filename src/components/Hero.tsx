@@ -57,7 +57,7 @@ export function Hero() {
           {[
             { href: "/identity", label: "Identity Lock" },
             { href: "/studio", label: "Studio" },
-            { href: "/analyze", label: "Analyzer" },
+            { href: "/analyze", label: "Silk Analyzer" },
             { href: "/vault", label: "Vault" },
           ].map((item) => (
             <Link

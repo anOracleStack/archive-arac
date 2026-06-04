@@ -6,6 +6,7 @@ import Link from "next/link";
 import { PlatformShell } from "@/components/PlatformShell";
 import { BalancedText } from "@/components/BalancedText";
 import { AnalyzerSection } from "@/components/AnalyzerSection";
+import { FeatureExplainer } from "@/components/FeatureExplainer";
 
 function AnalyzeContent() {
   const searchParams = useSearchParams();
@@ -33,6 +34,15 @@ function AnalyzeContent() {
               "what is innovative, what is not working,",
               "& strand recommendations.",
               "Compare two sites side-by-side.",
+            ]}
+          />
+          <FeatureExplainer
+            className="mt-8 text-left"
+            whatThisIs="Paste any public URL; get tech stack, design/interaction signals, UX & accessibility notes, performance hints, innovation score, and strand recommendations. Compare two sites side-by-side."
+            youCan={[
+              "Save reports to Vault",
+              "Share links",
+              "Export Markdown",
             ]}
           />
         </div>

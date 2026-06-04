@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { strands } from "@/data/strands";
 import { BalancedText } from "@/components/BalancedText";
+import { FeatureExplainer } from "@/components/FeatureExplainer";
 import { PlatformShell } from "@/components/PlatformShell";
 import { buildComposeExport } from "@/lib/composeExport";
 import { buildFullComposePackage } from "@/lib/composeScaffolds";
@@ -56,6 +57,15 @@ export default function ComposePage() {
             "you can drop into a Next.js repo — the first step",
             "toward a strand-native site builder, not a generic",
             "drag-and-drop host.",
+          ]}
+        />
+
+        <FeatureExplainer
+          className="mb-10 text-left"
+          whatThisIs="Pick up to five strands from the index and export a launch manifest or full scaffold package for your repo."
+          youCan={[
+            "Copy export text",
+            "Tune project name and export mode",
           ]}
         />
 

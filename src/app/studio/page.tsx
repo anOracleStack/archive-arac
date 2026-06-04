@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { BalancedText } from "@/components/BalancedText";
+import { FeatureExplainer } from "@/components/FeatureExplainer";
 import { PlatformShell } from "@/components/PlatformShell";
 import { buildPlatforms, hostingTiers, socialConnectors } from "@/data/buildPlatforms";
 import { saveStudioBrief } from "@/lib/identityStore";
@@ -31,6 +32,15 @@ export default function StudioPage() {
             "with Identity Lock — connect X & TikTok",
             "for read-only monitoring, or link Wix sites",
             "for deeper studio workflows.",
+          ]}
+        />
+
+        <FeatureExplainer
+          className="mb-10 text-left"
+          whatThisIs="Build and connect—hosting tiers, Cursor/Wix/Lovable paths, social monitoring (X/TikTok OAuth, read-only), Wix site linking."
+          youCan={[
+            "Save studio briefs to Vault",
+            "Deep-link to Social, Wix, or Identity Lock subflows",
           ]}
         />
 

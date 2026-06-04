@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { BalancedText } from "@/components/BalancedText";
+import { FeatureExplainer } from "@/components/FeatureExplainer";
 import { PlatformShell } from "@/components/PlatformShell";
 import { IdentityResults } from "@/components/identity/IdentityResults";
 import { IdentityTopPick } from "@/components/identity/IdentityTopPick";
@@ -104,6 +105,15 @@ export default function IdentityPage() {
             ".com, .io, .ai, & more — with RDAP checks,",
             "live GitHub verification, & a claim playbook.",
             "Approve a package, pick hosting, & save to Vault.",
+          ]}
+        />
+
+        <FeatureExplainer
+          className="mb-8 text-left"
+          whatThisIs="Brand-name discovery with live domain (RDAP) and social-handle checks. Rank candidates, approve one, export a lock package, optionally checkout via Stripe."
+          youCan={[
+            "Save locks to Vault",
+            "Bundle with Studio hosting",
           ]}
         />
 
