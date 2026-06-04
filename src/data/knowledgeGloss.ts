@@ -38,21 +38,21 @@ export const gloss = {
 
   weaveGrowth: {
     headline: "The Growth of the Weave",
-    say: "concept chart — not live market data",
+    say: "Weave Motion — illustrative, not live data",
     beginner: {
-      what: "A simple line chart that illustrates how three trends are climbing over time. The numbers are illustrative, not a financial or industry report.",
+      what: "An animated silk-weave that introduces three interface trends — AI intent, spatial depth, and physics micro-UX. It is illustrative, not a live analytics feed.",
       why: "It gives a shared picture before we dive into jargon like \"WebGL\" or \"intent-driven UI.\"",
-      action: "Hover the chart in your mind: orange = AI steering interfaces, green = 3D/spatial layers, dashed = small physics-based details that make apps feel alive.",
+      action: "Watch the threads: brown = AI steering interfaces, green = 3D/spatial layers, dashed = small physics-based details that make apps feel alive.",
     },
     moderate: {
-      what: "Synthetic trend curves for AI-guided UX, WebGL-backed spatial UI, & physics micro-UX (springs, inertia, scroll-linked motion).",
-      why: "We're arguing a thesis: flat CRUD UIs are losing mindshare to richer surfaces; the chart makes that legible in one glance.",
-      action: "Compare these curves to your product roadmap — where would you plot your own release cadence?",
+      what: "Weave Motion — a narrative animation for AI-guided UX, WebGL-backed spatial UI, & physics micro-UX (springs, inertia, scroll-linked motion). No percentage claims.",
+      why: "We're arguing a thesis: flat CRUD UIs are losing mindshare to richer surfaces; the motion makes that legible in one glance without fake metrics.",
+      action: "Compare these beats to your product roadmap — which thread would you weave first?",
     },
     advanced: {
       what: "A narrative visualization — not sourced telemetry. Treat it as a mood board for capability maturity, not a dataset to cite externally.",
       why: "Positioning requires a story arc; this section anchors the archive's editorial stance without pretending to be a research firm.",
-      action: "If you need defensible stats, replace this block with your own Chart.js feed from product analytics or third-party benchmarks.",
+      action: "If you need defensible stats, wire a separate analytics block from product telemetry or third-party benchmarks — not this marketing loop.",
     },
   } satisfies GatewayArticle,
 

@@ -46,20 +46,155 @@ body {
   text-align: center;
 }
 
-.chart-container {
+.weave-stage-shell {
   position: relative;
   width: 100%;
   max-width: 900px;
   margin-left: auto;
   margin-right: auto;
-  height: 50vh;
-  max-height: 450px;
 }
 
-@media (max-width: 768px) {
-  .chart-container {
-    height: 40vh;
-    max-height: 350px;
+.weave-label-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weave-descriptor {
+    opacity: 1 !important;
+    color: #2C2A29;
+  }
+
+  .weave-descriptor-copy {
+    display: inline !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .weave-grid {
+    animation: weave-grid-in 18s linear infinite;
+  }
+
+  .weave-thread-1 {
+    animation: weave-draw-thread-1 18s linear infinite;
+  }
+
+  .weave-thread-2 {
+    animation: weave-draw-thread-2 18s linear infinite;
+  }
+
+  .weave-thread-3 {
+    animation: weave-draw-thread-3 18s linear infinite;
+  }
+
+  .weave-label-1 {
+    animation: weave-label-1 18s linear infinite;
+  }
+
+  .weave-label-2 {
+    animation: weave-label-2 18s linear infinite;
+  }
+
+  .weave-label-3 {
+    animation: weave-label-3 18s linear infinite;
+  }
+
+  .weave-knot-pulse {
+    animation: weave-knot-pulse 18s linear infinite;
+  }
+
+  .weave-descriptor-1 {
+    animation: weave-descriptor-1 18s linear infinite;
+  }
+
+  .weave-descriptor-2 {
+    animation: weave-descriptor-2 18s linear infinite;
+  }
+
+  .weave-descriptor-3 {
+    animation: weave-descriptor-3 18s linear infinite;
+  }
+
+  @keyframes weave-grid-in {
+    0%, 5.5% { opacity: 0; }
+    19.4% { opacity: 1; }
+    97.2% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes weave-draw-thread-1 {
+    0%, 19.4% { stroke-dashoffset: 1; opacity: 0.3; }
+    19.5% { stroke-dashoffset: 1; opacity: 1; }
+    36.1% { stroke-dashoffset: 0; opacity: 1; }
+    97.2% { stroke-dashoffset: 0; opacity: 1; }
+    99% { stroke-dashoffset: 0; opacity: 0.4; }
+    100% { stroke-dashoffset: 1; opacity: 0.3; }
+  }
+
+  @keyframes weave-draw-thread-2 {
+    0%, 41.6% { stroke-dashoffset: 1; opacity: 0; }
+    41.7% { stroke-dashoffset: 1; opacity: 1; }
+    58.3% { stroke-dashoffset: 0; opacity: 1; }
+    97.2% { stroke-dashoffset: 0; opacity: 1; }
+    99% { stroke-dashoffset: 0; opacity: 0.4; }
+    100% { stroke-dashoffset: 1; opacity: 0; }
+  }
+
+  @keyframes weave-draw-thread-3 {
+    0%, 63.8% { stroke-dashoffset: 1; opacity: 0; }
+    63.9% { stroke-dashoffset: 1; opacity: 1; }
+    80.5% { stroke-dashoffset: 0; opacity: 1; }
+    97.2% { stroke-dashoffset: 0; opacity: 1; }
+    99% { stroke-dashoffset: 0; opacity: 0.4; }
+    100% { stroke-dashoffset: 1; opacity: 0; }
+  }
+
+  @keyframes weave-label-1 {
+    0%, 36% { opacity: 0; }
+    41.6% { opacity: 1; }
+    97.2% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes weave-label-2 {
+    0%, 58.2% { opacity: 0; }
+    63.8% { opacity: 1; }
+    97.2% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes weave-label-3 {
+    0%, 80.4% { opacity: 0; }
+    86% { opacity: 1; }
+    97.2% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes weave-knot-pulse {
+    0%, 86% { opacity: 0; }
+    90% { opacity: 1; }
+    97.2% { opacity: 0.5; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes weave-descriptor-1 {
+    0%, 36% { opacity: 0.35; }
+    41.6%, 86% { opacity: 1; }
+    97.2%, 100% { opacity: 0.35; }
+  }
+
+  @keyframes weave-descriptor-2 {
+    0%, 58.2% { opacity: 0.35; }
+    63.8%, 86% { opacity: 1; }
+    97.2%, 100% { opacity: 0.35; }
+  }
+
+  @keyframes weave-descriptor-3 {
+    0%, 80.4% { opacity: 0.35; }
+    86%, 97.2% { opacity: 1; }
+    100% { opacity: 0.35; }
   }
 }
 
