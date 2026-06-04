@@ -6,6 +6,8 @@ import type { StrandItem } from "@/types";
 import { strands } from "@/data/strands";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
+import { ProductPillars } from "@/components/ProductPillars";
+import { HowItWorks } from "@/components/HowItWorks";
 import { LandscapeSection } from "@/components/LandscapeSection";
 import { DatabaseGrid } from "@/components/DatabaseGrid";
 import { MethodologySection } from "@/components/MethodologySection";
@@ -53,6 +55,8 @@ function HomePage() {
         <SilkTrail />
         <Navbar />
         <Hero />
+        <ProductPillars />
+        <HowItWorks />
         <LandscapeSection />
         <DatabaseGrid onSelect={handleSelect} />
         <AnalyzerSection initialUrl={urlPrefill} />

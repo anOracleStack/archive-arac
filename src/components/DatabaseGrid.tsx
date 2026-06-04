@@ -136,16 +136,17 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
           <div className="mb-16 flex flex-col items-center gap-8 md:flex-row md:items-end md:justify-between">
             <div className="max-w-xl text-center mx-auto">
               <div className="mb-4 flex items-start justify-center gap-3">
-                <h2 className="flex flex-1 flex-wrap items-center justify-center gap-3 text-balance text-4xl font-bold tracking-tight">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-1 shrink-0">
+                <h2 className="flex flex-1 flex-wrap items-center justify-center gap-3 text-balance text-4xl font-bold tracking-tight text-[#2C2A29]">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-1 shrink-0" aria-hidden>
                     <path d="M12 2a10 10 0 0 1 7.07 17.07L12 22l-7.07-2.93A10 10 0 0 1 12 2z" />
                     <path d="M12 6v6l4 2" />
                   </svg>
-                  <KnowledgeGateway article={gloss.indexAraneae} surface="cream">
-                    <span className="cursor-pointer border-b-2 border-transparent font-bold text-[#9C7C5B] transition-colors duration-200 hover:border-[#E67E22] hover:text-[#E67E22]">Index Araneae</span>
-                  </KnowledgeGateway>
+                  Site library
                 </h2>
               </div>
+              <p className="text-sm text-[#6B543C] mb-2">
+                Example sites to study — filter by the silk type behind each experience.
+              </p>
               <p className="leading-relaxed copy-balanced text-[#5A5653]">
                 <span className="copy-balanced-line">
                   <KnowledgeGateway article={gloss.curatedStrands} surface="cream">
@@ -166,7 +167,7 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
                 </span>
               </p>
             </div>
-            <div className="flex flex-col items-center md:items-end gap-4 shrink-0">
+            <div className="flex flex-col items-center md:items-end gap-4 shrink-0 w-full md:max-w-xs">
               <div
                 className="flex items-center gap-2 bg-[#F9F7F3]/95 backdrop-blur-md rounded-full px-3 py-2 border border-[#C4A882]/30"
                 role="group"
@@ -182,15 +183,14 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
                 >
                   Card grid
                 </button>
-                <button
-                  type="button"
-                  disabled
-                  title="Connection map view coming soon"
-                  className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-[#B8B5AE] cursor-not-allowed opacity-50"
-                  aria-pressed={false}
-                >
-                  Connection map
-                </button>
+              </div>
+              <div className="rounded-2xl border border-[#C4A882]/30 bg-[#F9F7F3]/90 p-4 text-left w-full">
+                <p className="text-[10px] font-black uppercase tracking-widest text-[#9C7C5B] mb-2">
+                  Connection map — coming soon
+                </p>
+                <p className="text-xs text-[#5A5653] font-light leading-relaxed">
+                  A graph view of how example sites link shared stacks, features, and silk types — so patterns stand out at a glance.
+                </p>
               </div>
               <div className="flex flex-wrap items-center justify-center gap-3">
               {FILTERS.map((f) => (

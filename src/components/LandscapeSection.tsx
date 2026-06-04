@@ -13,9 +13,12 @@ export function LandscapeSection() {
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#E67E22] mb-3">
                 Wormhole Weave
               </p>
-              <h2 className="text-4xl font-bold tracking-tight text-balance mb-4">
+              <h2 className="text-4xl font-bold tracking-tight text-balance mb-3">
                 Three threads, one loop
               </h2>
+              <p className="text-sm text-[#5A5653] font-light leading-relaxed mb-4">
+                Illustrative trends in motion and layout — not live market data.
+              </p>
             </ScrollReveal>
             <ScrollReveal index={1}>
               <p className="text-[#5A5653] mb-6 leading-relaxed copy-balanced">
