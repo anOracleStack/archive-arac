@@ -73,127 +73,165 @@ body {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .weave-grid {
-    animation: weave-grid-in 18s linear infinite;
-  }
-
   .weave-thread-1 {
-    animation: weave-draw-thread-1 18s linear infinite;
+    animation: weave-draw-thread-1 22s ease-in-out infinite;
   }
 
   .weave-thread-2 {
-    animation: weave-draw-thread-2 18s linear infinite;
+    animation: weave-draw-thread-2 22s ease-in-out infinite;
   }
 
   .weave-thread-3 {
-    animation: weave-draw-thread-3 18s linear infinite;
+    animation: weave-draw-thread-3 22s ease-in-out infinite;
+  }
+
+  .weave-strand-group-1 {
+    animation: weave-strand-drift-1 22s ease-in-out infinite;
+  }
+
+  .weave-strand-group-2 {
+    animation: weave-strand-drift-2 22s ease-in-out infinite;
+  }
+
+  .weave-strand-group-3 {
+    animation: weave-strand-drift-3 22s ease-in-out infinite;
+  }
+
+  .weave-orbit-motion {
+    animation: weave-orbit-spin 22s linear infinite;
+    transform-origin: 400px 250px;
+  }
+
+  .weave-core-pulse {
+    animation: weave-core-breathe 22s ease-in-out infinite;
+  }
+
+  .weave-orbit-ring {
+    animation: weave-orbit-ring-fade 22s ease-in-out infinite;
   }
 
   .weave-label-1 {
-    animation: weave-label-1 18s linear infinite;
+    animation: weave-label-1 22s ease-in-out infinite;
   }
 
   .weave-label-2 {
-    animation: weave-label-2 18s linear infinite;
+    animation: weave-label-2 22s ease-in-out infinite;
   }
 
   .weave-label-3 {
-    animation: weave-label-3 18s linear infinite;
+    animation: weave-label-3 22s ease-in-out infinite;
   }
 
   .weave-knot-pulse {
-    animation: weave-knot-pulse 18s linear infinite;
+    animation: weave-knot-pulse 22s ease-in-out infinite;
   }
 
   .weave-descriptor-1 {
-    animation: weave-descriptor-1 18s linear infinite;
+    animation: weave-descriptor-1 22s ease-in-out infinite;
   }
 
   .weave-descriptor-2 {
-    animation: weave-descriptor-2 18s linear infinite;
+    animation: weave-descriptor-2 22s ease-in-out infinite;
   }
 
   .weave-descriptor-3 {
-    animation: weave-descriptor-3 18s linear infinite;
-  }
-
-  @keyframes weave-grid-in {
-    0%, 5.5% { opacity: 0; }
-    19.4% { opacity: 1; }
-    97.2% { opacity: 1; }
-    100% { opacity: 0; }
+    animation: weave-descriptor-3 22s ease-in-out infinite;
   }
 
   @keyframes weave-draw-thread-1 {
-    0%, 19.4% { stroke-dashoffset: 1; opacity: 0.3; }
-    19.5% { stroke-dashoffset: 1; opacity: 1; }
-    36.1% { stroke-dashoffset: 0; opacity: 1; }
-    97.2% { stroke-dashoffset: 0; opacity: 1; }
-    99% { stroke-dashoffset: 0; opacity: 0.4; }
-    100% { stroke-dashoffset: 1; opacity: 0.3; }
+    0%, 8% { stroke-dashoffset: 1; opacity: 0.25; }
+    12% { stroke-dashoffset: 1; opacity: 0.75; }
+    28% { stroke-dashoffset: 0; opacity: 0.85; }
+    72%, 92% { stroke-dashoffset: 0; opacity: 0.75; }
+    100% { stroke-dashoffset: 1; opacity: 0.25; }
   }
 
   @keyframes weave-draw-thread-2 {
-    0%, 41.6% { stroke-dashoffset: 1; opacity: 0; }
-    41.7% { stroke-dashoffset: 1; opacity: 1; }
-    58.3% { stroke-dashoffset: 0; opacity: 1; }
-    97.2% { stroke-dashoffset: 0; opacity: 1; }
-    99% { stroke-dashoffset: 0; opacity: 0.4; }
-    100% { stroke-dashoffset: 1; opacity: 0; }
+    0%, 28% { stroke-dashoffset: 1; opacity: 0.15; }
+    32% { stroke-dashoffset: 1; opacity: 0.75; }
+    48% { stroke-dashoffset: 0; opacity: 0.85; }
+    72%, 92% { stroke-dashoffset: 0; opacity: 0.75; }
+    100% { stroke-dashoffset: 1; opacity: 0.15; }
   }
 
   @keyframes weave-draw-thread-3 {
-    0%, 63.8% { stroke-dashoffset: 1; opacity: 0; }
-    63.9% { stroke-dashoffset: 1; opacity: 1; }
-    80.5% { stroke-dashoffset: 0; opacity: 1; }
-    97.2% { stroke-dashoffset: 0; opacity: 1; }
-    99% { stroke-dashoffset: 0; opacity: 0.4; }
-    100% { stroke-dashoffset: 1; opacity: 0; }
+    0%, 48% { stroke-dashoffset: 1; opacity: 0.15; }
+    52% { stroke-dashoffset: 1; opacity: 0.7; }
+    68% { stroke-dashoffset: 0; opacity: 0.8; }
+    72%, 92% { stroke-dashoffset: 0; opacity: 0.7; }
+    100% { stroke-dashoffset: 1; opacity: 0.15; }
+  }
+
+  @keyframes weave-strand-drift-1 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-4px, 3px); }
+  }
+
+  @keyframes weave-strand-drift-2 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(5px, -2px); }
+  }
+
+  @keyframes weave-strand-drift-3 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-3px, -4px); }
+  }
+
+  @keyframes weave-orbit-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes weave-core-breathe {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.06); }
+  }
+
+  @keyframes weave-orbit-ring-fade {
+    0%, 100% { opacity: 0.15; }
+    68%, 92% { opacity: 0.45; }
   }
 
   @keyframes weave-label-1 {
-    0%, 36% { opacity: 0; }
-    41.6% { opacity: 1; }
-    97.2% { opacity: 1; }
+    0%, 26% { opacity: 0; }
+    32%, 70% { opacity: 1; }
     100% { opacity: 0; }
   }
 
   @keyframes weave-label-2 {
-    0%, 58.2% { opacity: 0; }
-    63.8% { opacity: 1; }
-    97.2% { opacity: 1; }
+    0%, 46% { opacity: 0; }
+    52%, 70% { opacity: 1; }
     100% { opacity: 0; }
   }
 
   @keyframes weave-label-3 {
-    0%, 80.4% { opacity: 0; }
-    86% { opacity: 1; }
-    97.2% { opacity: 1; }
+    0%, 64% { opacity: 0; }
+    70%, 92% { opacity: 1; }
     100% { opacity: 0; }
   }
 
   @keyframes weave-knot-pulse {
-    0%, 86% { opacity: 0; }
-    90% { opacity: 1; }
-    97.2% { opacity: 0.5; }
-    100% { opacity: 0; }
+    0%, 68% { opacity: 0; transform: scale(0.9); }
+    74% { opacity: 1; transform: scale(1); }
+    92% { opacity: 0.6; transform: scale(1.05); }
+    100% { opacity: 0; transform: scale(0.9); }
   }
 
   @keyframes weave-descriptor-1 {
-    0%, 36% { opacity: 0.35; }
-    41.6%, 86% { opacity: 1; }
-    97.2%, 100% { opacity: 0.35; }
+    0%, 26% { opacity: 0.35; }
+    32%, 68% { opacity: 1; }
+    100% { opacity: 0.35; }
   }
 
   @keyframes weave-descriptor-2 {
-    0%, 58.2% { opacity: 0.35; }
-    63.8%, 86% { opacity: 1; }
-    97.2%, 100% { opacity: 0.35; }
+    0%, 46% { opacity: 0.35; }
+    52%, 68% { opacity: 1; }
+    100% { opacity: 0.35; }
   }
 
   @keyframes weave-descriptor-3 {
-    0%, 80.4% { opacity: 0.35; }
-    86%, 97.2% { opacity: 1; }
+    0%, 64% { opacity: 0.35; }
+    70%, 92% { opacity: 1; }
     100% { opacity: 0.35; }
   }
 }

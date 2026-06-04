@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useRef, useEffect, type FormEvent } from "react";
-import type { AnalysisResult, AnalysisStatus } from "@/types/analysis";
+import type { AnalysisResult } from "@/types/analysis";
 import type { SiteComparison } from "@/lib/compareSites";
 import { tryNormalizeCanonicalUrl } from "@/lib/normalizeUrl";
 import { gloss } from "@/data/knowledgeGloss";
 import { KnowledgeGateway } from "@/components/KnowledgeGateway";
 import { BalancedText } from "@/components/BalancedText";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { useAnalyzerFlow } from "@/components/AnalyzerFlowContext";
+import { AnalyzeUrlField } from "@/components/AnalyzeUrlField";
 import { AnalyzerResults } from "./AnalyzerResults";
 import { CompareResults } from "./analyzer/CompareResults";
 
@@ -19,56 +21,46 @@ interface AnalyzerSectionProps {
 }
 
 export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerSectionProps) {
+  const single = useAnalyzerFlow();
   const [mode, setMode] = useState<AnalyzerMode>("single");
-  const [url, setUrl] = useState(initialUrl);
   const [urlB, setUrlB] = useState("");
-  const [status, setStatus] = useState<AnalysisStatus>("idle");
-  const [result, setResult] = useState<AnalysisResult | null>(null);
   const [compareA, setCompareA] = useState<AnalysisResult | null>(null);
   const [compareB, setCompareB] = useState<AnalysisResult | null>(null);
   const [comparison, setComparison] = useState<SiteComparison | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [compareError, setCompareError] = useState<string | null>(null);
+  const [compareStatus, setCompareStatus] = useState<"idle" | "fetching" | "complete" | "error">("idle");
   const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (initialUrl) setUrl(initialUrl);
+    if (initialUrl) single.setUrl(initialUrl);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sync prefill only when prop changes
   }, [initialUrl]);
 
-  const resetResults = () => {
-    setResult(null);
+  const resetCompare = () => {
     setCompareA(null);
     setCompareB(null);
     setComparison(null);
+    setCompareError(null);
+    setCompareStatus("idle");
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
-    resetResults();
-    setStatus("fetching");
 
     if (mode === "single") {
-      const submitUrl = tryNormalizeCanonicalUrl(url);
-      try {
-        const res = await fetch("/api/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: submitUrl }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Analysis failed");
-        setUrl(submitUrl);
-        setResult(data);
-        setStatus("complete");
-        scrollToResults();
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong");
-        setStatus("error");
-      }
+      setCompareError(null);
+      resetCompare();
+      const data = await single.submit();
+      if (data) scrollToResults();
       return;
     }
 
-    const submitA = tryNormalizeCanonicalUrl(url);
+    single.reset();
+    setCompareError(null);
+    resetCompare();
+    setCompareStatus("fetching");
+
+    const submitA = tryNormalizeCanonicalUrl(single.url);
     const submitB = tryNormalizeCanonicalUrl(urlB);
     try {
       const res = await fetch("/api/analyze/compare", {
@@ -78,16 +70,16 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerS
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Comparison failed");
-      setUrl(submitA);
+      single.setUrl(submitA);
       setUrlB(submitB);
       setCompareA(data.a);
       setCompareB(data.b);
       setComparison(data.comparison);
-      setStatus("complete");
+      setCompareStatus("complete");
       scrollToResults();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-      setStatus("error");
+      setCompareError(err instanceof Error ? err.message : "Something went wrong");
+      setCompareStatus("error");
     }
   };
 
@@ -97,11 +89,15 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerS
     }, 100);
   };
 
-  const busy = status === "fetching" || status === "analyzing";
+  const busy =
+    mode === "single"
+      ? single.busy
+      : compareStatus === "fetching";
   const canSubmit =
     mode === "single"
-      ? url.trim().length > 0
-      : url.trim().length > 0 && urlB.trim().length > 0;
+      ? single.url.trim().length > 0
+      : single.url.trim().length > 0 && urlB.trim().length > 0;
+  const error = mode === "single" ? single.error : compareError;
 
   return (
     <section id="analyzer" className="relative z-10 py-24 px-6 bg-white border-y border-[#E8E5DF]">
@@ -109,15 +105,14 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerS
         {showIntro && (
           <ScrollReveal>
             <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-[#E67E22]" />
-                Silk Intelligence
-              </div>
+              <p className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10 shadow-sm">
+                Full report
+              </p>
               <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
                 <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-balance">
                   <KnowledgeGateway article={gloss.silkAnalyzer} surface="cream">
                     <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">
-                      The Silk Analyzer
+                      Silk Analyzer
                     </span>
                   </KnowledgeGateway>
                 </h2>
@@ -125,97 +120,47 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerS
               <BalancedText
                 className="text-[#5A5653] mb-6"
                 lines={[
-                  "Unravel any URL — tech stack, design, UX,",
-                  "what works, what does not, innovation",
-                  "highlights, & strand recommendations.",
-                  "Compare two competitors side-by-side.",
+                  "Tech stack, design patterns, UX signals, innovation notes,",
+                  "and strand picks — or compare two URLs side by side.",
                 ]}
               />
-              <div className="inline-flex rounded-xl border border-[#E8E5DF] p-1 bg-[#F9F7F3]">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode("single");
-                    resetResults();
-                    setError(null);
-                    setStatus("idle");
-                  }}
-                  className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
-                    mode === "single" ? "bg-[#2C2A29] text-white" : "text-[#5A5653]"
-                  }`}
-                >
-                  Analyze
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode("compare");
-                    resetResults();
-                    setError(null);
-                    setStatus("idle");
-                  }}
-                  className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
-                    mode === "compare" ? "bg-[#2C2A29] text-white" : "text-[#5A5653]"
-                  }`}
-                >
-                  Compare
-                </button>
-              </div>
+              <ModeToggle mode={mode} onChange={(m) => { setMode(m); single.reset(); resetCompare(); }} />
             </div>
           </ScrollReveal>
         )}
 
         {!showIntro && (
           <div className="flex justify-center mb-8">
-            <div className="inline-flex rounded-xl border border-[#E8E5DF] p-1 bg-[#F9F7F3]">
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("single");
-                  resetResults();
-                  setError(null);
-                  setStatus("idle");
-                }}
-                className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
-                  mode === "single" ? "bg-[#2C2A29] text-white" : "text-[#5A5653]"
-                }`}
-              >
-                Analyze
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("compare");
-                  resetResults();
-                  setError(null);
-                  setStatus("idle");
-                }}
-                className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
-                  mode === "compare" ? "bg-[#2C2A29] text-white" : "text-[#5A5653]"
-                }`}
-              >
-                Compare
-              </button>
-            </div>
+            <ModeToggle mode={mode} onChange={(m) => { setMode(m); single.reset(); resetCompare(); }} />
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-8 space-y-4">
-          <UrlField
-            value={url}
-            onChange={setUrl}
-            placeholder={mode === "compare" ? "your-site.com" : "stripe.com or www.example.com"}
-            disabled={busy}
-            label={mode === "compare" ? "Site A" : undefined}
-          />
-          {mode === "compare" && (
-            <UrlField
-              value={urlB}
-              onChange={setUrlB}
-              placeholder="competitor.com"
+          <div>
+            {mode === "compare" && (
+              <span className="block text-[10px] font-bold uppercase tracking-widest text-[#B8B5AE] mb-1.5 ml-1">
+                Site A
+              </span>
+            )}
+            <AnalyzeUrlField
+              value={single.url}
+              onChange={single.setUrl}
+              placeholder={mode === "compare" ? "your-site.com" : "stripe.com or www.example.com"}
               disabled={busy}
-              label="Site B"
             />
+          </div>
+          {mode === "compare" && (
+            <div>
+              <span className="block text-[10px] font-bold uppercase tracking-widest text-[#B8B5AE] mb-1.5 ml-1">
+                Site B
+              </span>
+              <AnalyzeUrlField
+                value={urlB}
+                onChange={setUrlB}
+                placeholder="competitor.com"
+                disabled={busy}
+              />
+            </div>
           )}
           <button
             type="submit"
@@ -230,7 +175,7 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerS
             )}
             {busy
               ? mode === "compare"
-                ? "Comparing weaves…"
+                ? "Comparing…"
                 : "Analyzing…"
               : mode === "compare"
                 ? "Compare sites"
@@ -238,7 +183,7 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerS
           </button>
         </form>
 
-        {(status === "fetching" || status === "analyzing") && (
+        {(busy) && (
           <div className="max-w-2xl mx-auto mb-8">
             <div className="bg-[#F9F7F3] rounded-2xl p-6 border border-[#E8E5DF]">
               <div className="flex items-center gap-4 mb-4">
@@ -268,9 +213,9 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerS
         )}
       </div>
 
-      <div ref={resultRef} className="px-6">
-        {result && <AnalyzerResults result={result} />}
-        {compareA && compareB && comparison && (
+      <div id="analyzer-results" ref={resultRef} className="px-6">
+        {single.result && mode === "single" && <AnalyzerResults result={single.result} />}
+        {compareA && compareB && comparison && mode === "compare" && (
           <CompareResults a={compareA} b={compareB} comparison={comparison} />
         )}
       </div>
@@ -278,50 +223,33 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerS
   );
 }
 
-function UrlField({
-  value,
+function ModeToggle({
+  mode,
   onChange,
-  placeholder,
-  disabled,
-  label,
 }: {
-  value: string;
-  onChange: (v: string) => void;
-  placeholder: string;
-  disabled: boolean;
-  label?: string;
+  mode: AnalyzerMode;
+  onChange: (m: AnalyzerMode) => void;
 }) {
   return (
-    <div>
-      {label && (
-        <span className="block text-[10px] font-bold uppercase tracking-widest text-[#B8B5AE] mb-1.5 ml-1">
-          {label}
-        </span>
-      )}
-      <div className="relative">
-        <svg
-          className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5A5653]"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <line x1="2" y1="12" x2="22" y2="12" />
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-        </svg>
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onBlur={() => onChange(tryNormalizeCanonicalUrl(value))}
-          placeholder={placeholder}
-          className="w-full pl-14 pr-4 py-4 rounded-2xl border border-[#D1CEC7] bg-[#F9F7F3] text-[#2C2A29] text-sm outline-none focus:border-[#E67E22] focus:ring-2 focus:ring-[#E67E22]/10 transition-all"
-          disabled={disabled}
-        />
-      </div>
+    <div className="inline-flex rounded-xl border border-[#E8E5DF] p-1 bg-[#F9F7F3]">
+      <button
+        type="button"
+        onClick={() => onChange("single")}
+        className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
+          mode === "single" ? "bg-[#2C2A29] text-white" : "text-[#5A5653]"
+        }`}
+      >
+        Analyze
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange("compare")}
+        className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
+          mode === "compare" ? "bg-[#2C2A29] text-white" : "text-[#5A5653]"
+        }`}
+      >
+        Compare
+      </button>
     </div>
   );
 }

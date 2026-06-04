@@ -1,24 +1,40 @@
-import Link from "next/link";
+"use client";
+
+import { type FormEvent } from "react";
 import { BalancedText } from "@/components/BalancedText";
-import { KnowledgeGateway } from "@/components/KnowledgeGateway";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { gloss } from "@/data/knowledgeGloss";
+import { useAnalyzerFlow } from "@/components/AnalyzerFlowContext";
+import { AnalyzeUrlField } from "@/components/AnalyzeUrlField";
 
 export function Hero() {
+  const { url, setUrl, submit, busy } = useAnalyzerFlow();
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    const data = await submit();
+    if (data) {
+      setTimeout(() => {
+        document.getElementById("analyzer")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById("analyzer-results")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 120);
+    } else if (url.trim()) {
+      document.getElementById("analyzer")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <header className="relative pt-40 pb-20 px-6 max-w-5xl mx-auto text-center z-10">
       <ScrollReveal>
-        <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10 backdrop-blur-sm shadow-sm">
-          <span className="w-2 h-2 rounded-full bg-[#E67E22] animate-pulse" />
-          Vanguard Thread v2.0
-        </div>
+        <p className="inline-block mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10 backdrop-blur-sm shadow-sm">
+          Website intelligence
+        </p>
       </ScrollReveal>
       <ScrollReveal index={1}>
-        <h1 className="text-6xl md:text-8xl font-bold mb-8 leading-[0.9] tracking-tighter">
-          Spinning the <br />
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-[0.95] tracking-tighter text-balance">
+          Paste a URL.{" "}
           <span className="text-[#E67E22] relative inline-block">
-            Next Web.
-            <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 8" fill="none">
+            See how the site is built.
+            <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 8" fill="none" aria-hidden>
               <path d="M0 4 Q50 0 100 4 Q150 8 200 4" stroke="#E67E22" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.4" />
             </svg>
           </span>
@@ -26,48 +42,52 @@ export function Hero() {
       </ScrollReveal>
       <ScrollReveal index={2}>
         <BalancedText
-          className="text-xl text-[#5A5653] font-light"
+          className="text-lg md:text-xl text-[#5A5653] font-light max-w-2xl mx-auto"
           lines={[
-            "A specialized index of digital",
-            "architectures that break the mold.",
-            <>
-              We track the threads of{" "}
-              <KnowledgeGateway article={gloss.synapseSilk} surface="cream">
-                <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">
-                  Synapse &amp; Silk
-                </span>
-              </KnowledgeGateway>
-              {" "}
-              —
-            </>,
-            <>
-              where high-performance{" "}
-              <KnowledgeGateway article={gloss.whatIsUI} surface="cream">
-                <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 border-b-2 border-transparent hover:border-[#E67E22] cursor-pointer">
-                  UI
-                </span>
-              </KnowledgeGateway>{" "}
-              meets organic interactivity.
-            </>,
+            "Tech stack, layout patterns, UX signals, and innovation highlights —",
+            "from any public URL, in one pass.",
           ]}
         />
       </ScrollReveal>
       <ScrollReveal index={3}>
-        <div className="mt-12 flex flex-wrap justify-center gap-3">
-          {[
-            { href: "/identity", label: "Identity Lock" },
-            { href: "/studio", label: "Studio" },
-            { href: "/analyze", label: "Silk Analyzer" },
-            { href: "/vault", label: "Vault" },
-          ].map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="px-4 py-2 rounded-full border border-[#E8E5DF] text-[10px] font-bold uppercase tracking-widest text-[#5A5653] hover:border-[#E67E22] hover:text-[#E67E22] transition-colors"
-            >
-              {item.label}
-            </Link>
-          ))}
+        <form
+          onSubmit={handleSubmit}
+          className="mt-10 max-w-2xl mx-auto flex flex-col sm:flex-row gap-3 items-stretch"
+        >
+          <AnalyzeUrlField
+            id="hero-analyze-url"
+            value={url}
+            onChange={setUrl}
+            disabled={busy}
+            compact
+          />
+          <button
+            type="submit"
+            disabled={!url.trim() || busy}
+            className="shrink-0 px-8 py-3 bg-[#2C2A29] text-white rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-[#E67E22] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 min-h-[48px]"
+          >
+            {busy && (
+              <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden>
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.25" />
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+              </svg>
+            )}
+            {busy ? "Analyzing…" : "Analyze"}
+          </button>
+        </form>
+        <p className="mt-4 text-[11px] text-[#B8B5AE]">
+          Compare two sites, save reports, and browse curated examples below.
+        </p>
+      </ScrollReveal>
+      <ScrollReveal index={4}>
+        <div className="mt-8">
+          <a
+            href="#index"
+            className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#5A5653] hover:text-[#E67E22] transition-colors"
+          >
+            Browse example sites
+            <span aria-hidden>↓</span>
+          </a>
         </div>
       </ScrollReveal>
     </header>

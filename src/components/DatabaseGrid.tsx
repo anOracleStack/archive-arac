@@ -28,16 +28,13 @@ interface DatabaseGridProps {
 export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
   const [activeFilter, setActiveFilter] = useState<SilkCategory | "all">("all");
   const [hoveredId, setHoveredId] = useState<number | null>(null);
-  const [webView, setWebView] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const webCanvasRef = useRef<HTMLCanvasElement>(null);
   const cardRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const animRef = useRef<number>(0);
-  const webAnimRef = useRef<number>(0);
 
   const filtered = activeFilter === "all" ? strands : strands.filter((i) => i.category === activeFilter);
-  const displayStrands = webView ? strands : filtered;
+  const displayStrands = filtered;
 
   const setCardRef = useCallback((id: number, el: HTMLDivElement | null) => {
     if (el) cardRefs.current.set(id, el);
@@ -48,7 +45,7 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
   useEffect(() => {
     const cvs = canvasRef.current;
     const section = sectionRef.current;
-    if (!cvs || !section || webView) return;
+    if (!cvs || !section) return;
     const ctx = cvs.getContext("2d");
     if (!ctx) return;
 
@@ -122,256 +119,17 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
       cancelAnimationFrame(animRef.current);
       ro.disconnect();
     };
-  }, [hoveredId, webView]);
-
-  useEffect(() => {
-    if (!webView) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setWebView(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [webView]);
-
-  // Web View — radial/orbital node canvas
-  useEffect(() => {
-    if (!webView) {
-      cancelAnimationFrame(webAnimRef.current);
-      return;
-    }
-
-    const cvs = webCanvasRef.current;
-    if (!cvs) return;
-    const ctx = cvs.getContext("2d");
-    if (!ctx) return;
-
-    const resize = () => {
-      cvs.width = window.innerWidth;
-      cvs.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const nodes = strands.map((s, i) => {
-      const angle = (2 * Math.PI * i) / strands.length - Math.PI / 2;
-      const radius = Math.min(cvs.width, cvs.height) * 0.3;
-      const cx = cvs.width / 2 + Math.cos(angle) * radius;
-      const cy = cvs.height / 2 + Math.sin(angle) * radius;
-      return {
-        id: s.id,
-        name: s.name,
-        category: s.category,
-        cx,
-        cy,
-        targetX: cx,
-        targetY: cy,
-        vx: 0,
-        vy: 0,
-        pulse: 0,
-        pulseSpeed: 0.02 + Math.random() * 0.02,
-        label: s.shortDesc,
-      };
-    });
-
-    const connections: { a: number; b: number; alpha: number }[] = [];
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const sameCat = nodes[i].category === nodes[j].category;
-        connections.push({
-          a: i,
-          b: j,
-          alpha: sameCat ? 0.35 : 0.12,
-        });
-      }
-    }
-
-    let hoveredNode: number | null = null;
-    let mouseX = cvs.width / 2;
-    let mouseY = cvs.height / 2;
-    let isMouseOnCanvas = false;
-
-    cvs.onmousemove = (e) => {
-      const rect = cvs.getBoundingClientRect();
-      mouseX = e.clientX - rect.left;
-      mouseY = e.clientY - rect.top;
-      isMouseOnCanvas = true;
-
-      hoveredNode = null;
-      for (let i = 0; i < nodes.length; i++) {
-        const n = nodes[i];
-        const dx = mouseX - n.cx;
-        const dy = mouseY - n.cy;
-        if (Math.sqrt(dx * dx + dy * dy) < 50) {
-          hoveredNode = i;
-          cvs.style.cursor = "pointer";
-          break;
-        }
-      }
-      if (hoveredNode === null) cvs.style.cursor = "default";
-    };
-
-    cvs.onmouseleave = () => {
-      isMouseOnCanvas = false;
-      hoveredNode = null;
-      cvs.style.cursor = "default";
-    };
-
-    cvs.onclick = () => {
-      if (hoveredNode !== null) {
-        const strand = strands[nodes[hoveredNode].id - 1];
-        if (strand) onSelect(strand);
-      } else {
-        setWebView(false);
-      }
-    };
-
-    let frame = 0;
-
-    const draw = () => {
-      if (!ctx || !cvs) return;
-      ctx.clearRect(0, 0, cvs.width, cvs.height);
-      frame++;
-
-      nodes.forEach((n) => {
-        n.pulse += n.pulseSpeed;
-        const driftAmp = 6;
-        const driftX = Math.sin(frame * 0.005 + n.id * 1.7) * driftAmp;
-        const driftY = Math.cos(frame * 0.004 + n.id * 2.3) * driftAmp;
-        n.cx += (n.targetX + driftX - n.cx) * 0.02;
-        n.cy += (n.targetY + driftY - n.cy) * 0.02;
-
-        if (isMouseOnCanvas && hoveredNode !== nodes.indexOf(n)) {
-          const dx = n.cx - mouseX;
-          const dy = n.cy - mouseY;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 150 && dist > 0) {
-            const force = (150 - dist) / 150 * 3;
-            n.cx += (dx / dist) * force;
-            n.cy += (dy / dist) * force;
-          }
-        }
-      });
-
-      connections.forEach((conn) => {
-        const na = nodes[conn.a];
-        const nb = nodes[conn.b];
-        const dist = Math.sqrt((na.cx - nb.cx) ** 2 + (na.cy - nb.cy) ** 2);
-        const maxDist = Math.min(cvs.width, cvs.height) * 0.65;
-        if (dist > maxDist) return;
-
-        let alpha = conn.alpha;
-        if (hoveredNode !== null) {
-          if (hoveredNode === conn.a || hoveredNode === conn.b) {
-            alpha = Math.min(alpha + 0.5, 0.7);
-          } else {
-            alpha *= 0.3;
-          }
-        }
-
-        const pulse = 0.7 + 0.3 * Math.sin(frame * 0.02 + conn.a + conn.b);
-        ctx.strokeStyle = `rgba(156, 124, 91, ${alpha * pulse})`;
-        ctx.lineWidth = 0.5 + alpha * 1.5;
-        ctx.setLineDash([3, 6]);
-        ctx.beginPath();
-        ctx.moveTo(na.cx, na.cy);
-        const midX = (na.cx + nb.cx) / 2;
-        const midY = (na.cy + nb.cy) / 2 - 10;
-        ctx.quadraticCurveTo(midX, midY, nb.cx, nb.cy);
-        ctx.stroke();
-      });
-
-      nodes.forEach((n, i) => {
-        const isHovered = hoveredNode === i;
-        const catColor = CATEGORY_COLORS[n.category];
-        const baseRadius = isHovered ? 36 : 24;
-        const pulseR = isHovered ? 0 : Math.sin(n.pulse) * 3;
-        const r = baseRadius + pulseR;
-
-        if (isHovered) {
-          const grad = ctx.createRadialGradient(n.cx, n.cy, 0, n.cx, n.cy, r + 20);
-          grad.addColorStop(0, `${catColor}99`);
-          grad.addColorStop(1, `${catColor}00`);
-          ctx.beginPath();
-          ctx.arc(n.cx, n.cy, r + 20, 0, Math.PI * 2);
-          ctx.fillStyle = grad;
-          ctx.fill();
-        }
-
-        ctx.beginPath();
-        ctx.arc(n.cx, n.cy, r, 0, Math.PI * 2);
-        ctx.fillStyle = isHovered ? catColor : `${catColor}33`;
-        ctx.fill();
-        ctx.strokeStyle = catColor;
-        ctx.lineWidth = isHovered ? 3 : 1.5;
-        ctx.stroke();
-
-        ctx.fillStyle = isHovered ? "#2C2A29" : "#5A5653";
-        ctx.font = isHovered
-          ? "bold 13px 'Outfit', sans-serif"
-          : "11px 'Outfit', sans-serif";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "top";
-
-        const textMetrics = ctx.measureText(n.name);
-        const labelW = textMetrics.width + 16;
-        const labelH = isHovered ? 20 : 16;
-        const labelX = n.cx - labelW / 2;
-        const labelY = n.cy + r + 8;
-        ctx.fillStyle = "rgba(249, 247, 243, 0.95)";
-        ctx.beginPath();
-        ctx.roundRect(labelX, labelY, labelW, labelH, 4);
-        ctx.fill();
-
-        ctx.fillStyle = isHovered ? "#2C2A29" : "#5A5653";
-        ctx.fillText(n.name, n.cx, labelY + (isHovered ? 2 : 1));
-
-        if (isHovered) {
-          ctx.font = "10px 'Outfit', sans-serif";
-          ctx.fillStyle = "#6B543C";
-          const descW = Math.min(220, ctx.measureText(n.label).width + 16);
-          const descX = n.cx - descW / 2;
-          const descY = labelY + labelH + 4;
-          ctx.fillStyle = "rgba(249, 247, 243, 0.9)";
-          ctx.beginPath();
-          ctx.roundRect(descX, descY, descW, 18, 4);
-          ctx.fill();
-          ctx.fillStyle = "#5A5653";
-          ctx.fillText(n.label, n.cx, descY + 5);
-        }
-      });
-
-      webAnimRef.current = requestAnimationFrame(draw);
-    };
-
-    draw();
-    return () => {
-      cancelAnimationFrame(webAnimRef.current);
-      window.removeEventListener("resize", resize);
-      cvs.onmousemove = null;
-      cvs.onmouseleave = null;
-      cvs.onclick = null;
-    };
-  }, [webView, onSelect]);
+  }, [hoveredId]);
 
   return (
     <section id="index" ref={sectionRef} className="relative z-10 overflow-hidden py-24 px-6">
       {/* Connection canvas — only this section; paints behind cards (z-0) */}
-      {!webView && (
-        <canvas
-          ref={canvasRef}
-          className="pointer-events-none absolute inset-0 z-0 h-full w-full"
-          style={{ opacity: 0.75 }}
-          aria-hidden
-        />
-      )}
-
-      {/* Web View full-page canvas */}
-      {webView && (
-        <canvas
-          ref={webCanvasRef}
-          className="fixed inset-0 z-20 h-full w-full pointer-events-auto"
-        />
-      )}
+      <canvas
+        ref={canvasRef}
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full"
+        style={{ opacity: 0.75 }}
+        aria-hidden
+      />
 
       <div className="relative z-10 mx-auto max-w-7xl">
         <ScrollReveal>
@@ -408,7 +166,33 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
                 </span>
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-col items-center md:items-end gap-4 shrink-0">
+              <div
+                className="flex items-center gap-2 bg-[#F9F7F3]/95 backdrop-blur-md rounded-full px-3 py-2 border border-[#C4A882]/30"
+                role="group"
+                aria-label="Index view"
+              >
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#B8B5AE] mr-1 hidden sm:inline">
+                  View
+                </span>
+                <button
+                  type="button"
+                  className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#E67E22] text-white shadow-sm"
+                  aria-pressed
+                >
+                  Card grid
+                </button>
+                <button
+                  type="button"
+                  disabled
+                  title="Connection map view coming soon"
+                  className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-[#B8B5AE] cursor-not-allowed opacity-50"
+                  aria-pressed={false}
+                >
+                  Connection map
+                </button>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-3">
               {FILTERS.map((f) => (
                 <KnowledgeGateway key={f.key} article={gloss[f.glossArticle]} surface="cream" onOpen={() => setActiveFilter(f.key)}>
                   <span className={`inline-block px-6 py-2 rounded-full border text-[11px] font-black uppercase tracking-widest transition-all ${
@@ -420,13 +204,12 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
                   </span>
                 </KnowledgeGateway>
               ))}
+              </div>
             </div>
           </div>
         </ScrollReveal>
 
-        {/* Grid view */}
-        {!webView && (
-          <StaggerGrid className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" staggerMs={80}>
+        <StaggerGrid className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" staggerMs={80}>
             {displayStrands.length > 0 ? (
               displayStrands.map((item) => (
                 <div
@@ -472,43 +255,6 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
               </div>
             )}
           </StaggerGrid>
-        )}
-
-        {/* Web View — empty state, canvas handles rendering */}
-        {webView && displayStrands.length === 0 && (
-          <div className="text-center py-40 text-[#5A5653]">
-            <BalancedText text="No strands match this silk type." className="mx-auto" />
-          </div>
-        )}
-      </div>
-
-      {/* Floating Grid/Web toggle */}
-      <div className="fixed bottom-8 right-8 z-40 flex flex-col items-center gap-2">
-        <div className="flex items-center gap-2 bg-[#F9F7F3]/95 backdrop-blur-md rounded-full px-4 py-2.5 shadow-lg border border-[#C4A882]/30">
-          <KnowledgeGateway article={gloss.gridWebView} surface="cream">
-            <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 cursor-pointer text-[10px] uppercase tracking-widest mr-2">View</span>
-          </KnowledgeGateway>
-          <button
-            onClick={() => setWebView(false)}
-            className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
-              !webView
-                ? "bg-[#E67E22] text-white shadow-sm"
-                : "text-[#5A5653] hover:text-[#E67E22]"
-            }`}
-          >
-            Grid
-          </button>
-          <button
-            onClick={() => setWebView(true)}
-            className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
-              webView
-                ? "bg-[#9C7C5B] text-white shadow-sm"
-                : "text-[#5A5653] hover:text-[#9C7C5B]"
-            }`}
-          >
-            Web
-          </button>
-        </div>
       </div>
     </section>
   );

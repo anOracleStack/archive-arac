@@ -4,20 +4,37 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
-const homeSections = [
-  { href: "/#weave", label: "Weave" },
-  { href: "/#index", label: "Index" },
-];
-
-const platformLinks = [
-  { href: "/identity", label: "Identity Lock" },
-  { href: "/studio", label: "Studio" },
-  { href: "/analyze", label: "Silk Analyzer" },
-  { href: "/compose", label: "Strand Composer" },
-  { href: "/collections", label: "Collections" },
-  { href: "/vault", label: "Vault" },
-  { href: "/mission", label: "Mission" },
-];
+const navGroups = [
+  {
+    label: "Discover",
+    links: [
+      { href: "/#weave", label: "Weave", match: (p: string) => p === "/" },
+      { href: "/#index", label: "Index", match: (p: string) => p === "/" },
+    ],
+  },
+  {
+    label: "Analyze",
+    links: [
+      { href: "/analyze", label: "Silk Analyzer" },
+      { href: "/collections", label: "Collections" },
+    ],
+  },
+  {
+    label: "Build",
+    links: [
+      { href: "/studio", label: "Studio" },
+      { href: "/compose", label: "Strand Composer" },
+    ],
+  },
+  {
+    label: "Brand",
+    links: [
+      { href: "/identity", label: "Identity Lock" },
+      { href: "/vault", label: "Vault" },
+      { href: "/mission", label: "Mission" },
+    ],
+  },
+] as const;
 
 function linkClass(isActive: boolean, variant: "home" | "platform") {
   const base =
@@ -25,7 +42,76 @@ function linkClass(isActive: boolean, variant: "home" | "platform") {
       ? "text-[#5A5653] hover:text-[#E67E22]"
       : "text-[#2C2A29] hover:text-[#E67E22]";
   const active = isActive ? " text-[#E67E22] underline underline-offset-4 decoration-[#E67E22]/60" : "";
-  return `${base} transition-colors${active}`;
+  return `${base} transition-colors whitespace-nowrap${active}`;
+}
+
+function NavDropdown({
+  label,
+  links,
+  pathname,
+}: {
+  label: string;
+  links: readonly { href: string; label: string; match?: (p: string) => boolean }[];
+  pathname: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const groupActive = links.some((l) =>
+    l.match ? l.match(pathname) : pathname === l.href || pathname.startsWith(`${l.href}/`)
+  );
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onPointer);
+    return () => document.removeEventListener("mousedown", onPointer);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className={`flex items-center gap-1.5 uppercase tracking-widest transition-colors ${
+          groupActive ? "text-[#E67E22]" : "text-[#5A5653] hover:text-[#E67E22]"
+        }`}
+        aria-expanded={open}
+      >
+        {label}
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+      {open && (
+        <div className="absolute left-0 top-full mt-2 min-w-[200px] rounded-2xl border border-[#E8E5DF] bg-[#FDFCFA] py-2 shadow-xl z-50">
+          {links.map((link) => {
+            const isActive =
+              "match" in link && link.match
+                ? link.match(pathname)
+                : pathname === link.href || pathname.startsWith(`${link.href}/`);
+            const isHash = link.href.includes("#");
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`block px-4 py-2.5 text-[11px] font-bold transition-colors ${
+                  isActive
+                    ? "text-[#E67E22] bg-[#E67E22]/5"
+                    : "text-[#2C2A29] hover:text-[#E67E22] hover:bg-[#F9F7F3]"
+                }`}
+                aria-current={isActive && !isHash ? "page" : undefined}
+                onClick={() => setOpen(false)}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function Navbar() {
@@ -40,8 +126,6 @@ export function Navbar() {
     setDrawerOpen(false);
     menuButtonRef.current?.focus();
   }, []);
-
-  const isPlatformActive = (href: string) => pathname === href;
 
   useEffect(() => {
     if (!drawerOpen) return;
@@ -80,25 +164,27 @@ export function Navbar() {
     };
   }, [drawerOpen, closeDrawer]);
 
+  let drawerLinkIndex = 0;
+
   return (
     <>
       <nav className="fixed top-0 w-full z-40 bg-[#F9F7F3]/90 backdrop-blur-md border-b border-[#C4A882]/30">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center gap-3">
           <Link href="/" className="flex flex-col items-start gap-0 group shrink-0">
             <span className="text-[10px] font-bold tracking-[0.2em] text-[#9C7C5B] uppercase leading-none mb-0.5">
               an Oracle Vision
             </span>
-            <span className="font-bold text-xl tracking-tighter flex items-center gap-2">
+            <span className="font-bold text-lg sm:text-xl tracking-tighter flex items-center gap-2">
               <svg
-                width="24"
-                height="24"
+                width="22"
+                height="22"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="#E67E22"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="group-hover:rotate-45 transition-transform duration-500"
+                className="group-hover:rotate-45 transition-transform duration-500 shrink-0"
                 aria-hidden="true"
               >
                 <path d="M12 2v20M2 12h20M5.5 5.5l13 13M18.5 5.5l-13 13" />
@@ -110,22 +196,29 @@ export function Navbar() {
             </span>
           </Link>
 
-          <div className="hidden lg:flex items-center gap-6 text-[10px] font-bold uppercase tracking-widest">
-            {homeSections.map((link) => (
-              <Link key={link.href} href={link.href} className={linkClass(false, "home")}>
-                {link.label}
-              </Link>
+          <div className="hidden lg:flex items-center gap-5 text-[10px] font-bold">
+            {navGroups.map((group) => (
+              <NavDropdown key={group.label} label={group.label} links={group.links} pathname={pathname} />
             ))}
-            <span className="w-px h-4 bg-[#D1CEC7]" aria-hidden="true" />
-            {platformLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={linkClass(isPlatformActive(link.href), "platform")}
-                aria-current={isPlatformActive(link.href) ? "page" : undefined}
-              >
-                {link.label}
-              </Link>
+          </div>
+
+          <div className="hidden md:flex lg:hidden items-center gap-3 text-[9px] font-bold uppercase tracking-widest flex-wrap justify-end max-w-[55%]">
+            {navGroups.map((group, gi) => (
+              <span key={group.label} className="flex items-center gap-2">
+                {gi > 0 && <span className="w-px h-3 bg-[#D1CEC7]" aria-hidden />}
+                <span className="text-[#B8B5AE]">{group.label}</span>
+                {group.links.slice(0, group.label === "Discover" ? 2 : 1).map((link) => {
+                  const isActive =
+                    "match" in link && link.match
+                      ? link.match(pathname)
+                      : pathname === link.href;
+                  return (
+                    <Link key={link.href} href={link.href} className={linkClass(isActive, link.href.startsWith("/#") ? "home" : "platform")}>
+                      {link.label}
+                    </Link>
+                  );
+                })}
+              </span>
             ))}
           </div>
 
@@ -186,50 +279,41 @@ export function Navbar() {
         aria-label="Site navigation"
       >
         <div className="flex flex-col h-full pt-20 pb-6 px-6 overflow-y-auto">
-          <section className="mb-8">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#9C7C5B] mb-3">
-              On the home page
-            </p>
-            <div className="flex flex-col gap-3">
-              {homeSections.map((link, i) => (
-                <Link
-                  key={link.href}
-                  ref={i === 0 ? firstFocusRef : undefined}
-                  href={link.href}
-                  className="text-sm font-bold text-[#5A5653] hover:text-[#E67E22] transition-colors"
-                  onClick={closeDrawer}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </section>
+          {navGroups.map((group) => (
+            <section key={group.label} className="mb-8">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#9C7C5B] mb-3">
+                {group.label}
+              </p>
+              <div className="flex flex-col gap-3">
+                {group.links.map((link) => {
+                  const isActive =
+                    "match" in link && link.match
+                      ? link.match(pathname)
+                      : pathname === link.href || pathname.startsWith(`${link.href}/`);
+                  const assignRef = drawerLinkIndex++ === 0 ? firstFocusRef : undefined;
+                  return (
+                    <Link
+                      key={link.href}
+                      ref={assignRef}
+                      href={link.href}
+                      className={`text-sm font-bold transition-colors ${
+                        isActive
+                          ? "text-[#E67E22] underline underline-offset-4"
+                          : "text-[#2C2A29] hover:text-[#E67E22]"
+                      }`}
+                      aria-current={isActive && !link.href.includes("#") ? "page" : undefined}
+                      onClick={closeDrawer}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
 
-          <section className="mb-8 flex-1">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#9C7C5B] mb-3">
-              Platform
-            </p>
-            <div className="flex flex-col gap-3">
-              {platformLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`text-sm font-bold transition-colors ${
-                    isPlatformActive(link.href)
-                      ? "text-[#E67E22] underline underline-offset-4"
-                      : "text-[#2C2A29] hover:text-[#E67E22]"
-                  }`}
-                  aria-current={isPlatformActive(link.href) ? "page" : undefined}
-                  onClick={closeDrawer}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          <p className="text-[10px] text-[#5A5653] leading-relaxed border-t border-[#D1CEC7]/60 pt-4">
-            Illustrative trends on home · not live analytics
+          <p className="text-[10px] text-[#5A5653] leading-relaxed border-t border-[#D1CEC7]/60 pt-4 mt-auto">
+            Weave trends are illustrative · not live analytics
           </p>
         </div>
       </div>

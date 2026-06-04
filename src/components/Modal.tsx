@@ -84,7 +84,7 @@ export function Modal({ item, onClose }: ModalProps) {
 
           <div className="mb-12">
             <h4 className="font-black text-xs tracking-widest uppercase mb-4 text-[#5A5653] flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#E67E22]" /> Structural Simulation
+              <span className="w-1.5 h-1.5 rounded-full bg-[#E67E22]" /> Interactive preview
             </h4>
             <div className="w-full bg-white rounded-2xl border border-[#E8E5DF] p-10 overflow-hidden flex items-center justify-center min-h-[300px] shadow-inner relative">
               {Demo ? <Demo /> : null}
@@ -93,11 +93,11 @@ export function Modal({ item, onClose }: ModalProps) {
 
           <div className="grid md:grid-cols-2 gap-12 text-center">
             <div>
-              <h4 className="font-bold text-lg mb-4 text-[#2C2A29]">Arachnid Logic</h4>
+              <h4 className="font-bold text-lg mb-4 text-[#2C2A29]">Why it stands out</h4>
               <BalancedText text={item.innovation} className="text-[#5A5653] text-sm" />
             </div>
             <div>
-              <h4 className="font-bold text-lg mb-4 text-[#2C2A29]">The Silk (Tech Stack)</h4>
+              <h4 className="font-bold text-lg mb-4 text-[#2C2A29]">Tech stack</h4>
               <BalancedText text={item.tech} className="text-[#5A5653] text-sm" />
             </div>
           </div>

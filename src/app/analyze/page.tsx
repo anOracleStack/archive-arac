@@ -6,6 +6,7 @@ import Link from "next/link";
 import { PlatformShell } from "@/components/PlatformShell";
 import { BalancedText } from "@/components/BalancedText";
 import { AnalyzerSection } from "@/components/AnalyzerSection";
+import { AnalyzerFlowProvider } from "@/components/AnalyzerFlowContext";
 import { FeatureExplainer } from "@/components/FeatureExplainer";
 
 function AnalyzeContent() {
@@ -13,6 +14,7 @@ function AnalyzeContent() {
   const prefill = searchParams.get("url") ?? "";
 
   return (
+    <AnalyzerFlowProvider initialUrl={prefill}>
     <PlatformShell>
       <div className="relative z-10 pt-28 pb-8 px-6 max-w-5xl mx-auto text-center">
         <div className="mb-8">
@@ -49,6 +51,7 @@ function AnalyzeContent() {
       </div>
       <AnalyzerSection initialUrl={prefill} showIntro={false} />
     </PlatformShell>
+    </AnalyzerFlowProvider>
   );
 }
 

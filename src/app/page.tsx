@@ -12,6 +12,7 @@ import { MethodologySection } from "@/components/MethodologySection";
 import { Footer } from "@/components/Footer";
 import { Modal } from "@/components/Modal";
 import { AnalyzerSection } from "@/components/AnalyzerSection";
+import { AnalyzerFlowProvider } from "@/components/AnalyzerFlowContext";
 import { WebWeaveBackground } from "@/components/effects/WebWeaveBackground";
 import { SilkTrail } from "@/components/effects/SilkTrail";
 
@@ -43,18 +44,22 @@ function HomePage() {
     }
   }, [searchParams]);
 
+  const urlPrefill = searchParams.get("url") ?? "";
+
   return (
-    <main id="top" className="relative min-h-screen">
-      <WebWeaveBackground />
-      <SilkTrail />
-      <Navbar />
-      <Hero />
-      <LandscapeSection />
-      <DatabaseGrid onSelect={handleSelect} />
-      <AnalyzerSection />
-      <MethodologySection />
-      <Footer />
-      <Modal item={selectedItem} onClose={handleClose} />
-    </main>
+    <AnalyzerFlowProvider initialUrl={urlPrefill}>
+      <main id="top" className="relative min-h-screen">
+        <WebWeaveBackground />
+        <SilkTrail />
+        <Navbar />
+        <Hero />
+        <LandscapeSection />
+        <DatabaseGrid onSelect={handleSelect} />
+        <AnalyzerSection initialUrl={urlPrefill} />
+        <MethodologySection />
+        <Footer />
+        <Modal item={selectedItem} onClose={handleClose} />
+      </main>
+    </AnalyzerFlowProvider>
   );
 }
