@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback } from "react";
 import type { StrandItem } from "@/types";
+import { useScrollLock } from "@/hooks/useScrollLock";
 import { FluidDemo } from "./demos/FluidDemo";
 import { SpatialDemo } from "./demos/SpatialDemo";
 import { MagneticDemo } from "./demos/MagneticDemo";
@@ -28,18 +29,19 @@ const demos: Record<string, React.FC> = {
 
 export function Modal({ item, onClose }: ModalProps) {
   const handleKey = useCallback((e: KeyboardEvent) => {
-    if (e.key === "Escape") onClose();
+    if (e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
+      onClose();
+    }
   }, [onClose]);
 
+  useScrollLock(!!item);
+
   useEffect(() => {
-    if (item) {
-      document.addEventListener("keydown", handleKey);
-      document.body.style.overflow = "hidden";
-    }
-    return () => {
-      document.removeEventListener("keydown", handleKey);
-      document.body.style.overflow = "";
-    };
+    if (!item) return;
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
   }, [item, handleKey]);
 
   if (!item) return null;
@@ -56,6 +58,7 @@ export function Modal({ item, onClose }: ModalProps) {
           <KnowledgeGateway article={gloss.strandModal} surface="cream" compact />
         </div>
         <button
+          type="button"
           onClick={onClose}
           className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl hover:bg-[#E67E22] hover:text-white transition-all text-2xl z-10"
         >

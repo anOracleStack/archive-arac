@@ -2,14 +2,16 @@
 
 import type { FC } from "react";
 import type { AnalysisResult } from "@/types/analysis";
+import type { StrandItem } from "@/types";
 import { recommendStrands } from "@/lib/strandMatcher";
 import { BalancedText } from "@/components/BalancedText";
 
 interface Props {
   result: AnalysisResult;
+  onStrandSelect?: (strand: StrandItem) => void;
 }
 
-export const StrandRecommendations: FC<Props> = ({ result }) => {
+export const StrandRecommendations: FC<Props> = ({ result, onStrandSelect }) => {
   const matches = recommendStrands(result);
 
   return (
@@ -26,14 +28,11 @@ export const StrandRecommendations: FC<Props> = ({ result }) => {
       />
       <div className="grid gap-4 sm:grid-cols-2">
         {matches.map((m) => (
-          <a
+          <button
             key={m.strand.id}
-            href={`/#index`}
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.href = `/?strand=${m.strand.id}#index`;
-            }}
-            className="group block p-4 rounded-xl border border-[#E8E5DF] bg-white hover:border-[#E67E22]/50 hover:shadow-md transition-all text-center"
+            type="button"
+            onClick={() => onStrandSelect?.(m.strand)}
+            className="group block w-full p-4 rounded-xl border border-[#E8E5DF] bg-white hover:border-[#E67E22]/50 hover:shadow-md transition-all text-left"
           >
             <div className="flex justify-between items-start gap-2 mb-2">
               <span className="font-bold text-[#2C2A29] group-hover:text-[#E67E22] transition-colors">
@@ -43,7 +42,7 @@ export const StrandRecommendations: FC<Props> = ({ result }) => {
             </div>
             <BalancedText text={m.strand.shortDesc} className="text-xs text-[#5A5653] mb-2" />
             <BalancedText text={m.reasons[0]} className="text-[10px] text-[#9C7C5B] font-medium" />
-          </a>
+          </button>
         ))}
       </div>
       <div className="mt-6 flex flex-wrap gap-3">

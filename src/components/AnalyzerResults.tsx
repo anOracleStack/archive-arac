@@ -2,6 +2,7 @@
 
 import { useState, type FC } from "react";
 import type { AnalysisResult } from "@/types/analysis";
+import type { StrandItem } from "@/types";
 import { gloss } from "@/data/knowledgeGloss";
 import { KnowledgeGateway } from "@/components/KnowledgeGateway";
 import { CodeBlock } from "./CodeBlock";
@@ -11,6 +12,7 @@ import { BalancedText } from "@/components/BalancedText";
 
 interface Props {
   result: AnalysisResult;
+  onStrandSelect?: (strand: StrandItem) => void;
 }
 
 type Tab = "overview" | "design" | "tech" | "interactions" | "ux" | "extracted";
@@ -24,7 +26,7 @@ const tabs: { key: Tab; label: string }[] = [
   { key: "extracted", label: "Code Snippets" },
 ];
 
-export const AnalyzerResults: FC<Props> = ({ result }) => {
+export const AnalyzerResults: FC<Props> = ({ result, onStrandSelect }) => {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const { overview, design, tech, interactions, ux, interactionHighlights, codeSnippets, extractedCSS } = result;
 
@@ -116,7 +118,7 @@ export const AnalyzerResults: FC<Props> = ({ result }) => {
         )}
       </div>
 
-      <StrandRecommendations result={result} />
+      <StrandRecommendations result={result} onStrandSelect={onStrandSelect} />
       <ReportActions result={result} />
     </div>
   );

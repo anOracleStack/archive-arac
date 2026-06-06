@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, type FormEvent } from "react";
 import type { AnalysisResult } from "@/types/analysis";
+import type { StrandItem } from "@/types";
 import type { SiteComparison } from "@/lib/compareSites";
 import { tryNormalizeCanonicalUrl } from "@/lib/normalizeUrl";
 import { gloss } from "@/data/knowledgeGloss";
@@ -12,15 +13,18 @@ import { useAnalyzerFlow } from "@/components/AnalyzerFlowContext";
 import { AnalyzeUrlField } from "@/components/AnalyzeUrlField";
 import { AnalyzerResults } from "./AnalyzerResults";
 import { CompareResults } from "./analyzer/CompareResults";
+import { Modal } from "./Modal";
+import { WorkshopChat } from "./WorkshopChat";
 
 type AnalyzerMode = "single" | "compare";
 
 interface AnalyzerSectionProps {
   initialUrl?: string;
   showIntro?: boolean;
+  onStrandSelect?: (strand: StrandItem) => void;
 }
 
-export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerSectionProps) {
+export function AnalyzerSection({ initialUrl = "", showIntro = true, onStrandSelect }: AnalyzerSectionProps) {
   const single = useAnalyzerFlow();
   const [mode, setMode] = useState<AnalyzerMode>("single");
   const [urlB, setUrlB] = useState("");
@@ -29,7 +33,13 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerS
   const [comparison, setComparison] = useState<SiteComparison | null>(null);
   const [compareError, setCompareError] = useState<string | null>(null);
   const [compareStatus, setCompareStatus] = useState<"idle" | "fetching" | "complete" | "error">("idle");
+  const [localStrand, setLocalStrand] = useState<StrandItem | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
+
+  const handleStrandSelect = (strand: StrandItem) => {
+    if (onStrandSelect) onStrandSelect(strand);
+    else setLocalStrand(strand);
+  };
 
   useEffect(() => {
     if (initialUrl) single.setUrl(initialUrl);
@@ -214,11 +224,19 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true }: AnalyzerS
       </div>
 
       <div id="analyzer-results" ref={resultRef} className="px-6">
-        {single.result && mode === "single" && <AnalyzerResults result={single.result} />}
+        {single.result && mode === "single" && (
+          <>
+            <AnalyzerResults result={single.result} onStrandSelect={handleStrandSelect} />
+            <WorkshopChat result={single.result} />
+          </>
+        )}
         {compareA && compareB && comparison && mode === "compare" && (
           <CompareResults a={compareA} b={compareB} comparison={comparison} />
         )}
       </div>
+      {!onStrandSelect && (
+        <Modal item={localStrand} onClose={() => setLocalStrand(null)} />
+      )}
     </section>
   );
 }

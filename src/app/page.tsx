@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState, useCallback, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { StrandItem } from "@/types";
 import { strands } from "@/data/strands";
 import { Navbar } from "@/components/Navbar";
@@ -27,11 +27,20 @@ export default function Page() {
 }
 
 function HomePage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedItem, setSelectedItem] = useState<StrandItem | null>(null);
 
   const handleSelect = useCallback((item: StrandItem) => setSelectedItem(item), []);
-  const handleClose = useCallback(() => setSelectedItem(null), []);
+  const handleClose = useCallback(() => {
+    setSelectedItem(null);
+    if (searchParams.get("strand")) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("strand");
+      const qs = params.toString();
+      router.replace(qs ? `/?${qs}` : "/", { scroll: false });
+    }
+  }, [router, searchParams]);
 
   useEffect(() => {
     const id = searchParams.get("strand");
@@ -59,7 +68,7 @@ function HomePage() {
         <HowItWorks />
         <LandscapeSection />
         <DatabaseGrid onSelect={handleSelect} />
-        <AnalyzerSection initialUrl={urlPrefill} />
+        <AnalyzerSection initialUrl={urlPrefill} onStrandSelect={handleSelect} />
         <MethodologySection />
         <Footer />
         <Modal item={selectedItem} onClose={handleClose} />

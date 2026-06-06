@@ -4,6 +4,7 @@ import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 
 import { createPortal } from "react-dom";
 import type { GatewayArticle } from "@/data/knowledgeGloss";
 import { BalancedText } from "@/components/BalancedText";
+import { useScrollLock } from "@/hooks/useScrollLock";
 
 type Level = "beginner" | "moderate" | "advanced";
 
@@ -47,8 +48,14 @@ export function KnowledgeGateway({ article, surface = "cream", compact = false, 
   const panelEntered = usePanelEnter(open);
 
   const onKey = useCallback((e: KeyboardEvent) => {
-    if (e.key === "Escape") setOpen(false);
+    if (e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
+      setOpen(false);
+    }
   }, []);
+
+  useScrollLock(open);
 
   useEffect(() => {
     setMounted(true);
@@ -57,13 +64,8 @@ export function KnowledgeGateway({ article, surface = "cream", compact = false, 
   useEffect(() => {
     if (!open) return;
     document.addEventListener("keydown", onKey);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     queueMicrotask(() => closeRef.current?.focus());
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
-    };
+    return () => document.removeEventListener("keydown", onKey);
   }, [open, onKey]);
 
   const block = article[level];
