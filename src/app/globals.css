@@ -14,7 +14,7 @@
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-outfit), "Outfit", sans-serif;
   background-color: #F9F7F3;
   color: #2C2A29;
   overflow-x: hidden;
