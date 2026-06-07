@@ -3,7 +3,7 @@
 import { useState, type FC } from "react";
 import type { AnalysisResult } from "@/types/analysis";
 import { exportReportMarkdown, saveToVault } from "@/lib/reportStore";
-import { shareUrlFromResult } from "@/lib/reportShare";
+import { analyzeShareUrl } from "@/lib/reportShare";
 
 interface Props {
   result: AnalysisResult;
@@ -29,7 +29,7 @@ export const ReportActions: FC<Props> = ({ result }) => {
   };
 
   const handleShare = async () => {
-    const link = shareUrlFromResult(result, window.location.origin);
+    const link = analyzeShareUrl(result, window.location.origin);
     await navigator.clipboard.writeText(link);
     flash("Share link copied");
   };

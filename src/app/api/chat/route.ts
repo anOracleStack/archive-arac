@@ -29,14 +29,20 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const messages = body.messages as ChatMessage[] | undefined;
     const analysisContext = typeof body.analysisContext === "string" ? body.analysisContext : null;
+    const formatHint = typeof body.formatHint === "string" ? body.formatHint : null;
 
     if (!messages?.length) {
       return NextResponse.json({ error: "Messages are required" }, { status: 400 });
     }
 
-    const systemContent = analysisContext
-      ? `${SYSTEM_PROMPT}\n\nCurrent site analysis (JSON):\n${analysisContext}`
-      : SYSTEM_PROMPT;
+    const systemContent = [
+      analysisContext
+        ? `${SYSTEM_PROMPT}\n\nCurrent site analysis (JSON):\n${analysisContext}`
+        : SYSTEM_PROMPT,
+      formatHint ? `\nFormat instruction: ${formatHint}` : "",
+    ]
+      .filter(Boolean)
+      .join("");
 
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",

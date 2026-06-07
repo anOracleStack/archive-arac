@@ -57,3 +57,9 @@ export function shareUrlFromResult(result: AnalysisResult, origin: string): stri
   const token = encodeSharePayload(buildSharePayload(result));
   return `${origin}/report?s=${token}`;
 }
+
+/** Direct analyze link — prefill URL on /analyze (re-run analysis on open). */
+export function analyzeShareUrl(result: AnalysisResult, origin: string): string {
+  const params = new URLSearchParams({ url: result.url });
+  return `${origin}/analyze?${params.toString()}`;
+}

@@ -20,11 +20,12 @@ type AnalyzerMode = "single" | "compare";
 
 interface AnalyzerSectionProps {
   initialUrl?: string;
+  autoRun?: boolean;
   showIntro?: boolean;
   onStrandSelect?: (strand: StrandItem) => void;
 }
 
-export function AnalyzerSection({ initialUrl = "", showIntro = true, onStrandSelect }: AnalyzerSectionProps) {
+export function AnalyzerSection({ initialUrl = "", autoRun = false, showIntro = true, onStrandSelect }: AnalyzerSectionProps) {
   const single = useAnalyzerFlow();
   const [mode, setMode] = useState<AnalyzerMode>("single");
   const [urlB, setUrlB] = useState("");
@@ -45,6 +46,33 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true, onStrandSel
     if (initialUrl) single.setUrl(initialUrl);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- sync prefill only when prop changes
   }, [initialUrl]);
+
+  const autoRan = useRef(false);
+  useEffect(() => {
+    if (!autoRun || autoRan.current) return;
+    if (!single.url.trim() || single.result || single.busy) return;
+    autoRan.current = true;
+    void single.submit().then((data) => {
+      if (data) scrollToResults();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once when autoRun + url ready
+  }, [autoRun, single.url, single.result, single.busy]);
+
+  const handleClearResults = () => {
+    single.reset();
+    resetCompare();
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      params.delete("url");
+      params.delete("run");
+      const qs = params.toString();
+      window.history.replaceState(
+        null,
+        "",
+        `${window.location.pathname}${qs ? `?${qs}` : ""}${window.location.hash}`
+      );
+    }
+  };
 
   const resetCompare = () => {
     setCompareA(null);
@@ -226,7 +254,12 @@ export function AnalyzerSection({ initialUrl = "", showIntro = true, onStrandSel
       <div id="analyzer-results" ref={resultRef} className="px-6">
         {single.result && mode === "single" && (
           <>
-            <AnalyzerResults result={single.result} onStrandSelect={handleStrandSelect} />
+            <AnalyzerResults
+              result={single.result}
+              analyzedAt={single.analyzedAt}
+              onClear={handleClearResults}
+              onStrandSelect={handleStrandSelect}
+            />
             <WorkshopChat result={single.result} />
           </>
         )}

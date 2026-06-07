@@ -8,11 +8,13 @@ const AnalyzerFlowContext = createContext<SingleAnalyzeFlow | null>(null);
 export function AnalyzerFlowProvider({
   children,
   initialUrl = "",
+  syncUrlOnComplete = true,
 }: {
   children: ReactNode;
   initialUrl?: string;
+  syncUrlOnComplete?: boolean;
 }) {
-  const flow = useSingleAnalyze(initialUrl);
+  const flow = useSingleAnalyze(initialUrl, { syncUrlOnComplete });
   return (
     <AnalyzerFlowContext.Provider value={flow}>{children}</AnalyzerFlowContext.Provider>
   );

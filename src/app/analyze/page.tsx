@@ -12,6 +12,7 @@ import { FeatureExplainer } from "@/components/FeatureExplainer";
 function AnalyzeContent() {
   const searchParams = useSearchParams();
   const prefill = searchParams.get("url") ?? "";
+  const autoRun = searchParams.get("run") === "1" && prefill.length > 0;
 
   return (
     <AnalyzerFlowProvider initialUrl={prefill}>
@@ -49,7 +50,7 @@ function AnalyzeContent() {
           />
         </div>
       </div>
-      <AnalyzerSection initialUrl={prefill} showIntro={false} />
+      <AnalyzerSection initialUrl={prefill} autoRun={autoRun} showIntro={false} />
     </PlatformShell>
     </AnalyzerFlowProvider>
   );

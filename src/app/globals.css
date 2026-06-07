@@ -308,3 +308,41 @@ body {
   50% { width: 70%; }
   100% { width: 100%; }
 }
+
+/* Workshop analyzer surfaces */
+.workshop-desk {
+  position: relative;
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(230, 126, 34, 0.04), transparent 45%),
+    radial-gradient(circle at 80% 100%, rgba(139, 168, 150, 0.05), transparent 40%);
+}
+
+.workshop-panel {
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(249, 247, 243, 0.95)),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  background-blend-mode: overlay, normal;
+}
+
+.workshop-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px -12px rgba(44, 42, 41, 0.35);
+}
+
+.feature-card {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-radius: 0.875rem;
+  border: 1px solid #E8E5DF;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -12px rgba(44, 42, 41, 0.15);
+}
+
+.feature-card--green:hover { border-color: rgba(139, 168, 150, 0.5); }
+.feature-card--orange:hover { border-color: rgba(230, 126, 34, 0.45); }
+.feature-card--alert:hover { border-color: rgba(248, 113, 113, 0.45); }

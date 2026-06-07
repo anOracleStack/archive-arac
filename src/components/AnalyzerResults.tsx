@@ -12,6 +12,8 @@ import { BalancedText } from "@/components/BalancedText";
 
 interface Props {
   result: AnalysisResult;
+  analyzedAt?: string | null;
+  onClear?: () => void;
   onStrandSelect?: (strand: StrandItem) => void;
 }
 
@@ -26,47 +28,77 @@ const tabs: { key: Tab; label: string }[] = [
   { key: "extracted", label: "Code Snippets" },
 ];
 
-export const AnalyzerResults: FC<Props> = ({ result, onStrandSelect }) => {
+export const AnalyzerResults: FC<Props> = ({ result, analyzedAt, onClear, onStrandSelect }) => {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const { overview, design, tech, interactions, ux, interactionHighlights, codeSnippets, extractedCSS } = result;
 
+  const formattedTime = analyzedAt
+    ? new Intl.DateTimeFormat(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }).format(new Date(analyzedAt))
+    : null;
+
   return (
-    <div className="max-w-5xl mx-auto mt-16">
-      {/* Score badge */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h3 className="text-2xl font-bold tracking-tight mb-1">{result.title}</h3>
-          <a
-            href={result.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-[#E67E22] hover:underline"
-          >
-            {result.hostname} ↗
-          </a>
-        </div>
-        <div className="text-center">
-          <div
-            className={`w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-black border-2 ${
-              overview.score >= 70
-                ? "border-[#8BA896] text-[#8BA896]"
-                : overview.score >= 45
-                  ? "border-[#E67E22] text-[#E67E22]"
-                  : "border-red-400 text-red-400"
-            }`}
-          >
-            {overview.score}
+    <div className="workshop-desk max-w-5xl mx-auto mt-16 rounded-3xl border border-[#D1CEC7]/70 bg-[#FDFCFA] shadow-[0_24px_60px_-28px_rgba(44,42,41,0.18)] overflow-hidden">
+      {/* Sticky workshop header */}
+      <div className="sticky top-0 z-20 border-b border-[#E8E5DF] bg-[#FDFCFA]/95 backdrop-blur-md px-6 py-4 md:px-8">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#9C7C5B] mb-1.5">
+              Workshop desk
+            </p>
+            <h3 className="text-xl md:text-2xl font-bold tracking-tight mb-1 truncate">{result.title}</h3>
+            <a
+              href={result.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm text-[#E67E22] hover:underline truncate max-w-full"
+            >
+              {result.hostname}
+              <span aria-hidden>↗</span>
+            </a>
+            {formattedTime && (
+              <p className="mt-1 text-[10px] font-medium uppercase tracking-widest text-[#B8B5AE]">
+                Analyzed {formattedTime}
+              </p>
+            )}
           </div>
-          <div className="mt-1 flex items-center justify-center gap-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#5A5653]">
-              <KnowledgeGateway article={gloss.analyzerScore} surface="cream">
-                <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 cursor-pointer">Score</span>
-              </KnowledgeGateway>
-            </span>
+          <div className="flex items-center gap-3 shrink-0">
+            {onClear && (
+              <button
+                type="button"
+                onClick={onClear}
+                className="rounded-lg border border-[#E8E5DF] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#5A5653] hover:border-[#E67E22] hover:text-[#2C2A29] transition-colors"
+              >
+                Clear results
+              </button>
+            )}
+            <div className="text-center">
+              <div
+                className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center text-lg md:text-xl font-black border-2 ${
+                  overview.score >= 70
+                    ? "border-[#8BA896] text-[#8BA896]"
+                    : overview.score >= 45
+                      ? "border-[#E67E22] text-[#E67E22]"
+                      : "border-red-400 text-red-400"
+                }`}
+              >
+                {overview.score}
+              </div>
+              <div className="mt-1 flex items-center justify-center gap-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#5A5653]">
+                  <KnowledgeGateway article={gloss.analyzerScore} surface="cream">
+                    <span className="font-bold text-[#9C7C5B] hover:text-[#E67E22] transition-colors duration-200 cursor-pointer">Score</span>
+                  </KnowledgeGateway>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
+      <div className="px-6 py-8 md:px-8">
       {/* Tabs */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
         <p className="text-[10px] font-bold uppercase tracking-widest text-[#B8B5AE]">Result tabs</p>
@@ -120,6 +152,7 @@ export const AnalyzerResults: FC<Props> = ({ result, onStrandSelect }) => {
 
       <StrandRecommendations result={result} onStrandSelect={onStrandSelect} />
       <ReportActions result={result} />
+      </div>
     </div>
   );
 };
@@ -133,9 +166,9 @@ function OverviewTab({ overview }: { overview: AnalysisResult["overview"] }) {
       {overview.innovations.length > 0 && (
         <div className="max-w-xl mx-auto">
           <h4 className="font-bold text-sm uppercase tracking-widest text-[#8BA896] mb-3">✦ What&apos;s Innovative</h4>
-          <ul className="space-y-2 text-left">
+          <ul className="space-y-2">
             {overview.innovations.map((item, i) => (
-              <li key={i} className="flex items-start gap-3 text-sm text-[#2C2A29]">
+              <li key={i} className="feature-card feature-card--green flex items-start gap-3 text-sm text-[#2C2A29]">
                 <svg className="w-4 h-4 mt-0.5 shrink-0 text-[#8BA896]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
                 {item}
               </li>
@@ -147,9 +180,9 @@ function OverviewTab({ overview }: { overview: AnalysisResult["overview"] }) {
       {overview.uniqueFeatures.length > 0 && (
         <div className="max-w-xl mx-auto">
           <h4 className="font-bold text-sm uppercase tracking-widest text-[#E67E22] mb-3">✦ Unique Features</h4>
-          <ul className="space-y-2 text-left">
+          <ul className="space-y-2">
             {overview.uniqueFeatures.map((item, i) => (
-              <li key={i} className="flex items-start gap-3 text-sm text-[#2C2A29]">
+              <li key={i} className="feature-card feature-card--orange flex items-start gap-3 text-sm text-[#2C2A29]">
                 <svg className="w-4 h-4 mt-0.5 shrink-0 text-[#E67E22]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
                 {item}
               </li>
@@ -161,9 +194,9 @@ function OverviewTab({ overview }: { overview: AnalysisResult["overview"] }) {
       {overview.problems.length > 0 && (
         <div className="max-w-xl mx-auto">
           <h4 className="font-bold text-sm uppercase tracking-widest text-red-400 mb-3">⚠ Needs Attention</h4>
-          <ul className="space-y-2 text-left">
+          <ul className="space-y-2">
             {overview.problems.map((item, i) => (
-              <li key={i} className="flex items-start gap-3 text-sm text-[#5A5653]">
+              <li key={i} className="feature-card feature-card--alert flex items-start gap-3 text-sm text-[#5A5653]">
                 <svg className="w-4 h-4 mt-0.5 shrink-0 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                 {item}
               </li>
@@ -173,7 +206,7 @@ function OverviewTab({ overview }: { overview: AnalysisResult["overview"] }) {
       )}
 
       {/* Summary card */}
-      <div className="bg-[#F9F7F3] rounded-2xl p-6 border border-[#E8E5DF]">
+      <div className="bg-[#F9F7F3] rounded-2xl p-6 border border-[#E8E5DF] shadow-inner">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <div>
             <div className="text-2xl font-black text-[#8BA896]">{overview.innovations.length}</div>

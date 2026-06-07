@@ -56,6 +56,7 @@ function HomePage() {
   }, [searchParams]);
 
   const urlPrefill = searchParams.get("url") ?? "";
+  const autoRun = searchParams.get("run") === "1" && urlPrefill.length > 0;
 
   return (
     <AnalyzerFlowProvider initialUrl={urlPrefill}>
@@ -68,7 +69,7 @@ function HomePage() {
         <HowItWorks />
         <LandscapeSection />
         <DatabaseGrid onSelect={handleSelect} />
-        <AnalyzerSection initialUrl={urlPrefill} onStrandSelect={handleSelect} />
+        <AnalyzerSection initialUrl={urlPrefill} autoRun={autoRun} onStrandSelect={handleSelect} />
         <MethodologySection />
         <Footer />
         <Modal item={selectedItem} onClose={handleClose} />
