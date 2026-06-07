@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState, useRef, useEffect, type FormEvent } from "react";
 import type { AnalysisResult } from "@/types/analysis";
 import type { StrandItem } from "@/types";
@@ -11,10 +12,28 @@ import { BalancedText } from "@/components/BalancedText";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { useAnalyzerFlow } from "@/components/AnalyzerFlowContext";
 import { AnalyzeUrlField } from "@/components/AnalyzeUrlField";
-import { AnalyzerResults } from "./AnalyzerResults";
-import { CompareResults } from "./analyzer/CompareResults";
 import { Modal } from "./Modal";
-import { WorkshopChat } from "./WorkshopChat";
+
+const AnalyzerResults = dynamic(
+  () => import("./AnalyzerResults").then((mod) => mod.AnalyzerResults),
+  {
+    loading: () => (
+      <div className="max-w-4xl mx-auto py-12 text-center text-sm text-[#5A5653]">Loading results…</div>
+    ),
+  }
+);
+const CompareResults = dynamic(
+  () => import("./analyzer/CompareResults").then((mod) => mod.CompareResults),
+  {
+    loading: () => (
+      <div className="max-w-4xl mx-auto py-12 text-center text-sm text-[#5A5653]">Loading comparison…</div>
+    ),
+  }
+);
+const WorkshopChat = dynamic(
+  () => import("./WorkshopChat").then((mod) => mod.WorkshopChat),
+  { ssr: false }
+);
 
 type AnalyzerMode = "single" | "compare";
 

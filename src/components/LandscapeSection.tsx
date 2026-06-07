@@ -1,7 +1,24 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { WeaveMotionDescriptors, WeaveMotionStage } from "@/components/WeaveMotion";
+
+const WeaveMotionDescriptors = dynamic(
+  () => import("@/components/WeaveMotion").then((mod) => mod.WeaveMotionDescriptors),
+  { ssr: false }
+);
+const WeaveMotionStage = dynamic(
+  () => import("@/components/WeaveMotion").then((mod) => mod.WeaveMotionStage),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="weave-stage relative aspect-[16/10] w-full min-h-[280px] max-h-[360px] rounded-2xl bg-[#F9F7F3]/80 animate-pulse"
+        aria-hidden
+      />
+    ),
+  }
+);
 
 export function LandscapeSection() {
   return (

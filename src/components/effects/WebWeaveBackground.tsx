@@ -8,6 +8,8 @@ export function WebWeaveBackground() {
   const animRef = useRef<number>(0);
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     const cvs = canvasRef.current;
     if (!cvs) return;
     const ctx = cvs.getContext("2d");

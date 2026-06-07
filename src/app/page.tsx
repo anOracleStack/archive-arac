@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Suspense, useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { StrandItem } from "@/types";
@@ -8,15 +9,46 @@ import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { ProductPillars } from "@/components/ProductPillars";
 import { HowItWorks } from "@/components/HowItWorks";
-import { LandscapeSection } from "@/components/LandscapeSection";
-import { DatabaseGrid } from "@/components/DatabaseGrid";
 import { MethodologySection } from "@/components/MethodologySection";
 import { Footer } from "@/components/Footer";
-import { Modal } from "@/components/Modal";
-import { AnalyzerSection } from "@/components/AnalyzerSection";
 import { AnalyzerFlowProvider } from "@/components/AnalyzerFlowContext";
-import { WebWeaveBackground } from "@/components/effects/WebWeaveBackground";
-import { SilkTrail } from "@/components/effects/SilkTrail";
+
+const WebWeaveBackground = dynamic(
+  () => import("@/components/effects/WebWeaveBackground").then((mod) => mod.WebWeaveBackground),
+  { ssr: false }
+);
+const SilkTrail = dynamic(
+  () => import("@/components/effects/SilkTrail").then((mod) => mod.SilkTrail),
+  { ssr: false }
+);
+const LandscapeSection = dynamic(
+  () => import("@/components/LandscapeSection").then((mod) => mod.LandscapeSection),
+  {
+    loading: () => (
+      <section className="relative z-10 py-24 px-6 bg-white border-y border-[#C4A882]/30 min-h-[420px]" aria-hidden />
+    ),
+  }
+);
+const DatabaseGrid = dynamic(
+  () => import("@/components/DatabaseGrid").then((mod) => mod.DatabaseGrid),
+  {
+    loading: () => (
+      <section id="index" className="relative z-10 py-24 px-6 min-h-[320px]" aria-hidden />
+    ),
+  }
+);
+const AnalyzerSection = dynamic(
+  () => import("@/components/AnalyzerSection").then((mod) => mod.AnalyzerSection),
+  {
+    loading: () => (
+      <section id="analyzer" className="relative z-10 py-24 px-6 bg-white border-y border-[#E8E5DF] min-h-[280px]" aria-hidden />
+    ),
+  }
+);
+const Modal = dynamic(
+  () => import("@/components/Modal").then((mod) => mod.Modal),
+  { ssr: false }
+);
 
 export default function Page() {
   return (

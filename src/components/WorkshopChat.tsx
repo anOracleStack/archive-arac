@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { memo, useCallback, useEffect, useId, useRef, useState, type FormEvent } from "react";
 import type { AnalysisResult } from "@/types/analysis";
 import { buildAnalysisChatSummary } from "@/lib/analysisChatContext";
 import { useScrollLock } from "@/hooks/useScrollLock";
@@ -22,7 +22,7 @@ function isActionPlanRequest(text: string): boolean {
   return /action plan|checklist|to-?do|next steps/i.test(text);
 }
 
-function MessageContent({ content, asChecklist }: { content: string; asChecklist?: boolean }) {
+const MessageContent = memo(function MessageContent({ content, asChecklist }: { content: string; asChecklist?: boolean }) {
   const lines = content.split("\n").filter((l) => l.trim());
   const looksLikeList =
     asChecklist ||
@@ -94,7 +94,7 @@ function MessageContent({ content, asChecklist }: { content: string; asChecklist
       })}
     </ul>
   );
-}
+});
 
 export function WorkshopChat({ result }: Props) {
   const [open, setOpen] = useState(false);
