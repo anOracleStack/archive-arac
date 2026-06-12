@@ -10,7 +10,7 @@ import { Hero } from "@/components/Hero";
 import { ProductPillars } from "@/components/ProductPillars";
 import { HowItWorks } from "@/components/HowItWorks";
 import { MethodologySection } from "@/components/MethodologySection";
-import { Footer } from "@/components/Footer";
+import { PlatformFooter } from "@/components/PlatformFooter";
 import { AnalyzerFlowProvider } from "@/components/AnalyzerFlowContext";
 
 const WebWeaveBackground = dynamic(
@@ -92,7 +92,7 @@ function HomePage() {
 
   return (
     <AnalyzerFlowProvider initialUrl={urlPrefill}>
-      <main id="top" className="relative min-h-screen">
+      <main id="top" className="relative min-h-screen pb-14">
         <WebWeaveBackground />
         <SilkTrail />
         <Navbar />
@@ -103,7 +103,7 @@ function HomePage() {
         <DatabaseGrid onSelect={handleSelect} />
         <AnalyzerSection initialUrl={urlPrefill} autoRun={autoRun} onStrandSelect={handleSelect} />
         <MethodologySection />
-        <Footer />
+        <PlatformFooter />
         <Modal item={selectedItem} onClose={handleClose} />
       </main>
     </AnalyzerFlowProvider>
