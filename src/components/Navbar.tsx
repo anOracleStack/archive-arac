@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { AuthControls } from "@/components/AuthControls";
+import { BrandLogo } from "@/components/BrandLogo";
+import { useAuthSession } from "@/hooks/useAuthSession";
 
 const navGroups = [
   {
@@ -67,11 +70,11 @@ function NavDropdown({
   }, [open]);
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative shrink-0">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`flex items-center gap-1.5 uppercase tracking-widest transition-colors ${
+        className={`flex items-center gap-1 uppercase tracking-[0.18em] transition-colors whitespace-nowrap ${
           groupActive ? "text-[#E67E22]" : "text-[#5A5653] hover:text-[#E67E22]"
         }`}
         aria-expanded={open}
@@ -118,6 +121,7 @@ function NavDropdown({
 
 export function Navbar() {
   const pathname = usePathname();
+  const { isLoggedIn } = useAuthSession();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerId = useId();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -170,73 +174,67 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 w-full z-40 bg-[#F9F7F3]/90 backdrop-blur-md border-b border-[#C4A882]/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center gap-3">
-          <Link href="/" className="flex flex-col items-start gap-0 group shrink-0">
-            <span className="text-[10px] font-bold tracking-[0.2em] text-[#9C7C5B] uppercase leading-none mb-0.5">
-              an Oracle Vision
-            </span>
-            <span className="font-bold text-lg sm:text-xl tracking-tighter flex items-center gap-2">
+      <nav className="fixed top-0 w-full z-40 bg-[#F9F7F3]/95 backdrop-blur-md border-b-2 border-[#E67E22]/35">
+        <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-5 sm:px-8 py-3">
+          <BrandLogo />
+
+          <div className="hidden min-w-0 flex-1 items-center justify-end gap-3 lg:gap-4 md:flex">
+            <div className="flex min-w-0 items-center gap-3 lg:gap-4 text-[9px] font-bold xl:text-[10px]">
+              {navGroups.map((group) => (
+                <NavDropdown key={group.label} label={group.label} links={group.links} pathname={pathname} />
+              ))}
+              {isLoggedIn && (
+                <Link
+                  href="/profile"
+                  className={`shrink-0 uppercase tracking-[0.18em] transition-colors whitespace-nowrap ${
+                    pathname === "/profile"
+                      ? "text-[#E67E22]"
+                      : "text-[#5A5653] hover:text-[#E67E22]"
+                  }`}
+                >
+                  Profile
+                </Link>
+              )}
+            </div>
+            <AuthControls />
+          </div>
+
+          <div className="flex items-center gap-2 md:hidden">
+            <AuthControls compact />
+            <button
+              ref={menuButtonRef}
+              type="button"
+              className="shrink-0 rounded-lg p-2 text-[#2C2A29] transition-colors hover:bg-[#E8E5DF]/80"
+              aria-expanded={drawerOpen}
+              aria-controls={drawerId}
+              aria-label={drawerOpen ? "Close menu" : "Open menu"}
+              onClick={() => setDrawerOpen((open) => !open)}
+            >
               <svg
                 width="22"
                 height="22"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#E67E22"
+                stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
-                strokeLinejoin="round"
-                className="group-hover:rotate-45 transition-transform duration-500 shrink-0"
                 aria-hidden="true"
               >
-                <path d="M12 2v20M2 12h20M5.5 5.5l13 13M18.5 5.5l-13 13" />
-                <circle cx="12" cy="12" r="3" />
-                <circle cx="12" cy="12" r="6" />
-                <circle cx="12" cy="12" r="9" />
+                {drawerOpen ? (
+                  <>
+                    <path d="M18 6L6 18" />
+                    <path d="M6 6l12 12" />
+                  </>
+                ) : (
+                  <>
+                    <path d="M4 7h16" />
+                    <path d="M4 12h16" />
+                    <path d="M4 17h16" />
+                  </>
+                )}
               </svg>
-              ARCHIVE ARAC
-            </span>
-          </Link>
-
-          <div className="hidden md:flex items-center gap-5 text-[10px] font-bold">
-            {navGroups.map((group) => (
-              <NavDropdown key={group.label} label={group.label} links={group.links} pathname={pathname} />
-            ))}
+            </button>
           </div>
-
-          <button
-            ref={menuButtonRef}
-            type="button"
-            className="md:hidden shrink-0 p-2 -mr-2 rounded-lg text-[#2C2A29] hover:bg-[#E8E5DF]/80 transition-colors"
-            aria-expanded={drawerOpen}
-            aria-controls={drawerId}
-            aria-label={drawerOpen ? "Close menu" : "Open menu"}
-            onClick={() => setDrawerOpen((open) => !open)}
-          >
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              aria-hidden="true"
-            >
-              {drawerOpen ? (
-                <>
-                  <path d="M18 6L6 18" />
-                  <path d="M6 6l12 12" />
-                </>
-              ) : (
-                <>
-                  <path d="M4 7h16" />
-                  <path d="M4 12h16" />
-                  <path d="M4 17h16" />
-                </>
-              )}
-            </svg>
-          </button>
         </div>
       </nav>
 
@@ -298,6 +296,22 @@ export function Navbar() {
               </div>
             </section>
           ))}
+
+          {isLoggedIn && (
+            <section className="mb-8">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#9C7C5B] mb-3">
+                Account
+              </p>
+              <div className="flex flex-col gap-3">
+                <Link href="/profile" className="text-sm font-bold text-[#2C2A29] hover:text-[#E67E22]" onClick={closeDrawer}>
+                  Profile
+                </Link>
+                <Link href="/vault" className="text-sm font-bold text-[#2C2A29] hover:text-[#E67E22]" onClick={closeDrawer}>
+                  Archive
+                </Link>
+              </div>
+            </section>
+          )}
 
           <p className="text-[10px] text-[#5A5653] leading-relaxed border-t border-[#D1CEC7]/60 pt-4 mt-auto">
             Weave trends are illustrative · not live analytics

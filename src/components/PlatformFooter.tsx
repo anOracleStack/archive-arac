@@ -1,68 +1,34 @@
+"use client";
+
 import Link from "next/link";
-
-const platformLinks = [
-  { href: "/identity", label: "Identity Lock" },
-  { href: "/studio/weave", label: "Weave" },
-  { href: "/studio", label: "Studio" },
-  { href: "/analyze", label: "Silk Analyzer" },
-  { href: "/compose", label: "Strand Composer" },
-  { href: "/collections", label: "Collections" },
-  { href: "/vault", label: "Vault" },
-  { href: "/mission", label: "Mission" },
-];
-
-const homeSections = [
-  { href: "/#weave", label: "Weave" },
-  { href: "/#index", label: "Index" },
-];
+import { AuthControls } from "@/components/AuthControls";
+import { useAuthSession } from "@/hooks/useAuthSession";
 
 export function PlatformFooter() {
+  const { isLoggedIn } = useAuthSession();
+
   return (
-    <footer className="relative z-10 border-t border-[#C4A882]/30 bg-[#F9F7F3] px-6 py-10">
-      <div className="max-w-7xl mx-auto flex flex-col items-center gap-6 text-center">
-        <div className="flex flex-col gap-4 w-full max-w-2xl">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#9C7C5B] mb-2">
-              Platform
-            </p>
-            <nav
-              className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-semibold text-[#2C2A29]"
-              aria-label="Platform navigation"
-            >
-              {platformLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="hover:text-[#E67E22] transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#9C7C5B] mb-2">
-              Home
-            </p>
-            <nav
-              className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-semibold text-[#5A5653]"
-              aria-label="Home sections"
-            >
-              {homeSections.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="hover:text-[#E67E22] transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        </div>
-        <p className="text-[10px] tracking-[0.3em] font-bold uppercase text-[#5A5653]">
-          &copy; 2026 Index Araneae &mdash; No Threads Left Unspun
+    <footer className="fixed bottom-0 z-40 w-full border-t-2 border-[#E67E22]/35 bg-[#F9F7F3]/95 backdrop-blur-md">
+      <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-5 sm:px-8 py-3">
+        <p className="min-w-0 truncate text-[9px] font-semibold uppercase tracking-[0.12em] text-[#5A5653] sm:text-[10px] sm:tracking-[0.16em]">
+          Vanguard weaving for the next digital era
         </p>
+        <nav
+          className="flex shrink-0 items-center gap-3 text-[9px] font-bold uppercase tracking-widest text-[#2C2A29] sm:gap-4 sm:text-[10px]"
+          aria-label="Footer"
+        >
+          <Link href="/privacy" className="transition-colors hover:text-[#E67E22]">
+            Privacy
+          </Link>
+          <Link href="/terms" className="transition-colors hover:text-[#E67E22]">
+            Terms
+          </Link>
+          {!isLoggedIn && (
+            <Link href="/login" className="transition-colors hover:text-[#E67E22]">
+              Login
+            </Link>
+          )}
+        </nav>
       </div>
     </footer>
   );

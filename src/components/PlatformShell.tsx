@@ -8,7 +8,7 @@ import { VaultAutoSync } from "@/components/VaultAutoSync";
 
 export function PlatformShell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="relative min-h-screen flex flex-col">
+    <main className="relative flex min-h-screen flex-col pb-14 pt-14">
       <WebWeaveBackground />
       <SilkTrail />
       <Navbar />
