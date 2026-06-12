@@ -2,7 +2,13 @@
 
 import { memo, useCallback, useEffect, useId, useRef, useState, type FormEvent } from "react";
 import type { AnalysisResult } from "@/types/analysis";
-import { buildAnalysisChatSummary } from "@/lib/analysisChatContext";
+import type { SiteComparison } from "@/lib/compareSites";
+import {
+  buildAnalysisChatSummary,
+  buildCompareChatSummary,
+  resolveContextTier,
+  type ContextLevel,
+} from "@/lib/analysisChatContext";
 import { useScrollLock } from "@/hooks/useScrollLock";
 import {
   loadWorkshopThread,
@@ -14,15 +20,35 @@ import {
 
 type ChatMessage = StoredChatMessage;
 
-type Props = {
-  result?: AnalysisResult | null;
+type CompareContext = {
+  a: AnalysisResult;
+  b: AnalysisResult;
+  comparison: SiteComparison;
 };
 
-const STARTER_PROMPTS = [
+type Props = {
+  result?: AnalysisResult | null;
+  compare?: CompareContext | null;
+};
+
+type RetryPayload = {
+  userText: string;
+  actionPlan: boolean;
+  messagesBefore: ChatMessage[];
+};
+
+const SINGLE_STARTER_PROMPTS = [
   { label: "Top 3 improvements", message: "What are the top 3 improvements I should make to this site?" },
   { label: "Explain the stack", message: "Explain the tech stack detected in this analysis in plain language." },
   { label: "Brand alignment tips", message: "How well does this site align with modern brand and design trends? Give specific tips." },
   { label: "Turn into action plan", message: "Turn the key findings into a prioritized action plan I can execute this week.", actionPlan: true },
+] as const;
+
+const COMPARE_STARTER_PROMPTS = [
+  { label: "Who wins on score?", message: "Compare the innovation scores and vibes of both sites. Which leads and why?" },
+  { label: "Stack differences", message: "Explain the biggest tech stack differences between these two sites and what they imply." },
+  { label: "What should A steal?", message: "What should site A borrow from site B based on this comparison?" },
+  { label: "Compare action plan", message: "Build a prioritized action plan for improving the lower-scoring site using this comparison.", actionPlan: true },
 ] as const;
 
 const ACTION_PLAN_JSON_HINT =
@@ -32,38 +58,106 @@ function isActionPlanRequest(text: string): boolean {
   return /action plan|checklist|to-?do|next steps|roadmap|priorities/i.test(text);
 }
 
+type StreamEvent = {
+  type: string;
+  delta?: string;
+  message?: string;
+};
+
+type StreamOutcome = {
+  completed: boolean;
+  streamError?: string;
+};
+
+function parseSseChunk(raw: string): StreamEvent | null {
+  const line = raw.trim();
+  if (!line.startsWith("data:")) return null;
+  try {
+    return JSON.parse(line.slice(5).trim()) as StreamEvent;
+  } catch {
+    return null;
+  }
+}
+
 async function consumeChatStream(
   body: ReadableStream<Uint8Array>,
   onDelta: (text: string) => void
-): Promise<void> {
+): Promise<StreamOutcome> {
   const reader = body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
+  let completed = false;
+  let streamError: string | undefined;
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    const parts = buffer.split("\n\n");
-    buffer = parts.pop() ?? "";
-
-    for (const part of parts) {
-      const line = part.trim();
-      if (!line.startsWith("data:")) continue;
-      try {
-        const event = JSON.parse(line.slice(5).trim()) as {
-          type: string;
-          delta?: string;
-          message?: string;
-        };
-        if (event.type === "text-delta" && event.delta) onDelta(event.delta);
-        if (event.type === "error") throw new Error(event.message || "Stream error");
-      } catch (e) {
-        if (e instanceof Error && e.message !== "Stream error") continue;
-        throw e;
-      }
+  const handleEvent = (event: StreamEvent) => {
+    if (event.type === "text-delta" && event.delta) onDelta(event.delta);
+    if (event.type === "done") completed = true;
+    if (event.type === "error") {
+      streamError = event.message || "Stream error";
     }
+  };
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const parts = buffer.split("\n\n");
+      buffer = parts.pop() ?? "";
+
+      for (const part of parts) {
+        const event = parseSseChunk(part);
+        if (!event) continue;
+        handleEvent(event);
+        if (streamError) break;
+      }
+      if (streamError) break;
+    }
+
+    if (!streamError && buffer.trim()) {
+      const event = parseSseChunk(buffer);
+      if (event) handleEvent(event);
+    }
+
+    if (!streamError && !completed) {
+      streamError = "Connection closed before the reply finished";
+    }
+  } catch (err) {
+    streamError = err instanceof Error ? err.message : "Stream failed";
   }
+
+  return { completed: completed && !streamError, streamError };
+}
+
+function resolveContextLevel(text: string): ContextLevel {
+  return resolveContextTier(undefined, text) === "L1" ? "full" : "core";
+}
+
+function buildChatContext(
+  text: string,
+  result: AnalysisResult | null | undefined,
+  compare: CompareContext | null | undefined
+): string | null {
+  const level = resolveContextLevel(text);
+  const options = { contextLevel: level, lastUserMessage: text };
+
+  if (compare) {
+    return buildCompareChatSummary(compare.a, compare.b, compare.comparison, options).context;
+  }
+  if (result) {
+    return buildAnalysisChatSummary(result, options).context;
+  }
+  return null;
+}
+
+function threadHostname(
+  result: AnalysisResult | null | undefined,
+  compare: CompareContext | null | undefined
+): string {
+  if (compare) {
+    return `compare:${compare.a.hostname}|${compare.b.hostname}`;
+  }
+  return result?.hostname ?? "";
 }
 
 function ActionPlanView({ plan }: { plan: ActionPlanPayload }) {
@@ -197,18 +291,21 @@ const MessageContent = memo(function MessageContent({
   );
 });
 
-export function WorkshopChat({ result }: Props) {
+export function WorkshopChat({ result, compare = null }: Props) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [retryPayload, setRetryPayload] = useState<RetryPayload | null>(null);
   const panelId = useId();
   const closeRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const hostname = result?.hostname ?? "";
+  const hostname = threadHostname(result, compare);
+  const starterPrompts = compare ? COMPARE_STARTER_PROMPTS : SINGLE_STARTER_PROMPTS;
+  const hasContext = !!result || !!compare;
 
   useScrollLock(open);
 
@@ -223,8 +320,16 @@ export function WorkshopChat({ result }: Props) {
 
   useEffect(() => {
     if (!hostname || messages.length === 0) return;
+
+    if (busy) {
+      const timer = window.setTimeout(() => {
+        saveWorkshopThread(hostname, messages);
+      }, 500);
+      return () => window.clearTimeout(timer);
+    }
+
     saveWorkshopThread(hostname, messages);
-  }, [hostname, messages]);
+  }, [hostname, messages, busy]);
 
   useEffect(() => {
     if (!open) return;
@@ -268,16 +373,28 @@ export function WorkshopChat({ result }: Props) {
   }, [open]);
 
   const send = useCallback(
-    async (textOverride?: string, opts?: { actionPlan?: boolean }) => {
+    async (
+      textOverride?: string,
+      opts?: { actionPlan?: boolean; retryFrom?: RetryPayload }
+    ) => {
       const text = (textOverride ?? input).trim();
       if (!text || busy) return;
 
       const actionPlan = opts?.actionPlan ?? isActionPlanRequest(text);
-      const nextMessages: ChatMessage[] = [...messages, { role: "user", content: text }];
+      const baseMessages = opts?.retryFrom?.messagesBefore ?? messages;
+      const nextMessages: ChatMessage[] = [...baseMessages, { role: "user", content: text }];
+
       setMessages(nextMessages);
       setInput("");
       setError(null);
+      setRetryPayload(null);
       setBusy(true);
+
+      const snapshot: RetryPayload = {
+        userText: text,
+        actionPlan,
+        messagesBefore: baseMessages,
+      };
 
       const assistantPlaceholder: ChatMessage = {
         role: "assistant",
@@ -292,35 +409,59 @@ export function WorkshopChat({ result }: Props) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messages: nextMessages,
-            analysisContext: result ? buildAnalysisChatSummary(result) : null,
+            analysisContext: buildChatContext(text, result, compare),
             formatHint: actionPlan ? ACTION_PLAN_JSON_HINT : undefined,
             stream: true,
           }),
         });
 
+        const contentType = res.headers.get("content-type") ?? "";
+
         if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          throw new Error(data.error || "Chat failed");
+          const data = contentType.includes("application/json")
+            ? await res.json().catch(() => ({}))
+            : {};
+          throw new Error(data.error || `Chat failed (${res.status})`);
         }
 
-        const contentType = res.headers.get("content-type") ?? "";
         let fullReply = "";
 
         if (contentType.includes("text/event-stream") && res.body) {
-          await consumeChatStream(res.body, (delta) => {
-            fullReply += delta;
+          let streamRaf = 0;
+          const flushStream = () => {
+            const snapshotText = fullReply;
             setMessages((prev) => {
               const copy = [...prev];
               const last = copy[copy.length - 1];
               if (last?.role === "assistant") {
-                copy[copy.length - 1] = { ...last, content: fullReply };
+                copy[copy.length - 1] = { ...last, content: snapshotText };
               }
               return copy;
             });
+          };
+
+          const outcome = await consumeChatStream(res.body, (delta) => {
+            fullReply += delta;
+            if (streamRaf) return;
+            streamRaf = requestAnimationFrame(() => {
+              streamRaf = 0;
+              flushStream();
+            });
           });
+
+          if (streamRaf) {
+            cancelAnimationFrame(streamRaf);
+            flushStream();
+          }
+
+          if (outcome.streamError) {
+            setRetryPayload(snapshot);
+            throw new Error(outcome.streamError);
+          }
         } else {
           const data = await res.json();
           fullReply = data.reply ?? "";
+          if (!fullReply) throw new Error("Empty response from chat");
         }
 
         const actionPlanData = actionPlan ? parseActionPlanPayload(fullReply) : null;
@@ -343,14 +484,24 @@ export function WorkshopChat({ result }: Props) {
           if (last?.role === "assistant" && !last.content) return prev.slice(0, -1);
           return prev;
         });
+        setRetryPayload(snapshot);
         setError(err instanceof Error ? err.message : "Something went wrong");
       } finally {
         setBusy(false);
         queueMicrotask(() => inputRef.current?.focus());
       }
     },
-    [busy, input, messages, result]
+    [busy, compare, input, messages, result]
   );
+
+  const retryLast = useCallback(() => {
+    if (!retryPayload || busy) return;
+    setMessages(retryPayload.messagesBefore);
+    void send(retryPayload.userText, {
+      actionPlan: retryPayload.actionPlan,
+      retryFrom: retryPayload,
+    });
+  }, [busy, retryPayload, send]);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -398,7 +549,12 @@ export function WorkshopChat({ result }: Props) {
                 <h2 id={`${panelId}-title`} className="text-lg font-bold tracking-tight text-[#2C2A29]">
                   Ask about your analysis
                 </h2>
-                {result && (
+                {compare && (
+                  <p className="mt-1 text-[10px] text-[#5A5653] truncate max-w-[260px]">
+                    Context: {compare.a.hostname} vs {compare.b.hostname}
+                  </p>
+                )}
+                {!compare && result && (
                   <p className="mt-1 text-[10px] text-[#5A5653] truncate max-w-[240px]">
                     Context: {result.hostname}
                   </p>
@@ -427,12 +583,12 @@ export function WorkshopChat({ result }: Props) {
                     or shape your next build move.
                   </p>
                   <div className="flex flex-wrap justify-center gap-2" role="list">
-                    {STARTER_PROMPTS.map((chip) => (
+                    {starterPrompts.map((chip) => (
                       <button
                         key={chip.label}
                         type="button"
                         role="listitem"
-                        disabled={busy}
+                        disabled={busy || !hasContext}
                         onClick={() => void send(chip.message, { actionPlan: "actionPlan" in chip && chip.actionPlan })}
                         className="rounded-full border border-[#E8E5DF] bg-white px-3 py-1.5 text-[11px] font-semibold text-[#2C2A29] hover:border-[#E67E22] hover:text-[#E67E22] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-40"
                       >
@@ -477,16 +633,26 @@ export function WorkshopChat({ result }: Props) {
                 </div>
               )}
               {error && (
-                <p className="text-xs text-red-600 text-center" role="alert">
-                  {error}
-                </p>
+                <div className="text-center space-y-2" role="alert">
+                  <p className="text-xs text-red-600">{error}</p>
+                  {retryPayload && (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => retryLast()}
+                      className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-red-700 hover:bg-red-100 disabled:opacity-40"
+                    >
+                      Retry message
+                    </button>
+                  )}
+                </div>
               )}
             </div>
 
             <form onSubmit={onSubmit} className="border-t border-[#E8E5DF] p-4 shrink-0 bg-[#FDFCFA]">
               {messages.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mb-3">
-                  {STARTER_PROMPTS.slice(0, 3).map((chip) => (
+                  {starterPrompts.slice(0, 3).map((chip) => (
                     <button
                       key={chip.label}
                       type="button"

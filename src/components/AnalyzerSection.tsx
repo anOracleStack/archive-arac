@@ -18,7 +18,11 @@ import { BalancedText } from "@/components/BalancedText";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { useAnalyzerFlow } from "@/components/AnalyzerFlowContext";
 import { AnalyzeUrlField } from "@/components/AnalyzeUrlField";
-import { Modal } from "./Modal";
+
+const Modal = dynamic(
+  () => import("./Modal").then((mod) => mod.Modal),
+  { ssr: false }
+);
 
 const AnalyzerResults = dynamic(
   () => import("./AnalyzerResults").then((mod) => mod.AnalyzerResults),
@@ -383,7 +387,12 @@ export function AnalyzerSection({
           </>
         )}
         {compareA && compareB && comparison && mode === "compare" && (
-          <CompareResults a={compareA} b={compareB} comparison={comparison} />
+          <>
+            <CompareResults a={compareA} b={compareB} comparison={comparison} />
+            <WorkshopChat
+              compare={{ a: compareA, b: compareB, comparison }}
+            />
+          </>
         )}
       </div>
       {!onStrandSelect && (

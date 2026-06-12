@@ -39,6 +39,27 @@ End with **First move today:** one sentence.`;
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
+const HISTORY_TOKEN_BUDGET = 1500;
+const MAX_HISTORY_TURNS = 6;
+
+function estimateTokens(text: string): number {
+  return Math.ceil(text.length / 4);
+}
+
+/** Keep last N turns within ~1.5K token budget (spec §2.2). */
+function trimConversationHistory(messages: ChatMessage[]): ChatMessage[] {
+  const recent = messages.slice(-MAX_HISTORY_TURNS * 2);
+  let total = recent.reduce((sum, m) => sum + estimateTokens(m.content), 0);
+  const trimmed = [...recent];
+
+  while (trimmed.length > 2 && total > HISTORY_TOKEN_BUDGET) {
+    trimmed.shift();
+    total = trimmed.reduce((sum, m) => sum + estimateTokens(m.content), 0);
+  }
+
+  return trimmed.slice(-MAX_HISTORY_TURNS * 2);
+}
+
 function wantsJsonActionPlan(formatHint: string | null): boolean {
   return !!formatHint?.includes("JSON");
 }
@@ -108,6 +129,16 @@ async function openAIStream(
       }
 
       let buffer = "";
+      let sawContent = false;
+      let streamError: string | null = null;
+
+      const emitError = (message: string) => {
+        streamError = message;
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify({ type: "error", message })}\n\n`)
+        );
+      };
+
       try {
         while (true) {
           const { done, value } = await reader.read();
@@ -124,9 +155,15 @@ async function openAIStream(
             try {
               const json = JSON.parse(payload) as {
                 choices?: { delta?: { content?: string } }[];
+                error?: { message?: string };
               };
+              if (json.error?.message) {
+                emitError(json.error.message);
+                break;
+              }
               const delta = json.choices?.[0]?.delta?.content;
               if (delta) {
+                sawContent = true;
                 controller.enqueue(
                   encoder.encode(
                     `data: ${JSON.stringify({ type: "text-delta", delta })}\n\n`
@@ -137,13 +174,21 @@ async function openAIStream(
               /* skip malformed SSE chunk */
             }
           }
+          if (streamError) break;
         }
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "done" })}\n\n`));
+
+        if (!streamError) {
+          if (!sawContent) {
+            emitError("No response content from model");
+          } else {
+            controller.enqueue(
+              encoder.encode(`data: ${JSON.stringify({ type: "done" })}\n\n`)
+            );
+          }
+        }
       } catch (err) {
         const message = err instanceof Error ? err.message : "Stream failed";
-        controller.enqueue(
-          encoder.encode(`data: ${JSON.stringify({ type: "error", message })}\n\n`)
-        );
+        emitError(message);
       } finally {
         controller.close();
       }
@@ -169,7 +214,7 @@ export async function POST(request: NextRequest) {
   }
 
   const ip = getClientIp(request);
-  const limited = checkChatRateLimit(ip);
+  const limited = await checkChatRateLimit(ip);
   if (!limited.ok) return rateLimitResponse(limited.retryAfterSec);
 
   try {
@@ -198,7 +243,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Too many messages in one request" }, { status: 400 });
     }
 
-    const scrubbed = scrubMessages(messages).slice(-12);
+    const scrubbed = trimConversationHistory(scrubMessages(messages));
     const actionPlan = !!formatHint;
     const jsonPlan = wantsJsonActionPlan(formatHint);
     const resolvedHint = actionPlan

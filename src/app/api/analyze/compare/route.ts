@@ -6,7 +6,7 @@ import { checkAnalyzeRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
-  const limited = checkAnalyzeRateLimit(ip);
+  const limited = await checkAnalyzeRateLimit(ip);
   if (!limited.ok) {
     return NextResponse.json(
       { error: "Too many analyses. Try again later." },
