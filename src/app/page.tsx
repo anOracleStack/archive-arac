@@ -92,16 +92,18 @@ function HomePage() {
 
   return (
     <AnalyzerFlowProvider initialUrl={urlPrefill}>
-      <main id="top" className="relative min-h-screen pb-14 pt-14">
+      <main id="top" className="relative min-h-screen">
         <WebWeaveBackground />
         <SilkTrail />
         <Navbar />
         <section
           id="hero"
           aria-label="Introduction"
-          className="relative z-10 mx-auto h-[calc(100svh-7rem)] max-h-[calc(100svh-7rem)] w-full max-w-5xl shrink-0 overflow-hidden px-6"
+          className="relative z-10 box-border flex min-h-screen flex-col overflow-hidden pt-14 pb-14"
         >
-          <Hero />
+          <div className="mx-auto flex h-full w-full max-w-5xl flex-1 flex-col justify-center px-6">
+            <Hero />
+          </div>
         </section>
         <ProductPillars />
         <HowItWorks />
