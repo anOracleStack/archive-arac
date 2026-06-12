@@ -12,6 +12,7 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { MethodologySection } from "@/components/MethodologySection";
 import { PlatformFooter } from "@/components/PlatformFooter";
 import { AnalyzerFlowProvider } from "@/components/AnalyzerFlowContext";
+import { parseCompareParams } from "@/lib/compareUrlSync";
 
 const WebWeaveBackground = dynamic(
   () => import("@/components/effects/WebWeaveBackground").then((mod) => mod.WebWeaveBackground),
@@ -87,8 +88,11 @@ function HomePage() {
     }
   }, [searchParams]);
 
-  const urlPrefill = searchParams.get("url") ?? "";
-  const autoRun = searchParams.get("run") === "1" && urlPrefill.length > 0;
+  const comparePrefill = parseCompareParams(searchParams);
+  const urlPrefill = comparePrefill ? "" : (searchParams.get("url") ?? "");
+  const autoRun = !comparePrefill && searchParams.get("run") === "1" && urlPrefill.length > 0;
+  const compareAutoRun =
+    !!comparePrefill && searchParams.get("run") === "1";
 
   return (
     <AnalyzerFlowProvider initialUrl={urlPrefill}>
@@ -109,7 +113,14 @@ function HomePage() {
         <HowItWorks />
         <LandscapeSection />
         <DatabaseGrid onSelect={handleSelect} />
-        <AnalyzerSection initialUrl={urlPrefill} autoRun={autoRun} showIntro={false} onStrandSelect={handleSelect} />
+        <AnalyzerSection
+          initialUrl={urlPrefill}
+          autoRun={autoRun}
+          comparePrefill={comparePrefill}
+          compareAutoRun={compareAutoRun}
+          showIntro={false}
+          onStrandSelect={handleSelect}
+        />
         <MethodologySection />
         <PlatformFooter />
         <Modal item={selectedItem} onClose={handleClose} />

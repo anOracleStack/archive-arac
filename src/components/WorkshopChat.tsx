@@ -4,8 +4,15 @@ import { memo, useCallback, useEffect, useId, useRef, useState, type FormEvent }
 import type { AnalysisResult } from "@/types/analysis";
 import { buildAnalysisChatSummary } from "@/lib/analysisChatContext";
 import { useScrollLock } from "@/hooks/useScrollLock";
+import {
+  loadWorkshopThread,
+  saveWorkshopThread,
+  parseActionPlanPayload,
+  type ActionPlanPayload,
+  type StoredChatMessage,
+} from "@/lib/workshopThreadStore";
 
-type ChatMessage = { role: "user" | "assistant"; content: string; actionPlan?: boolean };
+type ChatMessage = StoredChatMessage;
 
 type Props = {
   result?: AnalysisResult | null;
@@ -18,11 +25,105 @@ const STARTER_PROMPTS = [
   { label: "Turn into action plan", message: "Turn the key findings into a prioritized action plan I can execute this week.", actionPlan: true },
 ] as const;
 
+const ACTION_PLAN_JSON_HINT =
+  "Respond with ONLY valid JSON matching the action-plan schema (goal, quickWins, medium, larger, firstMove).";
+
 function isActionPlanRequest(text: string): boolean {
-  return /action plan|checklist|to-?do|next steps/i.test(text);
+  return /action plan|checklist|to-?do|next steps|roadmap|priorities/i.test(text);
 }
 
-const MessageContent = memo(function MessageContent({ content, asChecklist }: { content: string; asChecklist?: boolean }) {
+async function consumeChatStream(
+  body: ReadableStream<Uint8Array>,
+  onDelta: (text: string) => void
+): Promise<void> {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const parts = buffer.split("\n\n");
+    buffer = parts.pop() ?? "";
+
+    for (const part of parts) {
+      const line = part.trim();
+      if (!line.startsWith("data:")) continue;
+      try {
+        const event = JSON.parse(line.slice(5).trim()) as {
+          type: string;
+          delta?: string;
+          message?: string;
+        };
+        if (event.type === "text-delta" && event.delta) onDelta(event.delta);
+        if (event.type === "error") throw new Error(event.message || "Stream error");
+      } catch (e) {
+        if (e instanceof Error && e.message !== "Stream error") continue;
+        throw e;
+      }
+    }
+  }
+}
+
+function ActionPlanView({ plan }: { plan: ActionPlanPayload }) {
+  const sections: { title: string; items: ActionPlanPayload["quickWins"] }[] = [
+    { title: "Quick wins (this week)", items: plan.quickWins },
+    { title: "Medium effort (this month)", items: plan.medium },
+    { title: "Larger bets (when ready)", items: plan.larger },
+  ];
+
+  return (
+    <div className="space-y-4 text-sm">
+      <p className="font-semibold text-[#2C2A29]">{plan.goal}</p>
+      {sections.map(
+        (sec) =>
+          sec.items.length > 0 && (
+            <div key={sec.title}>
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#9C7C5B] mb-2">
+                {sec.title}
+              </p>
+              <ul className="space-y-2.5">
+                {sec.items.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border border-[#C4A882]/60 bg-white text-[9px] font-bold text-[#E67E22]">
+                      {item.effort}
+                    </span>
+                    <span>
+                      <span className="font-medium">{item.task}</span>
+                      {item.why && (
+                        <span className="block text-xs text-[#5A5653] mt-0.5">{item.why}</span>
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+      )}
+      {plan.firstMove && (
+        <p className="text-xs border-t border-[#E8E5DF] pt-3 text-[#5A5653]">
+          <span className="font-bold text-[#E67E22]">First move today: </span>
+          {plan.firstMove}
+        </p>
+      )}
+    </div>
+  );
+}
+
+const MessageContent = memo(function MessageContent({
+  content,
+  asChecklist,
+  actionPlanData,
+}: {
+  content: string;
+  asChecklist?: boolean;
+  actionPlanData?: ActionPlanPayload | null;
+}) {
+  if (actionPlanData) {
+    return <ActionPlanView plan={actionPlanData} />;
+  }
+
   const lines = content.split("\n").filter((l) => l.trim());
   const looksLikeList =
     asChecklist ||
@@ -107,8 +208,23 @@ export function WorkshopChat({ result }: Props) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const hostname = result?.hostname ?? "";
 
   useScrollLock(open);
+
+  useEffect(() => {
+    if (!hostname) {
+      setMessages([]);
+      return;
+    }
+    const saved = loadWorkshopThread(hostname);
+    setMessages(saved ?? []);
+  }, [hostname]);
+
+  useEffect(() => {
+    if (!hostname || messages.length === 0) return;
+    saveWorkshopThread(hostname, messages);
+  }, [hostname, messages]);
 
   useEffect(() => {
     if (!open) return;
@@ -163,6 +279,13 @@ export function WorkshopChat({ result }: Props) {
       setError(null);
       setBusy(true);
 
+      const assistantPlaceholder: ChatMessage = {
+        role: "assistant",
+        content: "",
+        actionPlan,
+      };
+      setMessages((prev) => [...prev, assistantPlaceholder]);
+
       try {
         const res = await fetch("/api/chat", {
           method: "POST",
@@ -170,18 +293,56 @@ export function WorkshopChat({ result }: Props) {
           body: JSON.stringify({
             messages: nextMessages,
             analysisContext: result ? buildAnalysisChatSummary(result) : null,
-            formatHint: actionPlan
-              ? "Respond with a numbered action plan using bullet points or checkbox-style items (- [ ] task)."
-              : undefined,
+            formatHint: actionPlan ? ACTION_PLAN_JSON_HINT : undefined,
+            stream: true,
           }),
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Chat failed");
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: data.reply, actionPlan },
-        ]);
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || "Chat failed");
+        }
+
+        const contentType = res.headers.get("content-type") ?? "";
+        let fullReply = "";
+
+        if (contentType.includes("text/event-stream") && res.body) {
+          await consumeChatStream(res.body, (delta) => {
+            fullReply += delta;
+            setMessages((prev) => {
+              const copy = [...prev];
+              const last = copy[copy.length - 1];
+              if (last?.role === "assistant") {
+                copy[copy.length - 1] = { ...last, content: fullReply };
+              }
+              return copy;
+            });
+          });
+        } else {
+          const data = await res.json();
+          fullReply = data.reply ?? "";
+        }
+
+        const actionPlanData = actionPlan ? parseActionPlanPayload(fullReply) : null;
+        setMessages((prev) => {
+          const copy = [...prev];
+          const last = copy[copy.length - 1];
+          if (last?.role === "assistant") {
+            copy[copy.length - 1] = {
+              ...last,
+              content: fullReply,
+              actionPlan,
+              actionPlanData,
+            };
+          }
+          return copy;
+        });
       } catch (err) {
+        setMessages((prev) => {
+          const last = prev[prev.length - 1];
+          if (last?.role === "assistant" && !last.content) return prev.slice(0, -1);
+          return prev;
+        });
         setError(err instanceof Error ? err.message : "Something went wrong");
       } finally {
         setBusy(false);
@@ -261,13 +422,16 @@ export function WorkshopChat({ result }: Props) {
               {messages.length === 0 && (
                 <div className="text-center py-4">
                   <p className="text-sm text-[#5A5653] mb-4 leading-relaxed">
-                    Brainstorm improvements, decode the score, or shape your next build move.
+                    Brainstorm improvements, decode the score,
+                    <br />
+                    or shape your next build move.
                   </p>
-                  <div className="flex flex-wrap justify-center gap-2">
+                  <div className="flex flex-wrap justify-center gap-2" role="list">
                     {STARTER_PROMPTS.map((chip) => (
                       <button
                         key={chip.label}
                         type="button"
+                        role="listitem"
                         disabled={busy}
                         onClick={() => void send(chip.message, { actionPlan: "actionPlan" in chip && chip.actionPlan })}
                         className="rounded-full border border-[#E8E5DF] bg-white px-3 py-1.5 text-[11px] font-semibold text-[#2C2A29] hover:border-[#E67E22] hover:text-[#E67E22] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-40"
@@ -288,13 +452,19 @@ export function WorkshopChat({ result }: Props) {
                   }`}
                 >
                   {msg.role === "assistant" ? (
-                    <MessageContent content={msg.content} asChecklist={msg.actionPlan} />
+                    msg.content || (busy && i === messages.length - 1) ? (
+                      <MessageContent
+                        content={msg.content}
+                        asChecklist={msg.actionPlan && !msg.actionPlanData}
+                        actionPlanData={msg.actionPlanData}
+                      />
+                    ) : null
                   ) : (
                     <span className="whitespace-pre-wrap">{msg.content}</span>
                   )}
                 </div>
               ))}
-              {busy && (
+              {busy && messages[messages.length - 1]?.role !== "assistant" && (
                 <div className="mr-4 rounded-2xl px-4 py-3 text-sm bg-[#F9F7F3] border border-[#E8E5DF] text-[#5A5653]">
                   <span className="inline-flex items-center gap-2">
                     <span className="flex gap-1">

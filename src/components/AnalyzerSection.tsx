@@ -6,6 +6,12 @@ import type { AnalysisResult } from "@/types/analysis";
 import type { StrandItem } from "@/types";
 import type { SiteComparison } from "@/lib/compareSites";
 import { tryNormalizeCanonicalUrl } from "@/lib/normalizeUrl";
+import {
+  readPersistedSession,
+  saveCompareSession,
+  clearAnalysisSession,
+} from "@/lib/analysisSession";
+import { syncCompareUrl, clearCompareUrl } from "@/lib/compareUrlSync";
 import { gloss } from "@/data/knowledgeGloss";
 import { KnowledgeGateway } from "@/components/KnowledgeGateway";
 import { BalancedText } from "@/components/BalancedText";
@@ -40,11 +46,20 @@ type AnalyzerMode = "single" | "compare";
 interface AnalyzerSectionProps {
   initialUrl?: string;
   autoRun?: boolean;
+  comparePrefill?: { urlA: string; urlB: string } | null;
+  compareAutoRun?: boolean;
   showIntro?: boolean;
   onStrandSelect?: (strand: StrandItem) => void;
 }
 
-export function AnalyzerSection({ initialUrl = "", autoRun = false, showIntro = true, onStrandSelect }: AnalyzerSectionProps) {
+export function AnalyzerSection({
+  initialUrl = "",
+  autoRun = false,
+  comparePrefill = null,
+  compareAutoRun = false,
+  showIntro = true,
+  onStrandSelect,
+}: AnalyzerSectionProps) {
   const single = useAnalyzerFlow();
   const [mode, setMode] = useState<AnalyzerMode>("single");
   const [urlB, setUrlB] = useState("");
@@ -66,6 +81,38 @@ export function AnalyzerSection({ initialUrl = "", autoRun = false, showIntro = 
     // eslint-disable-next-line react-hooks/exhaustive-deps -- sync prefill only when prop changes
   }, [initialUrl]);
 
+  const sessionRestored = useRef(false);
+  useEffect(() => {
+    if (sessionRestored.current) return;
+    sessionRestored.current = true;
+
+    if (comparePrefill) {
+      setMode("compare");
+      single.setUrl(comparePrefill.urlA);
+      setUrlB(comparePrefill.urlB);
+      return;
+    }
+
+    if (initialUrl.trim()) return;
+
+    const saved = readPersistedSession();
+    if (!saved) return;
+
+    if (saved.mode === "compare") {
+      setMode("compare");
+      single.setUrl(saved.urlA);
+      setUrlB(saved.urlB);
+      setCompareA(saved.compareA);
+      setCompareB(saved.compareB);
+      setComparison(saved.comparison);
+      setCompareStatus("complete");
+      queueMicrotask(() => scrollToResults());
+      return;
+    }
+    // single restore handled by useSingleAnalyze
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-once restore
+  }, []);
+
   const autoRan = useRef(false);
   useEffect(() => {
     if (!autoRun || autoRan.current) return;
@@ -77,9 +124,53 @@ export function AnalyzerSection({ initialUrl = "", autoRun = false, showIntro = 
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once when autoRun + url ready
   }, [autoRun, single.url, single.result, single.busy]);
 
+  const compareAutoRan = useRef(false);
+  useEffect(() => {
+    if (!compareAutoRun || compareAutoRan.current || !comparePrefill) return;
+    if (compareA || compareStatus === "fetching") return;
+    compareAutoRan.current = true;
+    setMode("compare");
+    single.setUrl(comparePrefill.urlA);
+    setUrlB(comparePrefill.urlB);
+    void (async () => {
+      setCompareError(null);
+      resetCompare();
+      setCompareStatus("fetching");
+      try {
+        const res = await fetch("/api/analyze/compare", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ urlA: comparePrefill.urlA, urlB: comparePrefill.urlB }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Comparison failed");
+        setCompareA(data.a);
+        setCompareB(data.b);
+        setComparison(data.comparison);
+        setCompareStatus("complete");
+        saveCompareSession({
+          mode: "compare",
+          urlA: comparePrefill.urlA,
+          urlB: comparePrefill.urlB,
+          compareA: data.a,
+          compareB: data.b,
+          comparison: data.comparison,
+        });
+        syncCompareUrl(comparePrefill.urlA, comparePrefill.urlB);
+        scrollToResults();
+      } catch (err) {
+        setCompareError(err instanceof Error ? err.message : "Something went wrong");
+        setCompareStatus("error");
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- compare auto-run once
+  }, [compareAutoRun, comparePrefill]);
+
   const handleClearResults = () => {
     single.reset();
     resetCompare();
+    clearAnalysisSession();
+    clearCompareUrl();
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       params.delete("url");
@@ -133,6 +224,15 @@ export function AnalyzerSection({ initialUrl = "", autoRun = false, showIntro = 
       setCompareB(data.b);
       setComparison(data.comparison);
       setCompareStatus("complete");
+      saveCompareSession({
+        mode: "compare",
+        urlA: submitA,
+        urlB: submitB,
+        compareA: data.a,
+        compareB: data.b,
+        comparison: data.comparison,
+      });
+      syncCompareUrl(submitA, submitB);
       scrollToResults();
     } catch (err) {
       setCompareError(err instanceof Error ? err.message : "Something went wrong");
@@ -181,14 +281,14 @@ export function AnalyzerSection({ initialUrl = "", autoRun = false, showIntro = 
                   "from one URL or a side-by-side compare.",
                 ]}
               />
-              <ModeToggle mode={mode} onChange={(m) => { setMode(m); single.reset(); resetCompare(); }} />
+              <ModeToggle mode={mode} onChange={(m) => { setMode(m); single.reset(); resetCompare(); clearAnalysisSession(); clearCompareUrl(); }} />
             </div>
           </ScrollReveal>
         )}
 
         {!showIntro && (
           <div className="flex justify-center mb-8">
-            <ModeToggle mode={mode} onChange={(m) => { setMode(m); single.reset(); resetCompare(); }} />
+            <ModeToggle mode={mode} onChange={(m) => { setMode(m); single.reset(); resetCompare(); clearAnalysisSession(); clearCompareUrl(); }} />
           </div>
         )}
 

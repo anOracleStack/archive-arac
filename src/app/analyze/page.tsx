@@ -8,11 +8,15 @@ import { BalancedText } from "@/components/BalancedText";
 import { AnalyzerSection } from "@/components/AnalyzerSection";
 import { AnalyzerFlowProvider } from "@/components/AnalyzerFlowContext";
 import { FeatureExplainer } from "@/components/FeatureExplainer";
+import { parseCompareParams } from "@/lib/compareUrlSync";
 
 function AnalyzeContent() {
   const searchParams = useSearchParams();
-  const prefill = searchParams.get("url") ?? "";
-  const autoRun = searchParams.get("run") === "1" && prefill.length > 0;
+  const comparePrefill = parseCompareParams(searchParams);
+  const prefill = comparePrefill ? "" : (searchParams.get("url") ?? "");
+  const autoRun = !comparePrefill && searchParams.get("run") === "1" && prefill.length > 0;
+  const compareAutoRun =
+    !!comparePrefill && searchParams.get("run") === "1";
 
   return (
     <AnalyzerFlowProvider initialUrl={prefill}>
@@ -50,7 +54,13 @@ function AnalyzeContent() {
           />
         </div>
       </div>
-      <AnalyzerSection initialUrl={prefill} autoRun={autoRun} showIntro={false} />
+      <AnalyzerSection
+        initialUrl={prefill}
+        autoRun={autoRun}
+        comparePrefill={comparePrefill}
+        compareAutoRun={compareAutoRun}
+        showIntro={false}
+      />
     </PlatformShell>
     </AnalyzerFlowProvider>
   );
