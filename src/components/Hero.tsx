@@ -2,7 +2,7 @@
 
 import { type FormEvent } from "react";
 import { BalancedText } from "@/components/BalancedText";
-import { LoreTerm } from "@/components/LoreTerm";
+import { HERO_SUPPORT_COPY, LoreTerm } from "@/components/LoreTerm";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { useAnalyzerFlow } from "@/components/AnalyzerFlowContext";
 import { AnalyzeUrlField } from "@/components/AnalyzeUrlField";
@@ -24,14 +24,15 @@ export function Hero() {
   };
 
   return (
-    <header className="relative pt-40 pb-20 px-6 max-w-5xl mx-auto text-center z-10">
+    <header className="relative z-10 mx-auto flex min-h-[calc(100svh-3.5rem)] max-w-5xl flex-col justify-center px-6 py-14 text-center">
       <ScrollReveal>
         <LoreTerm
           className="mb-6"
-          term="Archive Arac"
+          size="hero"
+          term="Archive Arac: The architecture of websites"
           plain={[
-            "Digital real estate, end to end —",
-            "see any site, claim a name, build yours.",
+            "Your domain is your address on the web — we break down how sites work,",
+            "help you claim the right name, & build one that fits you.",
           ]}
         />
       </ScrollReveal>
@@ -48,10 +49,10 @@ export function Hero() {
       </ScrollReveal>
       <ScrollReveal index={2}>
         <BalancedText
-          className="text-lg md:text-xl text-[#5A5653] font-light max-w-2xl mx-auto"
+          className={`${HERO_SUPPORT_COPY} max-w-2xl mx-auto`}
           lines={[
-            "Understand & optimize any site — branding, domains, handles,",
-            "architecture, & a site that fits your identity.",
+            "Analyze any website's structure, secure your branding, domains, & handles,",
+            "& build a site that fits your identity.",
           ]}
         />
       </ScrollReveal>
