@@ -26,14 +26,14 @@ export function Hero() {
     <header className="relative pt-40 pb-20 px-6 max-w-5xl mx-auto text-center z-10">
       <ScrollReveal>
         <p className="inline-block mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10 backdrop-blur-sm shadow-sm">
-          Digital real estate, end to end
+          Digital Real Estate, End to End
         </p>
       </ScrollReveal>
       <ScrollReveal index={1}>
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-[0.95] tracking-tighter text-balance">
-          From foundation to{" "}
+          From Foundation to{" "}
           <span className="text-[#E67E22] relative inline-block">
-            deployment.
+            Fruition.
             <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 8" fill="none" aria-hidden>
               <path d="M0 4 Q50 0 100 4 Q150 8 200 4" stroke="#E67E22" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.4" />
             </svg>
@@ -44,8 +44,8 @@ export function Hero() {
         <BalancedText
           className="text-lg md:text-xl text-[#5A5653] font-light max-w-2xl mx-auto"
           lines={[
-            "Understand and optimize any site — then build your presence:",
-            "branding, domains, handles, architecture, and a site that fits your identity.",
+            "Understand & optimize any site — branding, domains, handles,",
+            "architecture, & a site that fits your identity.",
           ]}
         />
       </ScrollReveal>

@@ -36,15 +36,6 @@ const navGroups = [
   },
 ] as const;
 
-function linkClass(isActive: boolean, variant: "home" | "platform") {
-  const base =
-    variant === "home"
-      ? "text-[#5A5653] hover:text-[#E67E22]"
-      : "text-[#2C2A29] hover:text-[#E67E22]";
-  const active = isActive ? " text-[#E67E22] underline underline-offset-4 decoration-[#E67E22]/60" : "";
-  return `${base} transition-colors whitespace-nowrap${active}`;
-}
-
 function NavDropdown({
   label,
   links,
@@ -196,36 +187,16 @@ export function Navbar() {
             </span>
           </Link>
 
-          <div className="hidden lg:flex items-center gap-5 text-[10px] font-bold">
+          <div className="hidden md:flex items-center gap-5 text-[10px] font-bold">
             {navGroups.map((group) => (
               <NavDropdown key={group.label} label={group.label} links={group.links} pathname={pathname} />
-            ))}
-          </div>
-
-          <div className="hidden md:flex lg:hidden items-center gap-3 text-[9px] font-bold uppercase tracking-widest flex-wrap justify-end max-w-[55%]">
-            {navGroups.map((group, gi) => (
-              <span key={group.label} className="flex items-center gap-2">
-                {gi > 0 && <span className="w-px h-3 bg-[#D1CEC7]" aria-hidden />}
-                <span className="text-[#B8B5AE]">{group.label}</span>
-                {group.links.slice(0, group.label === "Discover" ? 2 : 1).map((link) => {
-                  const isActive =
-                    "match" in link && link.match
-                      ? link.match(pathname)
-                      : pathname === link.href;
-                  return (
-                    <Link key={link.href} href={link.href} className={linkClass(isActive, link.href.startsWith("/#") ? "home" : "platform")}>
-                      {link.label}
-                    </Link>
-                  );
-                })}
-              </span>
             ))}
           </div>
 
           <button
             ref={menuButtonRef}
             type="button"
-            className="lg:hidden shrink-0 p-2 -mr-2 rounded-lg text-[#2C2A29] hover:bg-[#E8E5DF]/80 transition-colors"
+            className="md:hidden shrink-0 p-2 -mr-2 rounded-lg text-[#2C2A29] hover:bg-[#E8E5DF]/80 transition-colors"
             aria-expanded={drawerOpen}
             aria-controls={drawerId}
             aria-label={drawerOpen ? "Close menu" : "Open menu"}
@@ -261,7 +232,7 @@ export function Navbar() {
       {drawerOpen && (
         <button
           type="button"
-          className="fixed inset-0 z-40 bg-[#2C2A29]/40 lg:hidden"
+          className="fixed inset-0 z-40 bg-[#2C2A29]/40 md:hidden"
           aria-label="Close menu"
           onClick={closeDrawer}
         />
@@ -270,7 +241,7 @@ export function Navbar() {
       <div
         id={drawerId}
         ref={drawerRef}
-        className={`fixed top-0 right-0 z-50 h-full w-[85vw] max-w-[320px] bg-[#F9F7F3] border-l border-[#C4A882]/40 shadow-2xl transform transition-transform duration-300 ease-out lg:hidden ${
+        className={`fixed top-0 right-0 z-50 h-full w-[85vw] max-w-[320px] bg-[#F9F7F3] border-l border-[#C4A882]/40 shadow-2xl transform transition-transform duration-300 ease-out md:hidden ${
           drawerOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
         }`}
         aria-hidden={!drawerOpen}
