@@ -1,7 +1,8 @@
 import type { AnalysisResult } from "@/types/analysis";
+import { scrubPii } from "@/lib/scrubPii";
 
 export function buildAnalysisChatSummary(result: AnalysisResult): string {
-  return JSON.stringify(
+  const raw = JSON.stringify(
     {
       url: result.url,
       hostname: result.hostname,
@@ -27,4 +28,5 @@ export function buildAnalysisChatSummary(result: AnalysisResult): string {
     null,
     2
   );
+  return scrubPii(raw);
 }

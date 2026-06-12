@@ -2,8 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { analyzeSite } from "@/lib/analyzer";
 import { compareAnalyses } from "@/lib/compareSites";
 import { normalizeCanonicalUrl } from "@/lib/normalizeUrl";
+import { checkAnalyzeRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request);
+  const limited = checkAnalyzeRateLimit(ip);
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: "Too many analyses. Try again later." },
+      { status: 429, headers: { "Retry-After": String(limited.retryAfterSec) } }
+    );
+  }
+
   try {
     const body = await request.json();
     const { urlA, urlB } = body;
