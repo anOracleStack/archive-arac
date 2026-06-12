@@ -1,5 +1,6 @@
 import { BalancedText } from "@/components/BalancedText";
 import { FeatureExplainer } from "@/components/FeatureExplainer";
+import { LoreTerm } from "@/components/LoreTerm";
 import { PlatformShell } from "@/components/PlatformShell";
 import { WeaveJourney } from "@/components/mission/WeaveJourney";
 import { ScrollReveal } from "@/components/ScrollReveal";
@@ -11,10 +12,11 @@ export default function MissionPage() {
     <PlatformShell>
       <div className="relative z-10 pt-32 pb-24 px-6 max-w-5xl mx-auto text-center">
         <ScrollReveal>
-          <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10 backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-[#E67E22] animate-pulse" />
-            Your map through the weave
-          </div>
+          <LoreTerm
+            className="mb-6"
+            term="Mission"
+            plain="Your map through the weave — four moves, one Vault."
+          />
         </ScrollReveal>
 
         <ScrollReveal index={1}>
@@ -38,7 +40,9 @@ export default function MissionPage() {
         <ScrollReveal index={3}>
           <FeatureExplainer
             className="mb-12"
-            whatThisIs="A plain-language map of the product—four moves (Unravel → Claim → Spin → Vault) with links into real tools."
+            loreTerm="Archive Arac"
+            plainMeaning="See any site, claim a name, ship hosting, & export the strands that fit."
+            whatThisIs="Four moves — Unravel → Claim → Spin → Weave — with links into real tools. One Vault holds everything you save."
             youCan="Understand the flow end-to-end before committing to Identity Lock or Studio."
           />
         </ScrollReveal>

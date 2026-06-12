@@ -8,31 +8,31 @@ const navGroups = [
   {
     label: "Discover",
     links: [
-      { href: "/#weave", label: "Weave trends", match: (p: string) => p === "/" },
-      { href: "/#index", label: "Index", match: (p: string) => p === "/" },
+      { href: "/#weave", label: "Weave trends", plain: "Illustrated web trends — not live data", match: (p: string) => p === "/" },
+      { href: "/#index", label: "Index Araneae", plain: "Gallery of interface examples (strands)", match: (p: string) => p === "/" },
     ],
   },
   {
     label: "Analyze",
     links: [
-      { href: "/analyze", label: "Silk Analyzer" },
-      { href: "/collections", label: "Collections" },
+      { href: "/analyze", label: "Silk Analyzer", plain: "Paste a URL — see how it's built" },
+      { href: "/collections", label: "Collections", plain: "Saved URL lists for batch scans" },
     ],
   },
   {
     label: "Build",
     links: [
-      { href: "/studio/weave", label: "Weave — site brief" },
-      { href: "/studio", label: "Studio" },
-      { href: "/compose", label: "Strand Composer" },
+      { href: "/studio/weave", label: "Weave", plain: "Describe the site you want" },
+      { href: "/studio", label: "Studio", plain: "Hosting, connect & launch tools" },
+      { href: "/compose", label: "Strand Composer", plain: "Pick examples & export code" },
     ],
   },
   {
     label: "Brand",
     links: [
-      { href: "/identity", label: "Identity Lock" },
-      { href: "/vault", label: "Vault" },
-      { href: "/mission", label: "Mission" },
+      { href: "/identity", label: "Identity Lock", plain: "Claim domains & social handles" },
+      { href: "/vault", label: "Vault", plain: "Everything you save — one drawer" },
+      { href: "/mission", label: "Mission", plain: "How the product fits together" },
     ],
   },
 ] as const;
@@ -43,7 +43,12 @@ function NavDropdown({
   pathname,
 }: {
   label: string;
-  links: readonly { href: string; label: string; match?: (p: string) => boolean }[];
+  links: readonly {
+    href: string;
+    label: string;
+    plain?: string;
+    match?: (p: string) => boolean;
+  }[];
   pathname: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -77,7 +82,7 @@ function NavDropdown({
         </svg>
       </button>
       {open && (
-        <div className="absolute left-0 top-full mt-2 min-w-[200px] rounded-2xl border border-[#E8E5DF] bg-[#FDFCFA] py-2 shadow-xl z-50">
+        <div className="absolute left-0 top-full mt-2 min-w-[240px] rounded-2xl border border-[#E8E5DF] bg-[#FDFCFA] py-2 shadow-xl z-50">
           {links.map((link) => {
             const isActive =
               "match" in link && link.match
@@ -88,7 +93,7 @@ function NavDropdown({
               <Link
                 key={link.href}
                 href={link.href}
-                className={`block px-4 py-2.5 text-[11px] font-bold transition-colors ${
+                className={`block px-4 py-2.5 transition-colors ${
                   isActive
                     ? "text-[#E67E22] bg-[#E67E22]/5"
                     : "text-[#2C2A29] hover:text-[#E67E22] hover:bg-[#F9F7F3]"
@@ -96,7 +101,12 @@ function NavDropdown({
                 aria-current={isActive && !isHash ? "page" : undefined}
                 onClick={() => setOpen(false)}
               >
-                {link.label}
+                <span className="block text-[11px] font-bold">{link.label}</span>
+                {link.plain && (
+                  <span className="block text-[10px] font-normal text-[#5A5653] mt-0.5 leading-snug">
+                    {link.plain}
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -268,7 +278,7 @@ export function Navbar() {
                       key={link.href}
                       ref={assignRef}
                       href={link.href}
-                      className={`text-sm font-bold transition-colors ${
+                      className={`transition-colors ${
                         isActive
                           ? "text-[#E67E22] underline underline-offset-4"
                           : "text-[#2C2A29] hover:text-[#E67E22]"
@@ -276,7 +286,12 @@ export function Navbar() {
                       aria-current={isActive && !link.href.includes("#") ? "page" : undefined}
                       onClick={closeDrawer}
                     >
-                      {link.label}
+                      <span className="block text-sm font-bold">{link.label}</span>
+                      {"plain" in link && link.plain && (
+                        <span className="block text-xs font-normal text-[#5A5653] mt-0.5">
+                          {link.plain}
+                        </span>
+                      )}
                     </Link>
                   );
                 })}

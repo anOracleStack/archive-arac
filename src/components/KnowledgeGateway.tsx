@@ -105,6 +105,11 @@ export function KnowledgeGateway({ article, surface = "cream", compact = false, 
             <h2 id={`${panelId}-title`} className="text-xl font-bold tracking-tight text-[#2C2A29] pr-2 text-balance">
               {article.headline}
             </h2>
+            {article.plainEnglish && (
+              <p className="mt-2 text-sm text-[#5A5653] leading-relaxed text-balance">
+                {article.plainEnglish}
+              </p>
+            )}
             {article.say && (
               <p className="mt-2 text-xs text-[#5A5653] font-mono break-words">
                 <span className="text-[#D1CEC7] font-sans not-italic">Say it:</span> {article.say}

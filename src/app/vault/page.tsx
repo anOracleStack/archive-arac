@@ -18,6 +18,7 @@ import { AnalyzerResults } from "@/components/AnalyzerResults";
 import { ClaimChecklist } from "@/components/identity/ClaimChecklist";
 import { BalancedText } from "@/components/BalancedText";
 import { FeatureExplainer } from "@/components/FeatureExplainer";
+import { LoreTerm } from "@/components/LoreTerm";
 import { VaultSyncBar } from "@/components/vault/VaultSyncBar";
 import { syncVaultBidirectional, applyServerSnapshotToLocal, pullServerVault } from "@/lib/vaultSync";
 import type { RegistrarOrder } from "@/types/connections";
@@ -185,27 +186,33 @@ function VaultInner() {
 
   return (
     <div className="relative z-10 pt-32 pb-24 px-6 max-w-4xl mx-auto text-center">
-      <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10">
-        Vault
-      </div>
+      <LoreTerm
+        className="mb-6"
+        term="Vault"
+        plain={[
+          "Your saved drawer — reports, brand locks,",
+          "Weave briefs, & orders in one place.",
+        ]}
+      />
       <h1 className="text-5xl font-bold tracking-tight mb-4">
-        Your <span className="text-[#E67E22]">vault</span>
+        Your <span className="text-[#E67E22]">saved work</span>
       </h1>
       <BalancedText
         className="text-[#5A5653] mb-6"
         lines={[
-          "Where your profile information lives —",
-          "reports, brand locks, Weave site briefs,",
-          "& studio notes in one place.",
+          "Synced to this browser & our server —",
+          "open any tab below to review or delete.",
         ]}
       />
 
       <FeatureExplainer
-        className="mb-6 text-left"
-        whatThisIs="Your saved drawer — Silk reports, brand locks, Weave site briefs, studio notes, & orders in one place, synced to this browser & our server."
+        className="mb-6"
+        loreTerm="Silk Vault"
+        plainMeaning="One drawer for Silk reports, Identity Lock packages, Weave site briefs, studio notes, & checkout orders."
+        whatThisIs="Everything you save across Archive Arac lives here. Sync when you switch devices or browsers."
         youCan={[
-          "Review, delete, sync",
-          "Open deep links (?id=)",
+          "Review, delete, or sync saved items",
+          "Open deep links (?id=) from checkout or email",
         ]}
       />
 

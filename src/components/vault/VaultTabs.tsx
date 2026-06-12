@@ -5,11 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
 
 const TABS = [
-  { id: "reports", label: "Silk reports" },
-  { id: "identity", label: "Identity locks" },
-  { id: "weave", label: "Weave briefs" },
-  { id: "orders", label: "Orders" },
-  { id: "briefs", label: "Studio briefs" },
+  { id: "reports", label: "Silk reports", plain: "Analyzer saves" },
+  { id: "identity", label: "Identity locks", plain: "Brand packages" },
+  { id: "weave", label: "Weave briefs", plain: "Site descriptions" },
+  { id: "orders", label: "Orders", plain: "Domain & hosting" },
+  { id: "briefs", label: "Studio briefs", plain: "Build notes" },
 ] as const;
 
 export type VaultTabId = (typeof TABS)[number]["id"];
@@ -27,13 +27,20 @@ export function VaultTabs({ children }: { children: ReactNode }) {
             key={t.id}
             type="button"
             onClick={() => router.push(`/vault?tab=${t.id}`)}
-            className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-colors ${
+            className={`px-4 py-2 rounded-xl text-center transition-colors ${
               tab === t.id
                 ? "bg-[#2C2A29] text-white"
                 : "text-[#5A5653] hover:bg-[#F5F3EE]"
             }`}
           >
-            {t.label}
+            <span className="block text-[10px] font-bold uppercase tracking-widest">{t.label}</span>
+            <span
+              className={`block text-[9px] font-normal normal-case tracking-normal mt-0.5 ${
+                tab === t.id ? "text-[#D1CEC7]" : "text-[#9C7C5B]"
+              }`}
+            >
+              {t.plain}
+            </span>
           </button>
         ))}
       </div>

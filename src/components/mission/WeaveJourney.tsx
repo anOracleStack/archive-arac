@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { BalancedText } from "@/components/BalancedText";
+import { LoreTerm } from "@/components/LoreTerm";
 import { ScrollReveal } from "@/components/ScrollReveal";
 
 type StepStatus = "ready" | "beta";
@@ -204,13 +205,14 @@ export function WeaveJourney({ appUrl }: { appUrl: string }) {
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#C4A882] mb-3 relative">
             One drawer — not four apps
           </p>
-          <h2 className="text-3xl font-bold mb-3 relative">The Silk Vault</h2>
-          <BalancedText
-            className="text-[#E8E5DF]/90 text-base mb-6 relative"
-            lines={[
+          <LoreTerm
+            variant="stack"
+            tone="dark"
+            className="mb-6 relative"
+            term="The Silk Vault"
+            plain={[
               "Everything you save lands in one place —",
-              "analyzer reports, brand locks, studio briefs,",
-              "& checkout orders. No hunting across tabs.",
+              "reports, brand locks, briefs, & orders.",
             ]}
           />
           <ul className="grid sm:grid-cols-2 gap-3 mb-8 text-sm text-[#C4A882]/90 relative">

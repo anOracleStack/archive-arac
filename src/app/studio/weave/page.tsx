@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { BalancedText } from "@/components/BalancedText";
 import { FeatureExplainer } from "@/components/FeatureExplainer";
+import { LoreTerm } from "@/components/LoreTerm";
 import { PlatformShell } from "@/components/PlatformShell";
 import { WeaveWorkshop } from "@/components/weave/WeaveWorkshop";
 
@@ -10,9 +11,11 @@ export default function WeavePage() {
   return (
     <PlatformShell>
       <div className="relative z-10 pt-28 pb-24 px-6 max-w-4xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10">
-          Weave — describe your site
-        </div>
+        <LoreTerm
+          className="mb-6"
+          term="Weave"
+          plain="Describe the website you want — we save your answers to Vault."
+        />
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
           Tell us what you want your{" "}
           <span className="text-[#E67E22]">website</span> to be
@@ -27,8 +30,10 @@ export default function WeavePage() {
         />
 
         <FeatureExplainer
-          className="mb-8 text-left max-w-2xl mx-auto"
-          whatThisIs="A simple chat where you describe the website you want — your name, style, goals, & pages. Everything lands in your Vault."
+          className="mb-8 max-w-2xl mx-auto"
+          loreTerm="Weave workshop"
+          plainMeaning="A simple chat — your business name, style, goals, & pages. Everything lands in Vault."
+          whatThisIs="Answer five questions about what you want your site to look like & do. Optional AI follow-up when chat is configured."
           youCan={[
             "Walk through questions in a chat-style flow",
             "Save your answers to Vault & optional AI follow-up",

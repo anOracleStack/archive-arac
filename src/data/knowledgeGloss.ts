@@ -8,6 +8,8 @@ export type DepthBlock = {
 
 export type GatewayArticle = {
   headline: string;
+  /** One plain-English line — what the lore term means for a regular person */
+  plainEnglish?: string;
   /** Optional "say it like…" hint */
   say?: string;
   beginner: DepthBlock;
@@ -18,6 +20,7 @@ export type GatewayArticle = {
 export const gloss = {
   synapseSilk: {
     headline: "Synapse & Silk",
+    plainEnglish: "The brain of your app & the feel of what you touch on screen.",
     say: "SIN-aps … silk",
     beginner: {
       what: "Our shorthand for two halves of modern interfaces: \"Synapse\" is the logic & data paths (the brain). \"Silk\" is what you feel on screen — motion, layout, & touch.",
@@ -37,7 +40,8 @@ export const gloss = {
   } satisfies GatewayArticle,
 
   weaveWorkshop: {
-    headline: "Weave (site brief)",
+    headline: "Weave",
+    plainEnglish: "A short chat where you describe the website you want — saved to your Vault.",
     say: "describe the website you want",
     beginner: {
       what: "Weave is a short chat where you tell us what you want your website to look like — your business name, site type, style, goals, & pages. We save your answers to the Vault.",
@@ -58,6 +62,7 @@ export const gloss = {
 
   weaveGrowth: {
     headline: "The Growth of the Weave",
+    plainEnglish: "An animated intro to three web trends — not live analytics.",
     say: "Weave Motion — illustrative, not live data",
     beginner: {
       what: "An animated silk-weave that introduces three interface trends — AI intent, spatial depth, and physics micro-UX. It is illustrative, not a live analytics feed.",
@@ -78,6 +83,7 @@ export const gloss = {
 
   indexAraneae: {
     headline: "Index Araneae",
+    plainEnglish: "Our gallery of interface examples — each card is a strand you can try.",
     say: "ah-rah-NEE-eye … Latin for spiders",
     beginner: {
       what: "A curated gallery of interface ideas — each card is a \"strand\" you can open to see a small interactive demo.",
@@ -97,7 +103,8 @@ export const gloss = {
   } satisfies GatewayArticle,
 
   curatedStrands: {
-    headline: "Curated strands of innovation",
+    headline: "Curated strands",
+    plainEnglish: "Hand-picked interface examples — one card = one strand.",
     say: "strand — one gallery card; innovation — the idea it showcases",
     beginner: {
       what: "\"Strand\" is our word for a single interface example in this archive (one card = one strand). \"Curated\" means we chose pieces that illustrate a direction — not every site on the web.",
@@ -117,7 +124,8 @@ export const gloss = {
   } satisfies GatewayArticle,
 
   silkStrand: {
-    headline: "Silk type (filter)",
+    headline: "Silk type",
+    plainEnglish: "Filters the gallery by vibe — Spatial, Gen-AI, or Physics.",
     say: "just \"silk\" — our word for interface family",
     beginner: {
       what: "The pill buttons (All / Spatial / Gen-AI / Physics) sort the gallery by what kind of \"feel\" each example leans into.",
@@ -138,6 +146,7 @@ export const gloss = {
 
   silkAnalyzer: {
     headline: "Silk Analyzer",
+    plainEnglish: "Paste a URL — get a quick read on how that site is built.",
     say: "AN-uh-ly-zer",
     beginner: {
       what: "Paste a website address. We fetch its public HTML when the server allows it, scan it like a quick health check, & summarize design, tech, accessibility hints, & sample code ideas.",
@@ -158,6 +167,7 @@ export const gloss = {
 
   strandModal: {
     headline: "Strand demo",
+    plainEnglish: "A mini interactive sample of one interface idea.",
     beginner: {
       what: "Each card in the Index opens this window: a short interactive sample that illustrates one idea (springs, 3D, scroll-linked motion, etc.). It's a teaching toy, not a production component library.",
       why: "Seeing motion beats reading a bullet list — especially for stakeholders who don't ship CSS daily.",
@@ -177,6 +187,7 @@ export const gloss = {
 
   readingYourAnalysis: {
     headline: "Reading your analysis",
+    plainEnglish: "Use the tabs like chapters — Overview first, then jump to what you need.",
     beginner: {
       what: "After a scan, use the tabs like chapters: Overview is the story, Design is look-and-feel, Tech is what libraries likely power the page, Interactions is motion & inputs, UX & A11y is accessibility hints, Code Snippets is starter ideas — not a full clone.",
       why: "Tabs keep experts fast while beginners aren't forced to read everything at once.",
@@ -196,6 +207,7 @@ export const gloss = {
 
   analyzerScore: {
     headline: "Silk score",
+    plainEnglish: "A 0–100 snapshot — like a report-card headline, not a legal grade.",
     say: "heuristic 0–100",
     beginner: {
       what: "A single number summarizing how many positive signals we found versus issues — like a report card headline, not a legal grade.",
@@ -216,6 +228,7 @@ export const gloss = {
 
   elasticSilk: {
     headline: "Elastic Silk",
+    plainEnglish: "UI that subtly moves when you get close — panels feel like fabric.",
     beginner: {
       what: "Interfaces that subtly move when you get close — panels feel \"tensioned\" like fabric, then relax when you look away.",
       why: "It rewards exploration without demanding clicks; good for marketing & creative tools.",
@@ -235,6 +248,7 @@ export const gloss = {
 
   orbitalWeb: {
     headline: "Orbital Web",
+    plainEnglish: "Navigation as rings around a center — not a flat list of links.",
     beginner: {
       what: "Navigation imagined as rings around a center — like a spider web viewed from above — instead of a flat list of links.",
       why: "It helps users build a mental map of depth: closer to the hub = broader, farther rings = more specific.",
@@ -254,6 +268,7 @@ export const gloss = {
 
   intentThread: {
     headline: "Intent Thread",
+    plainEnglish: "Say what you want — the page rearranges to match your goal.",
     beginner: {
       what: "You say what you want in plain language; the interface rearranges itself to match that goal instead of making you hunt through menus.",
       why: "That's how many AI assistants feel — & users now expect the same immediacy from traditional apps.",
@@ -273,6 +288,7 @@ export const gloss = {
 
   spinneret: {
     headline: "Spinneret",
+    plainEnglish: "Our name for the three interface patterns we think teams should master.",
     say: "SPIN-uh-ret — where silk comes out on a spider",
     beginner: {
       what: "The part of a spider that produces silk. Here, it's a metaphor for the three repeatable \"weaves\" we think modern product teams should master.",
@@ -293,6 +309,7 @@ export const gloss = {
 
   archiveArac: {
     headline: "Archive Arac",
+    plainEnglish: "This site — a themed archive of future-facing web ideas.",
     say: "AIR-ak … \"Arac\" like arachnid",
     beginner: {
       what: "The name of this micro-site: a small, themed archive of future-facing interface ideas, separate from your main company homepage.",
@@ -313,6 +330,7 @@ export const gloss = {
 
   whatIsUI: {
     headline: "User Interface (UI)",
+    plainEnglish: "The buttons, menus, text, & layout you see & tap on screen.",
     say: "you-eye",
     beginner: {
       what: "UI stands for User Interface -- the buttons, menus, text, images, & layout you see & interact with on a screen. It's the visual part of a website or app.",
@@ -333,6 +351,7 @@ export const gloss = {
 
   spatialCategory: {
     headline: "Spatial / WebGL",
+    plainEnglish: "Interfaces with depth & 3D — objects that tilt, layers that stack.",
     say: "web-G-L — graphic library for the browser",
     beginner: {
       what: "Interfaces that use depth, 3D, & perspective -- like objects that tilt when you move your mouse or layers that feel stacked in physical space. WebGL is the technology that draws 3D graphics in a browser.",
@@ -352,7 +371,8 @@ export const gloss = {
   } satisfies GatewayArticle,
 
   genAICategory: {
-    headline: "Gen-AI (Generative AI)",
+    headline: "Gen-AI",
+    plainEnglish: "Interfaces that reshape around what you ask for — not fixed menus.",
     say: "jen A-I",
     beginner: {
       what: "Technology that can create text, images, or code from prompts. Here it means interfaces that reshape around what you intend — Weave Motion labels this lane \"AI Intent\" (same idea as Intent-Driven).",
@@ -373,6 +393,7 @@ export const gloss = {
 
   physicsCategory: {
     headline: "Physics / Micro-UX",
+    plainEnglish: "Tiny motions that make an app feel alive — nudges, bounces, scroll weaves.",
     say: "MY-cro U-X",
     beginner: {
       what: "Buttons that nudge toward your cursor, panels that bounce into place, or scroll animations that feel organic. Micro-UX refers to tiny interactions that make an app feel alive.",
@@ -393,6 +414,7 @@ export const gloss = {
 
   intentDrivenTerm: {
     headline: "Intent-Driven",
+    plainEnglish: "Say what you want — the page rearranges to match your goal.",
     beginner: {
       what: "Interfaces that figure out what you want to do -- not by making you click through menus, but by guessing or asking. Like typing in a command bar & the page rearranges to show what you need.",
       why: "As AI grows, users expect apps to anticipate their needs instead of forcing them to navigate.",
@@ -412,6 +434,7 @@ export const gloss = {
 
   allStrands: {
     headline: "All Strands",
+    plainEnglish: "Every interface example in the gallery — no filter applied.",
     beginner: {
       what: "A 'strand' is our word for an individual interface example in this archive. 'All Strands' shows every example without filtering.",
       why: "Browsing everything at once helps you discover patterns you didn't know you were looking for.",
@@ -431,6 +454,7 @@ export const gloss = {
 
   gridWebView: {
     headline: "Grid & Web View",
+    plainEnglish: "Grid = scan cards · Web = see how strands connect on a map.",
     beginner: {
       what: "Grid shows strand cards in columns so you can read titles & blurbs. Web shows the same strands as nodes on a canvas — good for seeing how everything connects.",
       why: "Grid is for scanning & clicking cards. Web is for the big-picture map.",
@@ -450,6 +474,7 @@ export const gloss = {
 
   strandTags: {
     headline: "Card Tags",
+    plainEnglish: "Keyword chips on each card — quick shorthand for the vibe.",
     say: "shorthand descriptors",
     beginner: {
       what: "Keyword chips on each card — quick shorthand for the vibe. Common examples: Kinetic (motion-led); Magnetic (elements ease toward the cursor); Tension (springy pull); Scroll-weave / Story-silk (the narrative unfolds as you scroll); Observer (reveals when something enters the viewport); Particles / Canvas / 3D (how dense or dimensional the visuals feel).",
@@ -465,6 +490,46 @@ export const gloss = {
       what: "Tags are strictly decorative metadata — they don't drive logic beyond Array.prototype.filter. The canvas connection lines don't use tag proximity, only silk category.",
       why: "Tags decouple display from filtering. Category is for sorting; tags are for human scanning.",
       action: "If you add faceted search later, tags become filter dimensions. Until then, keep them sparse.",
+    },
+  } satisfies GatewayArticle,
+
+  vault: {
+    headline: "Vault",
+    plainEnglish: "Your saved drawer — reports, brand locks, Weave briefs, & orders in one place.",
+    beginner: {
+      what: "The Vault is where everything you save in Archive Arac lives — Silk Analyzer reports, Identity Lock packages, Weave site briefs, studio notes, & checkout orders.",
+      why: "You shouldn't hunt across four apps for your own work. One drawer keeps your digital real estate organized.",
+      action: "Open Vault from the nav anytime. Sync when you switch browsers or devices.",
+    },
+    moderate: {
+      what: "Client-side stores (localStorage) merged with a server snapshot via `/api/vault`. Tabs: reports, identity locks, weave briefs, orders, studio briefs.",
+      why: "Offline-first UX with optional server backup — no account required for the marketing surface.",
+      action: "Use deep links `?tab=weave&id=` to share a brief with a teammate.",
+    },
+    advanced: {
+      what: "`vaultSync.ts` bidirectional merge; `serverVault.ts` persists orders, social connections, & Wix metadata server-side.",
+      why: "Keeps PII-adjacent data (domain choices) off pure client storage when checkout completes.",
+      action: "Extend snapshot schema when adding new save surfaces — version the merge logic.",
+    },
+  } satisfies GatewayArticle,
+
+  identityLock: {
+    headline: "Identity Lock",
+    plainEnglish: "Find & claim your brand name — domains & social handles checked live.",
+    beginner: {
+      what: "Identity Lock ranks name ideas, checks domains (.com, .io, .ai & more) & social handles, then lets you approve one package & checkout.",
+      why: "Picking a name without checking availability wastes time. Lock early before someone else takes your handle.",
+      action: "Start at Identity Lock → pick a candidate → save to Vault → checkout when ready.",
+    },
+    moderate: {
+      what: "RDAP domain checks, platform-specific handle rules, scored candidates, Stripe checkout for registrar bundles.",
+      why: "Separates discovery from purchase so you can iterate on names before spending.",
+      action: "Export a lock package for your team before checkout if legal review is required.",
+    },
+    advanced: {
+      what: "`identityScan.ts` + `domainAvailability.ts`; locks persist in `identityStore`; fulfillment via `fulfillPaidLock` webhook.",
+      why: "Registrar APIs vary — keep provider abstraction in `registrar/` when adding resellers.",
+      action: "Log RDAP failures separately from \"taken\" — users confuse timeout with unavailable.",
     },
   } satisfies GatewayArticle,
 } as const;

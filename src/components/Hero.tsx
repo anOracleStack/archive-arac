@@ -2,6 +2,7 @@
 
 import { type FormEvent } from "react";
 import { BalancedText } from "@/components/BalancedText";
+import { LoreTerm } from "@/components/LoreTerm";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { useAnalyzerFlow } from "@/components/AnalyzerFlowContext";
 import { AnalyzeUrlField } from "@/components/AnalyzeUrlField";
@@ -25,9 +26,14 @@ export function Hero() {
   return (
     <header className="relative pt-40 pb-20 px-6 max-w-5xl mx-auto text-center z-10">
       <ScrollReveal>
-        <p className="inline-block mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10 backdrop-blur-sm shadow-sm">
-          Digital Real Estate, End to End
-        </p>
+        <LoreTerm
+          className="mb-6"
+          term="Archive Arac"
+          plain={[
+            "Digital real estate, end to end —",
+            "see any site, claim a name, build yours.",
+          ]}
+        />
       </ScrollReveal>
       <ScrollReveal index={1}>
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-[0.95] tracking-tighter text-balance">
@@ -76,7 +82,9 @@ export function Hero() {
           </button>
         </form>
         <p className="mt-4 text-[11px] text-[#B8B5AE]">
-          Paste a URL to see how it&apos;s built — one quick way to start understanding site architecture.
+          <span className="font-bold text-[#9C7C5B]">Silk Analyzer</span>
+          {" — "}
+          paste a URL to see how it&apos;s built.
         </p>
       </ScrollReveal>
       <ScrollReveal index={4}>

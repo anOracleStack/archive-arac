@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { BalancedText } from "@/components/BalancedText";
 import { FeatureExplainer } from "@/components/FeatureExplainer";
+import { LoreTerm } from "@/components/LoreTerm";
 import { PlatformShell } from "@/components/PlatformShell";
 import { buildPlatforms, hostingTiers, socialConnectors } from "@/data/buildPlatforms";
 
@@ -19,9 +20,14 @@ export default function StudioPage() {
   return (
     <PlatformShell>
       <div className="relative z-10 pt-32 pb-24 px-6 max-w-5xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-[#C4A882]/40 text-[#6B543C] text-[10px] font-black tracking-[0.2em] uppercase bg-[#C4A882]/10">
-          Studio
-        </div>
+        <LoreTerm
+          className="mb-6"
+          term="Studio"
+          plain={[
+            "Where you describe, connect, & launch —",
+            "Weave saves to Vault; Identity Lock bundles domains.",
+          ]}
+        />
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-4">
           Build, connect, <span className="text-[#E67E22]">host</span>
         </h1>
@@ -39,7 +45,13 @@ export default function StudioPage() {
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#E67E22] mb-3 section-heading">
             Primary path
           </p>
-          <h2 className="text-3xl font-bold mb-4">Describe your website with Weave</h2>
+          <LoreTerm
+            variant="stack"
+            className="mb-4"
+            term="Weave"
+            plain="A short chat — tell us what you want your site to be."
+          />
+          <h2 className="text-3xl font-bold mb-4">Describe your website</h2>
           <BalancedText
             className="text-sm text-[#5A5653] mb-6"
             lines={[
@@ -57,8 +69,10 @@ export default function StudioPage() {
         </section>
 
         <FeatureExplainer
-          className="mb-10 text-left"
-          whatThisIs="Archive Arac Studio — describe a new site with Weave, pick hosting, connect existing platforms, & monitor social."
+          className="mb-10"
+          loreTerm="Archive Arac Studio"
+          plainMeaning="Describe a new site, pick hosting, connect platforms, & monitor social — all in one place."
+          whatThisIs="Start with Weave for your site brief. Bundle hosting with Identity Lock. Connect Wix or run Silk Analyzer on any URL."
           youCan={[
             "Start a Weave session saved to Vault",
             "Bundle hosting with Identity Lock",
