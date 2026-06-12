@@ -2,7 +2,6 @@
 
 import { type FormEvent } from "react";
 import { BalancedText } from "@/components/BalancedText";
-import { HERO_SUPPORT_COPY } from "@/components/LoreTerm";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { useAnalyzerFlow } from "@/components/AnalyzerFlowContext";
 import { AnalyzeUrlField } from "@/components/AnalyzeUrlField";
@@ -24,22 +23,19 @@ export function Hero() {
   };
 
   return (
-    <header className="grid h-full min-h-0 grid-rows-[minmax(0,1fr)_auto_minmax(0,1fr)] overflow-hidden text-center">
+    <header className="grid h-full min-h-0 grid-rows-[minmax(0,1fr)_auto_auto_minmax(0,1fr)] overflow-hidden text-center">
       <div aria-hidden className="min-h-0" />
-      <div className="flex shrink-0 flex-col gap-2.5 sm:gap-3">
+      <div className="flex shrink-0 flex-col gap-2 sm:gap-2.5">
         <ScrollReveal>
-          <h1 className="text-[1.35rem] font-bold leading-[1.1] tracking-tighter sm:text-2xl md:text-[1.75rem] lg:text-[2.125rem]">
-            <span className="block">
-              <span>ARCHIVE</span>
-              <span className="ml-[0.35em]">ARAC</span>
-              <span className="text-[#9C7C5B]">:</span>
-            </span>
-            <span className="mt-1 block sm:mt-1.5">The Anatomy of Website Architecture</span>
+          <h1 className="text-[1.25rem] font-bold leading-[1.1] tracking-tighter sm:text-[1.65rem] md:text-[1.85rem] lg:text-[2rem]">
+            <span className="block">ARCHIVE ARAC</span>
+            <span className="mt-0.5 block sm:mt-1">The Anatomy of</span>
+            <span className="mt-0.5 block sm:mt-1">Website Architecture</span>
           </h1>
         </ScrollReveal>
         <ScrollReveal index={1}>
           <BalancedText
-            className={`${HERO_SUPPORT_COPY} mx-auto max-w-2xl`}
+            className="mx-auto max-w-2xl text-sm font-light leading-relaxed text-[#5A5653] sm:text-base md:text-lg"
             lines={[
               "Breaking down the biology of digital real estate —",
               "structure, branding, domains, & social handles —",
@@ -82,6 +78,15 @@ export function Hero() {
             </form>
           </div>
         </ScrollReveal>
+      </div>
+      <div className="shrink-0 py-3 sm:py-4">
+        <a
+          href="#index"
+          className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#5A5653] transition-colors hover:text-[#E67E22]"
+        >
+          Explore the platform
+          <span aria-hidden>↓</span>
+        </a>
       </div>
       <div aria-hidden className="min-h-0" />
     </header>
