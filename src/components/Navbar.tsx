@@ -12,7 +12,7 @@ const navGroups = [
     label: "Discover",
     links: [
       { href: "/#weave", label: "Weave trends", plain: "Illustrated web trends — not live data", match: (p: string) => p === "/" },
-      { href: "/#index", label: "Index Araneae", plain: "Gallery of interface examples (strands)", match: (p: string) => p === "/" },
+      { href: "/#index", label: "Site library", plain: "Example sites to study by silk type", match: (p: string) => p === "/" },
     ],
   },
   {
@@ -178,7 +178,7 @@ export function Navbar() {
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-5 sm:px-8 py-3">
           <BrandLogo />
 
-          <div className="hidden min-w-0 flex-1 items-center justify-end gap-3 lg:gap-4 md:flex">
+          <div className="hidden min-w-0 flex-1 items-center justify-end gap-2 lg:gap-4 lg:flex">
             <div className="flex min-w-0 items-center gap-3 lg:gap-4 text-[9px] font-bold xl:text-[10px]">
               {navGroups.map((group) => (
                 <NavDropdown key={group.label} label={group.label} links={group.links} pathname={pathname} />
@@ -199,7 +199,7 @@ export function Navbar() {
             <AuthControls />
           </div>
 
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
             <AuthControls compact />
             <button
               ref={menuButtonRef}
@@ -241,7 +241,7 @@ export function Navbar() {
       {drawerOpen && (
         <button
           type="button"
-          className="fixed inset-0 z-40 bg-[#2C2A29]/40 md:hidden"
+          className="fixed inset-0 z-40 bg-[#2C2A29]/40 lg:hidden"
           aria-label="Close menu"
           onClick={closeDrawer}
         />
@@ -250,7 +250,7 @@ export function Navbar() {
       <div
         id={drawerId}
         ref={drawerRef}
-        className={`fixed top-0 right-0 z-50 h-full w-[85vw] max-w-[320px] bg-[#F9F7F3] border-l border-[#C4A882]/40 shadow-2xl transform transition-transform duration-300 ease-out md:hidden ${
+        className={`fixed top-0 right-0 z-50 h-full w-[85vw] max-w-[320px] bg-[#F9F7F3] border-l border-[#C4A882]/40 shadow-2xl transform transition-transform duration-300 ease-out lg:hidden ${
           drawerOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
         }`}
         aria-hidden={!drawerOpen}

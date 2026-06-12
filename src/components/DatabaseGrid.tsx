@@ -25,9 +25,24 @@ interface DatabaseGridProps {
   onSelect: (item: StrandItem) => void;
 }
 
+type ViewMode = "grid" | "map";
+
+function buildTagEdges(items: StrandItem[]): [number, number][] {
+  const edges: [number, number][] = [];
+  for (let i = 0; i < items.length; i++) {
+    for (let j = i + 1; j < items.length; j++) {
+      const shared = items[i].tags.some((t) => items[j].tags.includes(t));
+      if (shared) edges.push([items[i].id, items[j].id]);
+    }
+  }
+  return edges;
+}
+
 export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
   const [activeFilter, setActiveFilter] = useState<SilkCategory | "all">("all");
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [mapHoverId, setMapHoverId] = useState<number | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cardRefs = useRef<Map<number, HTMLDivElement>>(new Map());
@@ -35,6 +50,18 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
 
   const filtered = activeFilter === "all" ? strands : strands.filter((i) => i.category === activeFilter);
   const displayStrands = filtered;
+  const tagEdges = buildTagEdges(displayStrands);
+
+  const mapPositions = displayStrands.map((item, i) => {
+    const angle = (i / Math.max(displayStrands.length, 1)) * Math.PI * 2 - Math.PI / 2;
+    const r = 38;
+    return {
+      id: item.id,
+      x: 50 + Math.cos(angle) * r,
+      y: 50 + Math.sin(angle) * r,
+      item,
+    };
+  });
 
   const setCardRef = useCallback((id: number, el: HTMLDivElement | null) => {
     if (el) cardRefs.current.set(id, el);
@@ -171,27 +198,41 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
               <div
                 className="flex items-center gap-2 bg-[#F9F7F3]/95 backdrop-blur-md rounded-full px-3 py-2 border border-[#C4A882]/30"
                 role="group"
-                aria-label="Index view"
+                aria-label="Library view"
               >
                 <span className="text-[10px] font-bold uppercase tracking-widest text-[#B8B5AE] mr-1 hidden sm:inline">
                   View
                 </span>
                 <button
                   type="button"
-                  className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#E67E22] text-white shadow-sm"
-                  aria-pressed
+                  onClick={() => setViewMode("grid")}
+                  className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
+                    viewMode === "grid"
+                      ? "bg-[#E67E22] text-white shadow-sm"
+                      : "text-[#5A5653] hover:text-[#E67E22]"
+                  }`}
+                  aria-pressed={viewMode === "grid"}
                 >
                   Card grid
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("map")}
+                  className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
+                    viewMode === "map"
+                      ? "bg-[#E67E22] text-white shadow-sm"
+                      : "text-[#5A5653] hover:text-[#E67E22]"
+                  }`}
+                  aria-pressed={viewMode === "map"}
+                >
+                  Connection map
+                </button>
               </div>
-              <div className="rounded-2xl border border-[#C4A882]/30 bg-[#F9F7F3]/90 p-4 text-left w-full">
-                <p className="text-[10px] font-black uppercase tracking-widest text-[#9C7C5B] mb-2">
-                  Connection map — coming soon
+              {viewMode === "map" && (
+                <p className="text-xs text-[#5A5653] font-light leading-relaxed text-center md:text-right w-full">
+                  Lines connect strands that share tags — hover a node to highlight its links.
                 </p>
-                <p className="text-xs text-[#5A5653] font-light leading-relaxed">
-                  A graph view of how example sites link shared stacks, features, and silk types — so patterns stand out at a glance.
-                </p>
-              </div>
+              )}
               <div className="flex flex-wrap items-center justify-center gap-3">
               {FILTERS.map((f) => (
                 <KnowledgeGateway key={f.key} article={gloss[f.glossArticle]} surface="cream" onOpen={() => setActiveFilter(f.key)}>
@@ -209,6 +250,68 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
           </div>
         </ScrollReveal>
 
+        {viewMode === "map" && displayStrands.length > 0 ? (
+          <div className="mx-auto max-w-3xl rounded-3xl border border-[#E8E5DF] bg-[#FDFCFA]/90 p-6 shadow-sm">
+            <svg viewBox="0 0 100 100" className="w-full aspect-square max-h-[420px]" role="img" aria-label="Strand connection map by shared tags">
+              {tagEdges.map(([a, b]) => {
+                const pa = mapPositions.find((p) => p.id === a);
+                const pb = mapPositions.find((p) => p.id === b);
+                if (!pa || !pb) return null;
+                const active =
+                  mapHoverId === null || mapHoverId === a || mapHoverId === b;
+                return (
+                  <line
+                    key={`${a}-${b}`}
+                    x1={pa.x}
+                    y1={pa.y}
+                    x2={pb.x}
+                    y2={pb.y}
+                    stroke="#E67E22"
+                    strokeOpacity={active ? 0.35 : 0.08}
+                    strokeWidth={0.35}
+                  />
+                );
+              })}
+              {mapPositions.map((node) => (
+                <g
+                  key={node.id}
+                  className="cursor-pointer"
+                  onMouseEnter={() => setMapHoverId(node.id)}
+                  onMouseLeave={() => setMapHoverId(null)}
+                  onClick={() => onSelect(node.item)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onSelect(node.item);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={node.item.name}
+                >
+                  <circle
+                    cx={node.x}
+                    cy={node.y}
+                    r={mapHoverId === node.id ? 3.2 : 2.6}
+                    fill={CATEGORY_COLORS[node.item.category]}
+                    stroke="#FDFCFA"
+                    strokeWidth={0.6}
+                  />
+                  <text
+                    x={node.x}
+                    y={node.y + 5.5}
+                    textAnchor="middle"
+                    className="fill-[#5A5653] text-[2.8px] font-semibold pointer-events-none"
+                  >
+                    {node.item.name.length > 14
+                      ? `${node.item.name.slice(0, 12)}…`
+                      : node.item.name}
+                  </text>
+                </g>
+              ))}
+            </svg>
+          </div>
+        ) : (
         <StaggerGrid className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" staggerMs={80}>
             {displayStrands.length > 0 ? (
               displayStrands.map((item) => (
@@ -255,6 +358,7 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
               </div>
             )}
           </StaggerGrid>
+        )}
       </div>
     </section>
   );

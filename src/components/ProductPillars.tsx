@@ -71,8 +71,8 @@ export function ProductPillars() {
               />
               <LoreNavLink
                 href="#index"
-                term="Index Araneae"
-                plain="Gallery of interface examples"
+                term="Site library"
+                plain="Example sites to study by silk type"
               />
               <LoreNavLink
                 href="#weave"
