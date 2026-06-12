@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 const TABS = [
   { id: "reports", label: "Silk reports" },
   { id: "identity", label: "Identity locks" },
+  { id: "weave", label: "Weave" },
   { id: "orders", label: "Orders" },
   { id: "briefs", label: "Studio briefs" },
 ] as const;

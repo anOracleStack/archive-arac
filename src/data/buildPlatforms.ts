@@ -125,7 +125,7 @@ export const hostingTiers = [
     monthlyUsd: 79,
     sites: 10,
     domains: 10,
-    includes: ["Everything in Growth", "Identity Lock scans", "White-label reports", "Cursor build credits"],
+    includes: ["Everything in Growth", "Identity Lock scans", "White-label reports", "Weave build credits"],
   },
 ] as const;
 

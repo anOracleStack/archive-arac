@@ -22,6 +22,7 @@ const navGroups = [
   {
     label: "Build",
     links: [
+      { href: "/studio/weave", label: "Weave" },
       { href: "/studio", label: "Studio" },
       { href: "/compose", label: "Strand Composer" },
     ],

@@ -12,6 +12,8 @@ import {
   getIdentityLock,
 } from "@/lib/identityStore";
 import { listStudioBriefs, removeStudioBrief } from "@/lib/identityStore";
+import { listWeaveSessions, removeWeaveSession, getWeaveSession } from "@/lib/weaveStore";
+import type { WeaveSession } from "@/types/weave";
 import { AnalyzerResults } from "@/components/AnalyzerResults";
 import { ClaimChecklist } from "@/components/identity/ClaimChecklist";
 import { BalancedText } from "@/components/BalancedText";
@@ -29,8 +31,10 @@ function VaultInner() {
   const [reports, setReports] = useState<VaultEntry[]>([]);
   const [locks, setLocks] = useState(listIdentityLocks());
   const [briefs, setBriefs] = useState(listStudioBriefs());
+  const [weaves, setWeaves] = useState<WeaveSession[]>([]);
   const [viewReport, setViewReport] = useState<VaultEntry | null>(null);
   const [viewLock, setViewLock] = useState(getIdentityLock(viewId ?? "") ?? null);
+  const [viewWeave, setViewWeave] = useState<WeaveSession | null>(null);
   const [orders, setOrders] = useState<RegistrarOrder[]>([]);
   const [serverMeta, setServerMeta] = useState<Pick<ServerVaultSnapshot, "social" | "wix">>({
     social: [],
@@ -48,6 +52,7 @@ function VaultInner() {
     setReports(listVault());
     setLocks(listIdentityLocks());
     setBriefs(listStudioBriefs());
+    setWeaves(listWeaveSessions());
   };
 
   useEffect(() => {
@@ -76,6 +81,11 @@ function VaultInner() {
     } else if (tab !== "identity") {
       setViewLock(null);
     }
+    if (tab === "weave" && viewId) {
+      setViewWeave(getWeaveSession(viewId));
+    } else if (tab !== "weave") {
+      setViewWeave(null);
+    }
   }, [viewId, tab]);
 
   if (viewReport) {
@@ -92,6 +102,47 @@ function VaultInner() {
           Saved {new Date(viewReport.savedAt).toLocaleString()}
         </p>
         <AnalyzerResults result={viewReport.result} />
+      </div>
+    );
+  }
+
+  if (viewWeave) {
+    return (
+      <div className="relative z-10 pt-32 pb-24 px-6 max-w-3xl mx-auto text-center">
+        <Link
+          href="/vault?tab=weave"
+          className="inline-flex mb-6 text-[10px] font-bold uppercase tracking-widest text-[#E67E22] hover:underline"
+        >
+          ← Back to vault
+        </Link>
+        <h1 className="text-3xl font-bold mb-2">{viewWeave.businessName}</h1>
+        <p className="text-sm text-[#B8B5AE] mb-8">
+          {viewWeave.status.replace("_", " ")} · {new Date(viewWeave.savedAt).toLocaleString()}
+        </p>
+        <div className="text-left space-y-4 p-6 rounded-2xl border border-[#E8E5DF] bg-white mb-8">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#9C7C5B]">Building</p>
+            <p className="text-sm text-[#2C2A29] mt-1">{viewWeave.building}</p>
+          </div>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#9C7C5B]">Vibe</p>
+            <p className="text-sm text-[#2C2A29] mt-1">{viewWeave.vibe}</p>
+          </div>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#9C7C5B]">Goals</p>
+            <p className="text-sm text-[#2C2A29] mt-1">{viewWeave.goals}</p>
+          </div>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#9C7C5B]">Pages</p>
+            <p className="text-sm text-[#2C2A29] mt-1">{viewWeave.pages}</p>
+          </div>
+        </div>
+        <Link
+          href="/studio/weave"
+          className="inline-flex px-5 py-2.5 rounded-xl bg-[#E67E22] text-white text-[10px] font-bold uppercase tracking-widest"
+        >
+          Start new Weave →
+        </Link>
       </div>
     );
   }
@@ -133,8 +184,8 @@ function VaultInner() {
         className="text-[#5A5653] mb-6"
         lines={[
           "Analyzer reports, identity locks,",
-          "& studio briefs — synced to this browser",
-          "& the server vault when you sync.",
+          "Weave sessions, & studio briefs —",
+          "synced to this browser & server vault.",
         ]}
       />
 
@@ -343,16 +394,70 @@ function VaultInner() {
           </>
         )}
 
+        {tab === "weave" && (
+          <>
+            {weaves.length === 0 ? (
+              <div className="p-10 rounded-2xl border border-dashed border-[#D1CEC7] text-center">
+                <BalancedText
+                  text="No Weave sessions yet."
+                  className="text-[#5A5653] mb-4 mx-auto"
+                />
+                <Link
+                  href="/studio/weave"
+                  className="inline-flex px-6 py-3 rounded-xl bg-[#E67E22] text-white text-[10px] font-bold uppercase tracking-widest"
+                >
+                  Open Weave →
+                </Link>
+              </div>
+            ) : (
+              <ul className="space-y-4">
+                {weaves.map((w) => (
+                  <li
+                    key={w.id}
+                    className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl border border-[#E8E5DF] bg-white"
+                  >
+                    <div className="text-left">
+                      <p className="font-bold">{w.businessName}</p>
+                      <p className="text-sm text-[#5A5653] line-clamp-1">{w.building}</p>
+                      <p className="text-xs text-[#B8B5AE] mt-1">
+                        {w.status.replace("_", " ")} · {new Date(w.savedAt).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/vault?tab=weave&id=${encodeURIComponent(w.id)}`}
+                        className="px-4 py-2 rounded-xl bg-[#2C2A29] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#E67E22]"
+                      >
+                        View
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          removeWeaveSession(w.id);
+                          refresh();
+                        }}
+                        className="px-4 py-2 rounded-xl text-[10px] font-bold uppercase text-red-500 hover:bg-red-50"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+
         {tab === "briefs" && (
           <>
             {briefs.length === 0 ? (
               <div className="p-10 rounded-2xl border border-dashed border-[#D1CEC7] text-center">
                 <BalancedText text="No studio briefs saved." className="text-[#5A5653] mb-4 mx-auto" />
                 <Link
-                  href="/studio"
+                  href="/studio/weave"
                   className="inline-flex px-6 py-3 rounded-xl bg-[#2C2A29] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#E67E22]"
                 >
-                  Studio →
+                  Weave →
                 </Link>
               </div>
             ) : (

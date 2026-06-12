@@ -1,5 +1,6 @@
 import type { VaultEntry } from "@/lib/reportStore";
 import type { IdentityLockPackage, StudioBriefEntry } from "@/types/identity";
+import type { WeaveSession } from "@/types/weave";
 import type { SocialConnection, WixSiteConnection, RegistrarOrder } from "@/types/connections";
 import { readVaultJson, writeVaultJson } from "@/lib/server/vaultStorage";
 
@@ -7,6 +8,7 @@ export interface ServerVaultSnapshot {
   reports: VaultEntry[];
   identityLocks: IdentityLockPackage[];
   briefs: StudioBriefEntry[];
+  weaves: WeaveSession[];
   social: SocialConnection[];
   wix: WixSiteConnection[];
   orders: RegistrarOrder[];
@@ -20,6 +22,7 @@ function emptySnapshot(): ServerVaultSnapshot {
     reports: [],
     identityLocks: [],
     briefs: [],
+    weaves: [],
     social: [],
     wix: [],
     orders: [],
@@ -54,6 +57,7 @@ export async function mergeVaultPush(
     reports: patch.reports ?? current.reports,
     identityLocks: patch.identityLocks ?? current.identityLocks,
     briefs: patch.briefs ?? current.briefs,
+    weaves: patch.weaves ?? current.weaves ?? [],
     social: patch.social ?? current.social,
     wix: patch.wix ?? current.wix,
     orders: patch.orders ?? current.orders,

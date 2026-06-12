@@ -1,11 +1,13 @@
 import { getOrCreateClientId } from "@/lib/clientId";
 import type { VaultEntry } from "@/lib/reportStore";
 import type { IdentityLockPackage, StudioBriefEntry } from "@/types/identity";
+import type { WeaveSession } from "@/types/weave";
 import type { ServerVaultSnapshot } from "@/lib/server/serverVault";
 
 const REPORTS_KEY = "archive-arac:vault";
 const LOCKS_KEY = "archive-arac:identity-locks";
 const BRIEFS_KEY = "archive-arac:studio-briefs";
+const WEAVES_KEY = "archive-arac:weave-sessions";
 
 function readLocal<T>(key: string): T[] {
   if (typeof window === "undefined") return [];
@@ -48,6 +50,7 @@ export async function pushLocalVaultToServer(): Promise<ServerVaultSnapshot | nu
     reports: readLocal<VaultEntry>(REPORTS_KEY),
     identityLocks: readLocal<IdentityLockPackage>(LOCKS_KEY),
     briefs: readLocal<StudioBriefEntry>(BRIEFS_KEY),
+    weaves: readLocal<WeaveSession>(WEAVES_KEY),
   };
   const res = await fetch("/api/vault", {
     method: "POST",
@@ -69,6 +72,10 @@ export function applyServerSnapshotToLocal(snapshot: ServerVaultSnapshot) {
     BRIEFS_KEY,
     mergeById(readLocal<StudioBriefEntry>(BRIEFS_KEY), snapshot.briefs)
   );
+  writeLocal(
+    WEAVES_KEY,
+    mergeById(readLocal<WeaveSession>(WEAVES_KEY), snapshot.weaves ?? [])
+  );
 }
 
 export async function syncVaultBidirectional(): Promise<{
@@ -80,6 +87,7 @@ export async function syncVaultBidirectional(): Promise<{
     const localReports = readLocal<VaultEntry>(REPORTS_KEY);
     const localLocks = readLocal<IdentityLockPackage>(LOCKS_KEY);
     const localBriefs = readLocal<StudioBriefEntry>(BRIEFS_KEY);
+    const localWeaves = readLocal<WeaveSession>(WEAVES_KEY);
 
     const clientId = getOrCreateClientId();
     const res = await fetch("/api/vault", {
@@ -90,6 +98,7 @@ export async function syncVaultBidirectional(): Promise<{
         reports: localReports,
         identityLocks: localLocks,
         briefs: localBriefs,
+        weaves: localWeaves,
         merge: true,
       }),
     });
@@ -100,7 +109,7 @@ export async function syncVaultBidirectional(): Promise<{
     applyServerSnapshotToLocal(merged);
     return {
       ok: true,
-      message: `Synced ${merged.reports.length} reports, ${merged.identityLocks.length} locks, ${merged.briefs.length} briefs`,
+      message: `Synced ${merged.reports.length} reports, ${merged.identityLocks.length} locks, ${merged.briefs.length} briefs, ${(merged.weaves ?? []).length} weaves`,
       snapshot: merged,
     };
   } catch {

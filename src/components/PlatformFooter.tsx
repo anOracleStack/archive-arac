@@ -2,6 +2,7 @@ import Link from "next/link";
 
 const platformLinks = [
   { href: "/identity", label: "Identity Lock" },
+  { href: "/studio/weave", label: "Weave" },
   { href: "/studio", label: "Studio" },
   { href: "/analyze", label: "Silk Analyzer" },
   { href: "/compose", label: "Strand Composer" },

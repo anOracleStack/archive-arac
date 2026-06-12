@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { VaultEntry } from "@/lib/reportStore";
 import type { IdentityLockPackage, StudioBriefEntry } from "@/types/identity";
+import type { WeaveSession } from "@/types/weave";
 import { loadServerVault, mergeVaultPush, type ServerVaultSnapshot } from "@/lib/server/serverVault";
 
 export const runtime = "nodejs";
@@ -34,6 +35,7 @@ export async function POST(req: NextRequest) {
     reports?: VaultEntry[];
     identityLocks?: IdentityLockPackage[];
     briefs?: StudioBriefEntry[];
+    weaves?: WeaveSession[];
     merge?: boolean;
   };
   try {
@@ -59,6 +61,9 @@ export async function POST(req: NextRequest) {
       briefs: body.merge
         ? mergeById(current.briefs, body.briefs ?? [])
         : (body.briefs ?? current.briefs),
+      weaves: body.merge
+        ? mergeById(current.weaves ?? [], body.weaves ?? [])
+        : (body.weaves ?? current.weaves ?? []),
       social: current.social,
       wix: current.wix,
       orders: current.orders,
