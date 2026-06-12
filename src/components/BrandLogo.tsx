@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-const LOGO_GAP = "0.5rem";
+const LOGO_GAP = "0.625rem";
 
 export function BrandLogo() {
   const brandRowRef = useRef<HTMLDivElement>(null);

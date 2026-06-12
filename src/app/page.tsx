@@ -101,7 +101,7 @@ function HomePage() {
         <HowItWorks />
         <LandscapeSection />
         <DatabaseGrid onSelect={handleSelect} />
-        <AnalyzerSection initialUrl={urlPrefill} autoRun={autoRun} onStrandSelect={handleSelect} />
+        <AnalyzerSection initialUrl={urlPrefill} autoRun={autoRun} showIntro={false} onStrandSelect={handleSelect} />
         <MethodologySection />
         <PlatformFooter />
         <Modal item={selectedItem} onClose={handleClose} />
