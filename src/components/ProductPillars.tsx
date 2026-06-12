@@ -42,7 +42,18 @@ function LoreNavLink({ href, term, plain, external }: LoreLink) {
 
 export function ProductPillars() {
   return (
-    <section id="pillars" className="relative z-10 px-6 pb-16 pt-4 max-w-5xl mx-auto">
+    <section id="pillars" className="relative z-10 mx-auto max-w-5xl px-6 pb-16 pt-10">
+      <ScrollReveal>
+        <p className="mb-10 text-center">
+          <a
+            href="#index"
+            className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#5A5653] transition-colors hover:text-[#E67E22]"
+          >
+            Explore the platform
+            <span aria-hidden>↓</span>
+          </a>
+        </p>
+      </ScrollReveal>
       <div className="grid gap-6 md:grid-cols-2">
         <ScrollReveal>
           <article className="h-full rounded-2xl border border-[#C4A882]/30 bg-[#F9F7F3]/80 p-8 transition-colors hover:border-[#C4A882]/50 hover:bg-white text-center">

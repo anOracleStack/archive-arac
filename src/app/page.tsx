@@ -92,7 +92,7 @@ function HomePage() {
 
   return (
     <AnalyzerFlowProvider initialUrl={urlPrefill}>
-      <main id="top" className="relative min-h-screen pb-14">
+      <main id="top" className="relative min-h-screen pb-14 pt-14">
         <WebWeaveBackground />
         <SilkTrail />
         <Navbar />

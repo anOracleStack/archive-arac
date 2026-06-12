@@ -24,15 +24,15 @@ export function Hero() {
   };
 
   return (
-    <header className="relative z-10 mx-auto flex min-h-[calc(100svh-7rem)] max-w-5xl flex-col justify-center gap-4 px-6 py-5 text-center">
+    <header className="relative z-10 mx-auto flex h-[calc(100svh-7rem)] max-h-[calc(100svh-7rem)] max-w-5xl flex-col justify-center gap-3 overflow-hidden px-6 text-center">
       <ScrollReveal>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tighter">
+        <h1 className="text-2xl font-bold leading-[1.08] tracking-tighter sm:text-3xl md:text-4xl lg:text-[2.75rem]">
           <span className="block">
             <span>ARCHIVE</span>
-            <span className="ml-[0.4em]">ARAC</span>
+            <span className="ml-[0.35em]">ARAC</span>
             <span className="text-[#9C7C5B]">:</span>
           </span>
-          <span className="mt-2 block text-[0.88em] font-bold tracking-tight md:mt-3">
+          <span className="mt-1.5 block text-[0.92em] font-bold tracking-tight sm:mt-2">
             The Anatomy of Website Architecture
           </span>
         </h1>
@@ -81,15 +81,6 @@ export function Hero() {
             </button>
           </form>
         </div>
-      </ScrollReveal>
-      <ScrollReveal index={3}>
-        <a
-          href="#index"
-          className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#5A5653] transition-colors hover:text-[#E67E22]"
-        >
-          Explore the platform
-          <span aria-hidden>↓</span>
-        </a>
       </ScrollReveal>
     </header>
   );
