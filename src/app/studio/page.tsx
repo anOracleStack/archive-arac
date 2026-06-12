@@ -28,8 +28,8 @@ export default function StudioPage() {
         <BalancedText
           className="text-lg text-[#5A5653] mb-10"
           lines={[
-            "Start with Weave — tell us what you want",
-            "& we gather context for your presence.",
+            "Start with Weave — describe the site you want",
+            "& we save your answers to Vault.",
             "Already live? Connect & audit. Hosting",
             "& domains bundle with Identity Lock.",
           ]}
@@ -39,13 +39,13 @@ export default function StudioPage() {
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#E67E22] mb-3 section-heading">
             Primary path
           </p>
-          <h2 className="text-3xl font-bold mb-4">Weave your presence</h2>
+          <h2 className="text-3xl font-bold mb-4">Describe your website with Weave</h2>
           <BalancedText
             className="text-sm text-[#5A5653] mb-6"
             lines={[
-              "Conversational intake — business, vibe, goals,",
-              "& pages. Saved to Vault. Build delivery",
-              "is coming; gathering context works now.",
+              "Chat through your business, vibe, goals,",
+              "& pages. Saved to Vault. Full builds",
+              "are on the way — tell us what you want now.",
             ]}
           />
           <Link
@@ -58,7 +58,7 @@ export default function StudioPage() {
 
         <FeatureExplainer
           className="mb-10 text-left"
-          whatThisIs="Archive Arac Studio — Weave intake for new builds, hosting tiers, connect existing platforms, & social monitoring."
+          whatThisIs="Archive Arac Studio — describe a new site with Weave, pick hosting, connect existing platforms, & monitor social."
           youCan={[
             "Start a Weave session saved to Vault",
             "Bundle hosting with Identity Lock",
@@ -161,7 +161,7 @@ export default function StudioPage() {
                   <BalancedText
                     className="text-sm text-[#5A5653] mb-4"
                     lines={[
-                      "Save Wix sites to your vault, run Silk audits,",
+                      "Save Wix sites to your Vault, run Silk audits,",
                       "& align domains via Identity Lock.",
                     ]}
                   />

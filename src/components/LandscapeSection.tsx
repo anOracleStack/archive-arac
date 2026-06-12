@@ -33,8 +33,14 @@ export function LandscapeSection() {
               <h2 className="text-4xl font-bold tracking-tight text-balance mb-3">
                 Three threads, one loop
               </h2>
-              <p className="text-sm text-[#5A5653] font-light leading-relaxed mb-4">
-                Illustrative trends in motion and layout — not live market data.
+              <p className="text-sm text-[#5A5653] font-light leading-relaxed mb-4 copy-balanced">
+                <span className="copy-balanced-line">
+                  Illustrative trends in motion & layout —
+                </span>
+                <br />
+                <span className="copy-balanced-line">
+                  a visual story, not live market data.
+                </span>
               </p>
             </ScrollReveal>
             <ScrollReveal index={1}>

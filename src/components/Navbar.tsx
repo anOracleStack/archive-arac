@@ -8,7 +8,7 @@ const navGroups = [
   {
     label: "Discover",
     links: [
-      { href: "/#weave", label: "Weave", match: (p: string) => p === "/" },
+      { href: "/#weave", label: "Weave trends", match: (p: string) => p === "/" },
       { href: "/#index", label: "Index", match: (p: string) => p === "/" },
     ],
   },
@@ -22,7 +22,7 @@ const navGroups = [
   {
     label: "Build",
     links: [
-      { href: "/studio/weave", label: "Weave" },
+      { href: "/studio/weave", label: "Weave — site brief" },
       { href: "/studio", label: "Studio" },
       { href: "/compose", label: "Strand Composer" },
     ],

@@ -18,7 +18,11 @@ export function ProductPillars() {
             </h2>
             <BalancedText
               className="text-[#5A5653] text-sm font-light leading-relaxed mb-6"
-              text="Analyze any URL, browse example sites, and explore illustrated trends in how the web is built."
+              lines={[
+                "Analyze any URL, browse example sites,",
+                "& explore illustrated trends in how",
+                "the web is built.",
+              ]}
             />
             <nav className="flex flex-wrap gap-4" aria-label="Understand and optimize">
               <a href="#analyzer" className={PILLAR_LINK}>
@@ -36,13 +40,17 @@ export function ProductPillars() {
         <ScrollReveal index={1}>
           <article className="h-full rounded-2xl border border-[#C4A882]/30 bg-[#F9F7F3]/80 p-8 transition-colors hover:border-[#C4A882]/50 hover:bg-white">
             <h2 className="text-2xl font-bold tracking-tight text-[#2C2A29] mb-3">
-              Build your presence
+              Build your website
             </h2>
             <BalancedText
               className="text-[#5A5653] text-sm font-light leading-relaxed mb-6"
-              text="Lock in branding, domains, and handles — then shape architecture and launch from the studio."
+              lines={[
+                "Lock in branding, domains, & handles —",
+                "describe your site in Weave, & launch",
+                "from Studio. Vault holds it all.",
+              ]}
             />
-            <nav className="flex flex-wrap gap-4" aria-label="Build your presence">
+            <nav className="flex flex-wrap gap-4" aria-label="Build your website">
               <Link href="/studio" className={PILLAR_LINK}>
                 Studio
               </Link>

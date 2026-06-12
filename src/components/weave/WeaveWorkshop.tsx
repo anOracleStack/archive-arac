@@ -21,12 +21,12 @@ const INTAKE_STEPS: { field: IntakeField; prompt: string; placeholder: string }[
   },
   {
     field: "vibe",
-    prompt: "What vibe or references should we weave in?",
+    prompt: "What look or style should your site have?",
     placeholder: "e.g. warm minimal like Aesop, bold editorial, dark luxury…",
   },
   {
     field: "goals",
-    prompt: "What should this presence achieve for you?",
+    prompt: "What should this website do for you?",
     placeholder: "e.g. book calls, sell templates, grow a waitlist…",
   },
   {
@@ -51,7 +51,7 @@ export function WeaveWorkshop() {
     {
       role: "assistant",
       content:
-        "Welcome to Weave — Archive Arac's build workshop.\n\nI'll gather what we need to shape your presence. Answer a few questions & we'll save your session to the Vault.",
+        "Welcome to Weave — tell us about the site you want to build.\n\nI'll ask a few questions about your business, look, & goals. When you're done, we'll save it to your Vault.",
     },
   ]);
   const [stepIndex, setStepIndex] = useState(0);
@@ -114,14 +114,14 @@ export function WeaveWorkshop() {
       }
 
       const summary = [
-        `Got it — here's what we're weaving for **${nextIntake.businessName}**:`,
+        `Got it — here's your site brief for **${nextIntake.businessName}**:`,
         "",
         `**Building:** ${nextIntake.building}`,
         `**Vibe:** ${nextIntake.vibe}`,
         `**Goals:** ${nextIntake.goals}`,
         `**Pages:** ${nextIntake.pages}`,
         "",
-        "We're weaving your presence. Build delivery is coming — your intake is saved & ready for the next phase.",
+        "Saved to your Vault. Full site building is coming soon — your notes are ready when we ship.",
       ].join("\n");
 
       nextMessages.push({ role: "assistant", content: summary });
@@ -207,13 +207,14 @@ export function WeaveWorkshop() {
           Weave
         </p>
         <h2 className="text-xl font-bold tracking-tight text-[#2C2A29]">
-          Shape your presence
+          Describe your website
         </h2>
         <BalancedText
           className="text-xs text-[#5A5653] mt-2"
           lines={[
-            "Conversational intake — saved to your Vault.",
-            "Build delivery is on the way; gathering context works now.",
+            "Quick questions — saved to your Vault.",
+            "Site building is on the way; tell us",
+            "what you want today.",
           ]}
         />
       </div>
@@ -242,7 +243,7 @@ export function WeaveWorkshop() {
                 <span className="w-1.5 h-1.5 rounded-full bg-[#E67E22] animate-pulse [animation-delay:150ms]" />
                 <span className="w-1.5 h-1.5 rounded-full bg-[#E67E22] animate-pulse [animation-delay:300ms]" />
               </span>
-              Weaving a reply…
+              Writing a reply…
             </span>
           </div>
         )}
@@ -269,7 +270,7 @@ export function WeaveWorkshop() {
         )}
         {intakeDone && chatEnabled === false && (
           <p className="text-[10px] text-[#9C7C5B] text-center mb-3">
-            AI follow-up unavailable — intake is complete & saved.
+            AI follow-up unavailable — your brief is saved.
           </p>
         )}
         <textarea

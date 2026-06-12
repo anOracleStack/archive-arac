@@ -19,7 +19,7 @@ const STEPS = [
     id: "build",
     number: "03",
     title: "Build",
-    body: "Use the studio and identity tools to align branding, domains, handles, and your site.",
+    body: "Use Studio & Identity Lock to align branding, domains, handles, & your site.",
   },
 ] as const;
 
@@ -32,7 +32,7 @@ export function HowItWorks() {
             How it works
           </p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-balance">
-            Three steps from URL to presence
+            Three steps from URL to your website
           </h2>
         </div>
       </ScrollReveal>

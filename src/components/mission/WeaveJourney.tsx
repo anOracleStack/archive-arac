@@ -48,11 +48,11 @@ const steps: JourneyStep[] = [
     id: "spin",
     glyph: "03",
     title: "Spin it up",
-    hook: "Hosting, domain bundle, & a build path — connect Wix or hand us a brief.",
+    hook: "Hosting, domain bundle, & Weave — describe the site you want or connect what you already have.",
     youGet: [
       "Hosting tiers tied to your lock",
-      "Connect an existing Wix site or any URL",
-      "Checkout when you’re ready to pay & ship",
+      "Weave: tell us your look, goals, & pages",
+      "Connect Wix or any URL; checkout when ready",
     ],
     status: "ready",
     primary: { href: "/studio", label: "Enter Studio" },
@@ -76,7 +76,7 @@ const steps: JourneyStep[] = [
 const onlyHere = [
   "Strand-native — we teach motion & layout patterns, not generic templates",
   "Every bold term opens a plain-language explainer — no jargon wall",
-  "Silk Analyzer, Identity Lock, Studio, & weave tools share one Vault — not four silos",
+  "Silk Analyzer, Identity Lock, Studio, & Weave briefs share one Vault — not four silos",
 ];
 
 function StatusPill({ status }: { status: StepStatus }) {

@@ -23,6 +23,17 @@ import { syncVaultBidirectional, applyServerSnapshotToLocal, pullServerVault } f
 import type { RegistrarOrder } from "@/types/connections";
 import type { ServerVaultSnapshot } from "@/lib/server/serverVault";
 
+function weaveStatusLabel(status: string): string {
+  switch (status) {
+    case "intake_complete":
+      return "Brief saved";
+    case "draft":
+      return "In progress";
+    default:
+      return status.replace(/_/g, " ");
+  }
+}
+
 function VaultInner() {
   const searchParams = useSearchParams();
   const tab = useVaultTab();
@@ -117,7 +128,7 @@ function VaultInner() {
         </Link>
         <h1 className="text-3xl font-bold mb-2">{viewWeave.businessName}</h1>
         <p className="text-sm text-[#B8B5AE] mb-8">
-          {viewWeave.status.replace("_", " ")} · {new Date(viewWeave.savedAt).toLocaleString()}
+          {weaveStatusLabel(viewWeave.status)} · {new Date(viewWeave.savedAt).toLocaleString()}
         </p>
         <div className="text-left space-y-4 p-6 rounded-2xl border border-[#E8E5DF] bg-white mb-8">
           <div>
@@ -183,15 +194,15 @@ function VaultInner() {
       <BalancedText
         className="text-[#5A5653] mb-6"
         lines={[
-          "Analyzer reports, identity locks,",
-          "Weave sessions, & studio briefs —",
-          "synced to this browser & server vault.",
+          "Where your profile information lives —",
+          "reports, brand locks, Weave site briefs,",
+          "& studio notes in one place.",
         ]}
       />
 
       <FeatureExplainer
         className="mb-6 text-left"
-        whatThisIs="Your local-first workspace keyed by anonymous client ID, with optional server sync—analyzer reports, identity locks, studio briefs, registrar orders, connected social/Wix metadata."
+        whatThisIs="Your saved drawer — Silk reports, brand locks, Weave site briefs, studio notes, & orders in one place, synced to this browser & our server."
         youCan={[
           "Review, delete, sync",
           "Open deep links (?id=)",
@@ -399,14 +410,17 @@ function VaultInner() {
             {weaves.length === 0 ? (
               <div className="p-10 rounded-2xl border border-dashed border-[#D1CEC7] text-center">
                 <BalancedText
-                  text="No Weave sessions yet."
+                  lines={[
+                    "No site briefs yet.",
+                    "Tell us what you want your website to be.",
+                  ]}
                   className="text-[#5A5653] mb-4 mx-auto"
                 />
                 <Link
                   href="/studio/weave"
                   className="inline-flex px-6 py-3 rounded-xl bg-[#E67E22] text-white text-[10px] font-bold uppercase tracking-widest"
                 >
-                  Open Weave →
+                  Describe your site →
                 </Link>
               </div>
             ) : (
@@ -420,7 +434,7 @@ function VaultInner() {
                       <p className="font-bold">{w.businessName}</p>
                       <p className="text-sm text-[#5A5653] line-clamp-1">{w.building}</p>
                       <p className="text-xs text-[#B8B5AE] mt-1">
-                        {w.status.replace("_", " ")} · {new Date(w.savedAt).toLocaleString()}
+                        {weaveStatusLabel(w.status)} · {new Date(w.savedAt).toLocaleString()}
                       </p>
                     </div>
                     <div className="flex gap-2">

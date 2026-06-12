@@ -36,6 +36,26 @@ export const gloss = {
     },
   } satisfies GatewayArticle,
 
+  weaveWorkshop: {
+    headline: "Weave (site brief)",
+    say: "describe the website you want",
+    beginner: {
+      what: "Weave is a short chat where you tell us what you want your website to look like — your business name, site type, style, goals, & pages. We save your answers to the Vault.",
+      why: "You shouldn't need dev jargon to start a build. Plain questions mean anyone can leave a useful brief.",
+      action: "Open Studio → Weave, answer the five questions, & find your saved brief under Vault → Weave briefs.",
+    },
+    moderate: {
+      what: "A guided intake flow (not a full site builder yet). Optional AI follow-up when chat is configured; the brief always saves locally & can sync to the server Vault.",
+      why: "Separates \"what I want\" from \"how we ship it\" so intake works before automated builds land.",
+      action: "Reuse saved briefs when checkout & hosting bundles go live — or export notes for your own build path.",
+    },
+    advanced: {
+      what: "Sessions persist via `weaveStore` with status `intake_complete`; follow-up posts to `/api/chat` with woven context from the five fields.",
+      why: "Keeps the workshop deterministic for the core Q&A while allowing LLM polish on the edges.",
+      action: "Extend `INTAKE_STEPS` or pipe completed sessions into Studio briefs / ops queue when build delivery ships.",
+    },
+  } satisfies GatewayArticle,
+
   weaveGrowth: {
     headline: "The Growth of the Weave",
     say: "Weave Motion — illustrative, not live data",
