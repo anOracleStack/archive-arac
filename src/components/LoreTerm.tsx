@@ -59,10 +59,12 @@ export function LoreTerm({
   return (
     <div className={`text-center ${className}`}>
       <div className={badgeClass}>{term}</div>
-      <BalancedText
-        className={`${size === "hero" ? HERO_SUPPORT_COPY : "text-sm text-[#5A5653]"} mt-3 max-w-2xl mx-auto`}
-        lines={plainLines}
-      />
+      {plainLines.length > 0 && plainLines.some((line) => line.trim()) && (
+        <BalancedText
+          className={`${size === "hero" ? HERO_SUPPORT_COPY : "text-sm text-[#5A5653]"} mt-3 max-w-2xl mx-auto`}
+          lines={plainLines}
+        />
+      )}
     </div>
   );
 }

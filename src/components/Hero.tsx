@@ -24,26 +24,27 @@ export function Hero() {
   };
 
   return (
-    <header className="relative z-10 mx-auto flex min-h-[calc(100svh-3.5rem)] max-w-5xl flex-col justify-center px-6 py-14 text-center">
+    <header className="relative z-10 mx-auto flex min-h-[calc(100svh-7rem)] max-w-5xl flex-col justify-center px-6 pt-14 pb-4 text-center">
       <ScrollReveal>
         <LoreTerm
-          className="mb-6"
+          className="mb-4"
           size="hero"
-          term="Archive Arac: The architecture of websites"
-          plain={[
-            "Your domain is your address on the web — we break down how sites work,",
-            "help you claim the right name, & build one that fits you.",
-          ]}
+          term="ARCHIVE ARAC: The Architecture of Websites"
+          plain={[]}
         />
       </ScrollReveal>
       <ScrollReveal index={1}>
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-[0.95] tracking-tighter text-balance">
-          From Foundation to{" "}
-          <span className="text-[#E67E22] relative inline-block">
-            Fruition.
-            <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 8" fill="none" aria-hidden>
-              <path d="M0 4 Q50 0 100 4 Q150 8 200 4" stroke="#E67E22" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.4" />
-            </svg>
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-[0.95] tracking-tighter">
+          <span className="block">From</span>
+          <span className="block">Foundation</span>
+          <span className="block">
+            to{" "}
+            <span className="text-[#E67E22] relative inline-block">
+              Fruition.
+              <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 8" fill="none" aria-hidden>
+                <path d="M0 4 Q50 0 100 4 Q150 8 200 4" stroke="#E67E22" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.4" />
+              </svg>
+            </span>
           </span>
         </h1>
       </ScrollReveal>
@@ -51,15 +52,16 @@ export function Hero() {
         <BalancedText
           className={`${HERO_SUPPORT_COPY} max-w-2xl mx-auto`}
           lines={[
-            "Analyze any website's structure, secure your branding, domains, & handles,",
-            "& build a site that fits your identity.",
+            "We break down the biology of digital real estate — the structure,",
+            "secure your branding, domains, & handles, & ultimately",
+            "build a website that represents your digital identity.",
           ]}
         />
       </ScrollReveal>
       <ScrollReveal index={3}>
         <form
           onSubmit={handleSubmit}
-          className="mt-10 max-w-2xl mx-auto flex flex-col sm:flex-row gap-3 items-stretch"
+          className="mt-6 max-w-2xl mx-auto flex flex-col sm:flex-row gap-3 items-stretch"
         >
           <AnalyzeUrlField
             id="hero-analyze-url"
@@ -82,14 +84,14 @@ export function Hero() {
             {busy ? "Analyzing…" : "Analyze"}
           </button>
         </form>
-        <p className="mt-4 text-[11px] text-[#B8B5AE]">
+        <p className="mt-3 text-[11px] text-[#B8B5AE]">
           <span className="font-bold text-[#9C7C5B]">Silk Analyzer</span>
           {" — "}
           paste a URL to see how it&apos;s built.
         </p>
       </ScrollReveal>
       <ScrollReveal index={4}>
-        <div className="mt-8">
+        <div className="mt-4">
           <a
             href="#index"
             className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#5A5653] hover:text-[#E67E22] transition-colors"
