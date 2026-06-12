@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { StrandItem, SilkCategory } from "@/types";
 import { strands } from "@/data/strands";
@@ -8,18 +9,21 @@ import { ScrollReveal, StaggerGrid } from "@/components/ScrollReveal";
 import { BalancedText } from "@/components/BalancedText";
 import { gloss } from "@/data/knowledgeGloss";
 
+const ConnectionMap = dynamic(
+  () => import("./ConnectionMap").then((mod) => mod.ConnectionMap),
+  {
+    loading: () => (
+      <div className="mx-auto max-w-3xl min-h-[420px] rounded-3xl border border-[#E8E5DF] bg-[#FDFCFA]/90" aria-hidden />
+    ),
+  }
+);
+
 const FILTERS: { key: SilkCategory | "all"; label: string; glossArticle: keyof typeof gloss }[] = [
   { key: "all", label: "All Strands", glossArticle: "allStrands" },
   { key: "webgl", label: "Spatial", glossArticle: "spatialCategory" },
   { key: "ai", label: "Gen-AI", glossArticle: "genAICategory" },
   { key: "ux", label: "Physics", glossArticle: "physicsCategory" },
 ];
-
-const CATEGORY_COLORS: Record<SilkCategory, string> = {
-  webgl: "#8BA896",
-  ai: "#E67E22",
-  ux: "#9C7C5B",
-};
 
 interface DatabaseGridProps {
   onSelect: (item: StrandItem) => void;
@@ -68,8 +72,13 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
     else cardRefs.current.delete(id);
   }, []);
 
-  // Connection-lines canvas (grid mode) — scoped to Index section so lines sit behind cards, not over the whole page
+  // Connection-lines canvas (grid mode) — only animate while a card is hovered
   useEffect(() => {
+    if (viewMode !== "grid" || hoveredId === null) return;
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
     const cvs = canvasRef.current;
     const section = sectionRef.current;
     if (!cvs || !section) return;
@@ -145,8 +154,9 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
     return () => {
       cancelAnimationFrame(animRef.current);
       ro.disconnect();
+      ctx.clearRect(0, 0, section.clientWidth, section.clientHeight);
     };
-  }, [hoveredId]);
+  }, [hoveredId, viewMode]);
 
   return (
     <section id="index" ref={sectionRef} className="relative z-10 overflow-hidden py-24 px-6">
@@ -251,66 +261,13 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
         </ScrollReveal>
 
         {viewMode === "map" && displayStrands.length > 0 ? (
-          <div className="mx-auto max-w-3xl rounded-3xl border border-[#E8E5DF] bg-[#FDFCFA]/90 p-6 shadow-sm">
-            <svg viewBox="0 0 100 100" className="w-full aspect-square max-h-[420px]" role="img" aria-label="Strand connection map by shared tags">
-              {tagEdges.map(([a, b]) => {
-                const pa = mapPositions.find((p) => p.id === a);
-                const pb = mapPositions.find((p) => p.id === b);
-                if (!pa || !pb) return null;
-                const active =
-                  mapHoverId === null || mapHoverId === a || mapHoverId === b;
-                return (
-                  <line
-                    key={`${a}-${b}`}
-                    x1={pa.x}
-                    y1={pa.y}
-                    x2={pb.x}
-                    y2={pb.y}
-                    stroke="#E67E22"
-                    strokeOpacity={active ? 0.35 : 0.08}
-                    strokeWidth={0.35}
-                  />
-                );
-              })}
-              {mapPositions.map((node) => (
-                <g
-                  key={node.id}
-                  className="cursor-pointer"
-                  onMouseEnter={() => setMapHoverId(node.id)}
-                  onMouseLeave={() => setMapHoverId(null)}
-                  onClick={() => onSelect(node.item)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      onSelect(node.item);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={node.item.name}
-                >
-                  <circle
-                    cx={node.x}
-                    cy={node.y}
-                    r={mapHoverId === node.id ? 3.2 : 2.6}
-                    fill={CATEGORY_COLORS[node.item.category]}
-                    stroke="#FDFCFA"
-                    strokeWidth={0.6}
-                  />
-                  <text
-                    x={node.x}
-                    y={node.y + 5.5}
-                    textAnchor="middle"
-                    className="fill-[#5A5653] text-[2.8px] font-semibold pointer-events-none"
-                  >
-                    {node.item.name.length > 14
-                      ? `${node.item.name.slice(0, 12)}…`
-                      : node.item.name}
-                  </text>
-                </g>
-              ))}
-            </svg>
-          </div>
+          <ConnectionMap
+            tagEdges={tagEdges}
+            mapPositions={mapPositions}
+            mapHoverId={mapHoverId}
+            onHover={setMapHoverId}
+            onSelect={onSelect}
+          />
         ) : (
         <StaggerGrid className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" staggerMs={80}>
             {displayStrands.length > 0 ? (

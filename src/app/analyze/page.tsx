@@ -1,14 +1,23 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { PlatformShell } from "@/components/PlatformShell";
 import { BalancedText } from "@/components/BalancedText";
-import { AnalyzerSection } from "@/components/AnalyzerSection";
 import { AnalyzerFlowProvider } from "@/components/AnalyzerFlowContext";
 import { FeatureExplainer } from "@/components/FeatureExplainer";
 import { parseCompareParams } from "@/lib/compareUrlSync";
+
+const AnalyzerSection = dynamic(
+  () => import("@/components/AnalyzerSection").then((mod) => mod.AnalyzerSection),
+  {
+    loading: () => (
+      <section className="relative z-10 py-24 px-6 bg-white border-y border-[#E8E5DF] min-h-[280px]" aria-hidden />
+    ),
+  }
+);
 
 function AnalyzeContent() {
   const searchParams = useSearchParams();
