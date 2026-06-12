@@ -96,7 +96,13 @@ function HomePage() {
         <WebWeaveBackground />
         <SilkTrail />
         <Navbar />
-        <Hero />
+        <section
+          id="hero"
+          aria-label="Introduction"
+          className="relative z-10 mx-auto h-[calc(100svh-7rem)] max-h-[calc(100svh-7rem)] w-full max-w-5xl shrink-0 overflow-hidden px-6"
+        >
+          <Hero />
+        </section>
         <ProductPillars />
         <HowItWorks />
         <LandscapeSection />
