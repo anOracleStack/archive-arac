@@ -3,16 +3,16 @@ import { outfit } from "@/lib/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://archive-arac.vercel.app"),
+  metadataBase: new URL("https://oidib.io"),
   title: "Archive Arac | Vanguard Weave",
   description:
-    "Web intelligence platform — curated strands, Silk Analyzer, compare URLs, strand composer, & audit vault. Plain-language explainers beside every bold term.",
+    "Digital real estate intelligence — curated strands, Silk Analyzer, compare URLs, strand composer, & audit vault. Plain-language explainers beside every bold term.",
   openGraph: {
     title: "Archive Arac | Vanguard Weave",
     description:
       "Curated interface strands, Silk Analyzer, compare URLs, strand composer, & audit vault.",
     type: "website",
-    url: "https://archive-arac.vercel.app",
+    url: "https://oidib.io",
   },
 };
 

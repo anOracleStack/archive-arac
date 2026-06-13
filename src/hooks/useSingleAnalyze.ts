@@ -56,8 +56,13 @@ export function useSingleAnalyze(
 
   useEffect(() => {
     if (status !== "complete" || !result) return;
-    saveAnalysisSession({ url, result, status, error, analyzedAt });
-    if (syncUrlOnComplete) syncAnalysisUrl(result.url);
+
+    const timer = window.setTimeout(() => {
+      saveAnalysisSession({ url, result, status, error, analyzedAt });
+      if (syncUrlOnComplete) syncAnalysisUrl(result.url);
+    }, 100);
+
+    return () => window.clearTimeout(timer);
   }, [status, result, url, error, analyzedAt, syncUrlOnComplete]);
 
   const reset = useCallback(() => {

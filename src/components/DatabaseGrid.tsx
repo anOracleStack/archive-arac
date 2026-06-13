@@ -268,6 +268,16 @@ export function DatabaseGrid({ onSelect }: DatabaseGridProps) {
             onHover={setMapHoverId}
             onSelect={onSelect}
           />
+        ) : viewMode === "map" ? (
+          <div className="mx-auto max-w-md text-center py-16 px-6 rounded-3xl border border-[#E8E5DF] bg-[#FDFCFA]/90">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#E67E22] mb-3">
+              No connections yet
+            </p>
+            <BalancedText
+              text="No strands match this silk type — try another filter to see the map."
+              className="text-sm text-[#5A5653]"
+            />
+          </div>
         ) : (
         <StaggerGrid className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" staggerMs={80}>
             {displayStrands.length > 0 ? (

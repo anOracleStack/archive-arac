@@ -23,6 +23,7 @@ yarn-error.log*
 # misc
 out/
 .vercel
+tsconfig.tsbuildinfo
 
 # server-side vault + oauth token storage (local dev)
 /data/

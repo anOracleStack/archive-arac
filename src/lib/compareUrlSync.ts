@@ -29,6 +29,11 @@ export function syncCompareUrl(urlA: string, urlB: string): void {
   window.history.replaceState(null, "", next);
 }
 
+export function compareShareUrl(urlA: string, urlB: string, origin: string): string {
+  const params = new URLSearchParams({ compare: urlA, b: urlB, run: "1" });
+  return `${origin}/analyze?${params.toString()}`;
+}
+
 export function clearCompareUrl(): void {
   if (typeof window === "undefined") return;
   const params = new URLSearchParams(window.location.search);

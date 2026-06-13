@@ -23,7 +23,8 @@ function AnalyzeContent() {
   const searchParams = useSearchParams();
   const comparePrefill = parseCompareParams(searchParams);
   const prefill = comparePrefill ? "" : (searchParams.get("url") ?? "");
-  const autoRun = !comparePrefill && searchParams.get("run") === "1" && prefill.length > 0;
+  // /analyze auto-runs when ?url= is present; compare needs ?run=1
+  const autoRun = !comparePrefill && prefill.length > 0;
   const compareAutoRun =
     !!comparePrefill && searchParams.get("run") === "1";
 

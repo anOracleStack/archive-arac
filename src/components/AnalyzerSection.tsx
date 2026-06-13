@@ -352,8 +352,23 @@ export function AnalyzerSection({
                 <span className="text-sm font-medium text-[#5A5653]">
                   {mode === "compare"
                     ? "Fetching both sites in parallel…"
-                    : "Fetching page source…"}
+                    : "Reading your digital real estate…"}
                 </span>
+              </div>
+              <div className="space-y-2 mb-4">
+                {(mode === "compare"
+                  ? ["Fetching both pages", "Comparing stacks & UX", "Building weave delta"]
+                  : ["Fetching page source", "Detecting stack & design", "Scoring innovation signals"]
+                ).map((step, i) => (
+                  <div key={step} className="flex items-center gap-2 text-xs text-[#5A5653]">
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        i === 0 ? "bg-[#E67E22] animate-pulse" : "bg-[#D1CEC7]"
+                      }`}
+                    />
+                    {step}
+                  </div>
+                ))}
               </div>
               <div className="h-1.5 bg-[#E8E5DF] rounded-full overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-[#E67E22] to-[#8BA896] rounded-full animate-[silk-progress_2s_ease-in-out_infinite]" />
@@ -363,13 +378,17 @@ export function AnalyzerSection({
         )}
 
         {error && (
-          <div className="max-w-2xl mx-auto mb-8 p-4 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-700 flex items-center gap-3">
-            <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <div className="max-w-2xl mx-auto mb-8 p-5 bg-[#FDFCFA] border border-red-200/80 rounded-2xl text-sm text-red-700 flex items-start gap-3 shadow-sm">
+            <svg className="w-5 h-5 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="10" />
-              <line x1="15" y1="9" x2="9" y2="15" />
-              <line x1="9" y1="9" x2="15" y2="15" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
-            <span>{error}</span>
+            <div>
+              <p className="font-semibold text-[#2C2A29] mb-0.5">Analysis couldn&apos;t complete</p>
+              <p className="text-red-600/90">{error}</p>
+              <p className="text-xs text-[#5A5653] mt-2">Check the URL is public and reachable, then try again.</p>
+            </div>
           </div>
         )}
       </div>

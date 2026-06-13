@@ -121,7 +121,8 @@ export function WeaveWorkshop() {
         `**Goals:** ${nextIntake.goals}`,
         `**Pages:** ${nextIntake.pages}`,
         "",
-        "Saved to your Vault. Full site building is coming soon — your notes are ready when we ship.",
+        "Saved to your Vault. Your site brief is ready —",
+        "we'll pick up the build when you're set to launch.",
       ].join("\n");
 
       nextMessages.push({ role: "assistant", content: summary });
